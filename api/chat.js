@@ -20,7 +20,7 @@ export default async function handler(req, res) {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization":
-                        `Bearer ${process.env.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}`
+                        `Bearer ${process.env.GROQ_API_KEY}`
                 },
 
                 body: JSON.stringify({
