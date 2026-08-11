@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,43 +6,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Mini AI Chatbot</title>
+    <title>AI Chat</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="chat-container">
+    <div class="app">
 
-        <div class="chat-header">
-            <div>
-                <strong>🤖 AI Assistant</strong>
-                <span>Online</span>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="sidebar-top">
+
+                <button class="new-chat" id="newChat">
+                    <span>＋</span>
+                    New chat
+                </button>
+
+                <div class="history-title">
+                    Today
+                </div>
+
+                <div id="chatHistory" class="chat-history">
+                    <div class="history-item active">
+                        <span>💬</span>
+                        New conversation
+                    </div>
+                </div>
+
             </div>
-        </div>
 
-        <div id="chatMessages" class="chat-messages">
+            <div class="sidebar-bottom">
+                <div class="sidebar-item">
+                    ⚙️ Settings
+                </div>
 
-            <div class="message bot">
-                Hi 👋 Ask me anything!
+                <div class="sidebar-item">
+                    👤 My Account
+                </div>
             </div>
 
-        </div>
+        </aside>
 
-        <div class="chat-input">
 
-            <input
-                type="text"
-                id="userInput"
-                placeholder="Ask anything..."
-                autocomplete="off"
-            >
-            <button id="sendButton">
-                ➤
-            </button>
-        </div>
+        <!-- Main Chat Area -->
+        <main class="main">
+
+            <!-- Header -->
+            <header class="top-bar">
+
+                <div class="model-name">
+                    <strong>Mini AI</strong>
+                    <span>⌄</span>
+                </div>
+
+                <button class="menu-btn" id="menuBtn">
+                    ☰
+                </button>
+
+            </header>
+
+
+            <!-- Messages -->
+            <div id="chatMessages" class="chat-messages">
+
+                <div class="welcome">
+
+                    <div class="welcome-icon">
+                        ✨
+                    </div>
+
+                    <h1>How can I help you?</h1>
+
+                    <p>
+                        Ask me anything and I'll do my best to help.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Input Area -->
+            <div class="input-area">
+
+                <div class="input-box">
+
+                    <button class="attach-btn">
+                        ＋
+                    </button>
+
+                    <input
+                        type="text"
+                        id="userInput"
+                        placeholder="Message Mini AI..."
+                        autocomplete="off"
+                    >
+
+                    <button id="sendButton" class="send-btn">
+                        ↑
+                    </button>
+
+                </div>
+
+                <div class="disclaimer">
+                    Mini AI can make mistakes. Check important information.
+                </div>
+
+            </div>
+
+        </main>
+
     </div>
+
+
     <script src="script.js"></script>
+
 </body>
+
 </html>
+```
