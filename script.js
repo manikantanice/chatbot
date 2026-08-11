@@ -12,12 +12,8 @@ let messages = [
     }
 ];
 
-
-// SEND MESSAGE
 button.addEventListener("click", sendMessage);
 
-
-// ENTER KEY
 input.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
         event.preventDefault();
@@ -25,58 +21,50 @@ input.addEventListener("keydown", function (event) {
     }
 });
 
-
-// MAIN SEND FUNCTION
 async function sendMessage() {
 
     const text = input.value.trim();
 
-    if (!text) {
-        return;
-    }
+    if (!text) return;
 
-    // Remove welcome screen
     const welcome = document.querySelector(".welcome");
 
     if (welcome) {
         welcome.remove();
     }
 
-    // Show user message
     addMessage(text, "user");
 
-    // Save user message
     messages.push({
         role: "user",
         content: text
     });
 
-    // Clear input
     input.value = "";
-
-    // Disable button
     button.disabled = true;
 
-    // Show thinking
     const loadingMessage = addMessage("Thinking...", "bot");
 
     try {
 
+        console.log("Sending request to /api/chat");
+
         const response = await fetch("/api/chat", {
             method: "POST",
-
             headers: {
                 "Content-Type": "application/json"
             },
-
             body: JSON.stringify({
                 messages: messages
             })
         });
 
+        console.log("API status:", response.status);
+
         const data = await response.json();
 
-        // Remove thinking
+        console.log("API response:", data);
+
         loadingMessage.remove();
 
         if (response.ok && data.reply) {
@@ -91,11 +79,10 @@ async function sendMessage() {
         } else {
 
             addMessage(
-                data.error || "Something went wrong.",
+                "API Error: " + (data.error || "Unknown error"),
                 "bot"
             );
 
-            console.error("API Error:", data);
         }
 
     } catch (error) {
@@ -103,22 +90,19 @@ async function sendMessage() {
         loadingMessage.remove();
 
         addMessage(
-            "Unable to connect to AI.",
+            "Connection Error: " + error.message,
             "bot"
         );
 
-        console.error("Connection Error:", error);
+        console.error("FULL ERROR:", error);
 
     }
 
-    // Enable button
     button.disabled = false;
-
     input.focus();
 }
 
 
-// ADD MESSAGE
 function addMessage(text, type) {
 
     const message = document.createElement("div");
@@ -138,7 +122,6 @@ function addMessage(text, type) {
 }
 
 
-// NEW CHAT
 newChatButton.addEventListener("click", function () {
 
     messages = [
@@ -165,16 +148,11 @@ newChatButton.addEventListener("click", function () {
     `;
 
     input.value = "";
-
     input.focus();
 
-    if (sidebar) {
-        sidebar.classList.remove("open");
-    }
 });
 
 
-// MOBILE MENU
 if (menuButton) {
 
     menuButton.addEventListener("click", function () {
