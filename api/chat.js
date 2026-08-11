@@ -1,7 +1,5 @@
-```javascript
 export default async function handler(req, res) {
 
-    // Only allow POST requests
     if (req.method !== "POST") {
         return res.status(405).json({
             error: "Method not allowed"
@@ -10,27 +8,23 @@ export default async function handler(req, res) {
 
     try {
 
-        // Check API key
-        if (!process.env.GROQ_API_KEY) {
+        const apiKey = process.env.GROQ_API_KEY;
 
+        if (!apiKey) {
             return res.status(500).json({
-                error: "GROQ_API_KEY is missing in Vercel Environment Variables"
+                error: "GROQ_API_KEY is not configured in Vercel."
             });
-
         }
 
-        // Get messages from frontend
-        const { messages } = req.body || {};
+        const body = req.body || {};
+        const messages = body.messages;
 
-        if (!messages || !Array.isArray(messages)) {
-
+        if (!messages) {
             return res.status(400).json({
-                error: "Messages are required"
+                error: "Messages are missing."
             });
-
         }
 
-        // Call Groq API
         const groqResponse = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",
             {
@@ -38,7 +32,7 @@ export default async function handler(req, res) {
 
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+                    "Authorization": "Bearer " + apiKey
                 },
 
                 body: JSON.stringify({
@@ -50,55 +44,43 @@ export default async function handler(req, res) {
             }
         );
 
+        const text = await groqResponse.text();
 
-        // Get Groq response
-        const data = await groqResponse.json();
+        let data;
 
-
-        // Groq returned an error
-        if (!groqResponse.ok) {
-
-            console.error("Groq API Error:", data);
-
-            return res.status(groqResponse.status).json({
-                error: data?.error?.message || "Groq API request failed"
-            });
-        }
-
-
-        // Check response
-        if (
-            !data.choices ||
-            !data.choices.length ||
-            !data.choices[0].message
-        ) {
-
-            console.error("Invalid Groq response:", data);
-
+        try {
+            data = JSON.parse(text);
+        } catch {
             return res.status(500).json({
-                error: "Invalid response from Groq"
+                error: "Groq returned an invalid response.",
+                details: text
             });
         }
 
+        if (!groqResponse.ok) {
+            return res.status(groqResponse.status).json({
+                error: data.error?.message || "Groq API error"
+            });
+        }
 
-        // Send AI response to frontend
+        const reply = data.choices?.[0]?.message?.content;
+
+        if (!reply) {
+            return res.status(500).json({
+                error: "No reply received from Groq."
+            });
+        }
+
         return res.status(200).json({
-
-            reply: data.choices[0].message.content
-
+            reply: reply
         });
-
 
     } catch (error) {
 
-        console.error("Server Error:", error);
+        console.error("API ERROR:", error);
 
         return res.status(500).json({
-
-            error: error.message || "Something went wrong"
-
+            error: error.message || "Server error"
         });
-
     }
 }
-```
