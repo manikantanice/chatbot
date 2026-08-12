@@ -4,24 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
        ELEMENTS
     ===================================================== */
 
-    const input =
-        document.getElementById("messageInput");
+    const input = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const chatArea = document.querySelector(".chat-area");
+    const chatMessages = document.getElementById("chatMessages");
+    const welcomeScreen = document.getElementById("welcomeScreen");
 
-    const sendBtn =
-        document.getElementById("sendBtn");
-
-    const chatArea =
-        document.querySelector(".chat-area");
-
-    const chatMessages =
-        document.getElementById("chatMessages");
-
-    const welcomeScreen =
-        document.getElementById("welcomeScreen");
-
-    const newChatBtn =
-        document.getElementById("newChatBtn");
-
+    const newChatBtn = document.getElementById("newChatBtn");
     const currentConversation =
         document.getElementById("currentConversation");
 
@@ -88,13 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================================== */
 
     let conversation = [];
-
     let selectedFiles = [];
-
     let webMode = false;
-
     let sending = false;
-
     let recognition = null;
 
 
@@ -103,9 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================================== */
 
     if (input) {
-
         input.focus();
-
         autoResize();
     }
 
@@ -131,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "input",
             autoResize
         );
+
     }
 
 
@@ -153,8 +137,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     sendMessage();
                 }
+
             }
         );
+
     }
 
 
@@ -168,6 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             sendMessage
         );
+
     }
 
 
@@ -182,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const message =
             input?.value.trim() || "";
 
-
         if (
             !message &&
             selectedFiles.length === 0
@@ -194,16 +180,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /* Hide welcome screen */
+        /* =================================================
+           HIDE WELCOME SCREEN
+        ================================================= */
 
         if (welcomeScreen) {
-
-            welcomeScreen.style.display =
-                "none";
+            welcomeScreen.style.display = "none";
         }
 
 
-        /* Add user message */
+        /* =================================================
+           ADD USER MESSAGE
+        ================================================= */
 
         addMessage(
             "user",
@@ -211,7 +199,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-        /* Add to conversation */
+        /* =================================================
+           ADD TO CONVERSATION
+        ================================================= */
 
         conversation.push({
 
@@ -221,7 +211,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
-        /* Clear input */
+        /* =================================================
+           CLEAR INPUT
+        ================================================= */
 
         if (input) {
 
@@ -231,7 +223,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /* Close tools */
+        /* =================================================
+           CLOSE TOOLS POPUP
+        ================================================= */
 
         if (toolsPopup) {
 
@@ -241,20 +235,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /* Loading */
+        /* =================================================
+           LOADING
+        ================================================= */
 
         setLoading(true);
 
 
         try {
 
+            /* =================================================
+               API REQUEST
+            ================================================= */
+
             const response =
                 await fetch(
                     "/api/chat",
                     {
+
                         method: "POST",
 
                         headers: {
+
                             "Content-Type":
                                 "application/json"
                         },
@@ -288,46 +290,53 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-            /* Check response */
+            /* =================================================
+               READ RESPONSE
+            ================================================= */
 
-            if (!response.ok) {
+            let data = null;
 
-                let errorMessage =
-                    `API error ${response.status}`;
+            try {
 
-                try {
+                data =
+                    await response.json();
 
-                    const errorData =
-                        await response.json();
+            } catch (jsonError) {
 
-                    if (errorData?.error) {
-
-                        errorMessage =
-                            errorData.error;
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        "Error reading API error:",
-                        error
-                    );
-                }
+                console.error(
+                    "Invalid JSON response:",
+                    jsonError
+                );
 
                 throw new Error(
-                    errorMessage
+                    `Server returned an invalid response (${response.status}).`
                 );
             }
 
 
-            const data =
-                await response.json();
+            /* =================================================
+               API ERROR
+            ================================================= */
+
+            if (!response.ok) {
+
+                console.error(
+                    "API Error:",
+                    response.status,
+                    data
+                );
 
 
-            console.log(
-                "API RESPONSE:",
-                data
-            );
+                const serverError =
+                    data?.error ||
+                    data?.message ||
+                    `API error ${response.status}`;
+
+
+                throw new Error(
+                    serverError
+                );
+            }
 
 
             /* =================================================
@@ -335,15 +344,14 @@ document.addEventListener("DOMContentLoaded", () => {
             ================================================= */
 
             if (
-                data &&
-                data.type === "image" &&
-                data.image
+                data?.type === "image" &&
+                data?.image
             ) {
 
                 await showGeneratedImage(
                     data.image,
                     data.reply ||
-                    "✨ Here is the image I created for you."
+                    "✨ Here is your generated image."
                 );
 
 
@@ -357,10 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
 
-                saveRecentChat(
-                    message
-                );
-
+                saveRecentChat(message);
 
                 return;
             }
@@ -372,6 +377,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const reply =
                 getReplyFromResponse(data);
+
+
+            if (!reply) {
+
+                throw new Error(
+                    "The AI returned an empty response."
+                );
+            }
 
 
             await typeAIMessage(
@@ -387,9 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
 
-            saveRecentChat(
-                message
-            );
+            saveRecentChat(message);
 
 
         } catch (error) {
@@ -400,13 +411,14 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
+            const errorMessage =
+                error?.message ||
+                "Something went wrong while connecting to the AI.";
+
+
             addMessage(
                 "ai",
-                "⚠️ " +
-                (
-                    error.message ||
-                    "I couldn't connect to the AI right now. Please try again."
-                )
+                `⚠️ ${errorMessage}`
             );
 
 
@@ -414,12 +426,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             setLoading(false);
 
-
             selectedFiles = [];
 
 
             if (fileInput) {
-
                 fileInput.value = "";
             }
 
@@ -438,12 +448,8 @@ document.addEventListener("DOMContentLoaded", () => {
         message
     ) {
 
-        if (!chatMessages) return;
-
-
         const wrapper =
             document.createElement("div");
-
 
         wrapper.className =
             "chat-message ai image-message";
@@ -452,7 +458,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const bubble =
             document.createElement("div");
 
-
         bubble.className =
             "chat-bubble ai-image-bubble";
 
@@ -460,10 +465,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const text =
             document.createElement("div");
 
-
         text.className =
             "image-response-text";
-
 
         text.textContent =
             message;
@@ -472,10 +475,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const loading =
             document.createElement("div");
 
-
         loading.className =
             "image-loading";
-
 
         loading.innerHTML = `
             <div class="image-loader">
@@ -484,28 +485,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span></span>
             </div>
 
-            <small>
-                Creating your image...
-            </small>
+            <small>Creating your image...</small>
         `;
 
 
-        bubble.appendChild(
-            text
-        );
+        bubble.appendChild(text);
 
-        bubble.appendChild(
-            loading
-        );
+        bubble.appendChild(loading);
 
-        wrapper.appendChild(
-            bubble
-        );
+        wrapper.appendChild(bubble);
 
-        chatMessages.appendChild(
-            wrapper
-        );
-
+        chatMessages.appendChild(wrapper);
 
         scrollChat();
 
@@ -517,193 +507,181 @@ document.addEventListener("DOMContentLoaded", () => {
         const image =
             new Image();
 
-
         image.src =
             imageUrl;
 
 
-        image.onload =
-            () => {
+        image.onload = () => {
 
-                loading.remove();
-
-
-                const imageContainer =
-                    document.createElement("div");
+            loading.remove();
 
 
-                imageContainer.className =
-                    "generated-image-container";
+            const imageContainer =
+                document.createElement("div");
+
+            imageContainer.className =
+                "generated-image-container";
 
 
-                imageContainer.innerHTML = `
-                    <img
-                        src="${escapeAttribute(imageUrl)}"
-                        alt="AI generated image"
-                        class="generated-ai-image"
-                    />
+            imageContainer.innerHTML = `
+                <img
+                    src="${escapeAttribute(imageUrl)}"
+                    alt="AI generated image"
+                    class="generated-ai-image"
+                />
 
-                    <div class="image-actions">
+                <div class="image-actions">
 
-                        <button
-                            type="button"
-                            class="image-action-btn download-image"
-                        >
-                            ↓ Save Image
-                        </button>
+                    <button
+                        type="button"
+                        class="image-action-btn download-image"
+                    >
+                        ↓ Save Image
+                    </button>
 
-                        <button
-                            type="button"
-                            class="image-action-btn copy-image"
-                        >
-                            ⧉ Copy Image URL
-                        </button>
+                    <button
+                        type="button"
+                        class="image-action-btn copy-image"
+                    >
+                        ⧉ Copy Image URL
+                    </button>
 
-                    </div>
-                `;
+                </div>
+            `;
 
 
-                bubble.appendChild(
-                    imageContainer
+            bubble.appendChild(
+                imageContainer
+            );
+
+
+            /* =================================================
+               DOWNLOAD IMAGE
+            ================================================= */
+
+            const downloadBtn =
+                imageContainer.querySelector(
+                    ".download-image"
                 );
 
 
-                /* =================================================
-                   DOWNLOAD IMAGE
-                ================================================= */
+            if (downloadBtn) {
 
-                const downloadBtn =
-                    imageContainer.querySelector(
-                        ".download-image"
-                    );
+                downloadBtn.addEventListener(
+                    "click",
+                    () => {
 
-
-                if (downloadBtn) {
-
-                    downloadBtn.addEventListener(
-                        "click",
-                        () => {
-
-                            const link =
-                                document.createElement(
-                                    "a"
-                                );
+                        const link =
+                            document.createElement("a");
 
 
-                            link.href =
-                                imageUrl;
+                        link.href =
+                            imageUrl;
 
 
-                            link.target =
-                                "_blank";
+                        link.target =
+                            "_blank";
 
 
-                            link.download =
-                                "mani-ai-generated-image.png";
+                        link.download =
+                            "mani-ai-generated-image.png";
 
 
-                            document.body.appendChild(
-                                link
+                        document.body.appendChild(
+                            link
+                        );
+
+
+                        link.click();
+
+
+                        link.remove();
+                    }
+                );
+            }
+
+
+            /* =================================================
+               COPY IMAGE URL
+            ================================================= */
+
+            const copyBtn =
+                imageContainer.querySelector(
+                    ".copy-image"
+                );
+
+
+            if (copyBtn) {
+
+                copyBtn.addEventListener(
+                    "click",
+                    async () => {
+
+                        try {
+
+                            await navigator.clipboard.writeText(
+                                imageUrl
                             );
 
 
-                            link.click();
+                            copyBtn.textContent =
+                                "✓ Copied";
 
 
-                            link.remove();
+                            setTimeout(
+                                () => {
+
+                                    copyBtn.textContent =
+                                        "⧉ Copy Image URL";
+
+                                },
+                                1500
+                            );
+
+
+                        } catch (error) {
+
+                            console.error(
+                                "Copy error:",
+                                error
+                            );
+
+                            copyBtn.textContent =
+                                "⚠️ Copy failed";
                         }
-                    );
-                }
+                    }
+                );
+            }
 
 
-                /* =================================================
-                   COPY IMAGE URL
-                ================================================= */
-
-                const copyBtn =
-                    imageContainer.querySelector(
-                        ".copy-image"
-                    );
-
-
-                if (copyBtn) {
-
-                    copyBtn.addEventListener(
-                        "click",
-                        async () => {
-
-                            try {
-
-                                await navigator.clipboard.writeText(
-                                    imageUrl
-                                );
-
-
-                                copyBtn.textContent =
-                                    "✓ Copied";
-
-
-                                setTimeout(
-                                    () => {
-
-                                        copyBtn.textContent =
-                                            "⧉ Copy Image URL";
-
-                                    },
-                                    1500
-                                );
-
-
-                            } catch (error) {
-
-                                console.error(
-                                    "Copy error:",
-                                    error
-                                );
-                            }
-                        }
-                    );
-                }
-
-
-                scrollChat();
-            };
+            scrollChat();
+        };
 
 
         /* =================================================
-           IMAGE ERROR
+           IMAGE LOAD ERROR
         ================================================= */
 
-        image.onerror =
-            () => {
+        image.onerror = () => {
 
-                loading.innerHTML = `
-                    <div class="image-error">
-                        ⚠️ Image could not be loaded.
-                    </div>
-                `;
+            loading.innerHTML = `
+                <div class="image-error">
+                    ⚠️ Image could not be loaded.
+                </div>
+            `;
 
-
-                console.error(
-                    "Image failed:",
-                    imageUrl
-                );
-
-
-                scrollChat();
-            };
+            scrollChat();
+        };
 
 
         /* =================================================
-           IMAGE TIMEOUT
+           TIMEOUT SAFETY
         ================================================= */
 
         setTimeout(
             () => {
 
-                if (
-                    !image.complete
-                ) {
+                if (!image.complete) {
 
                     loading.innerHTML = `
                         <div class="image-error">
@@ -722,9 +700,7 @@ document.addEventListener("DOMContentLoaded", () => {
        API RESPONSE
     ===================================================== */
 
-    function getReplyFromResponse(
-        data
-    ) {
+    function getReplyFromResponse(data) {
 
         if (!data) {
 
@@ -740,6 +716,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        /* =================================================
+           ERROR RESPONSE
+        ================================================= */
+
+        if (
+            typeof data.error === "string"
+        ) {
+
+            return `⚠️ ${data.error}`;
+        }
+
+
+        /* =================================================
+           REPLY
+        ================================================= */
+
         if (
             typeof data.reply === "string"
         ) {
@@ -747,6 +739,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return data.reply;
         }
 
+
+        /* =================================================
+           MESSAGE
+        ================================================= */
 
         if (
             typeof data.message === "string"
@@ -756,6 +752,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        /* =================================================
+           RESPONSE
+        ================================================= */
+
         if (
             typeof data.response === "string"
         ) {
@@ -764,6 +764,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        /* =================================================
+           CONTENT
+        ================================================= */
+
         if (
             typeof data.content === "string"
         ) {
@@ -771,6 +775,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return data.content;
         }
 
+
+        /* =================================================
+           OPENAI STYLE RESPONSE
+        ================================================= */
 
         if (
             data.choices &&
@@ -783,8 +791,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 choice.message &&
-                typeof choice.message.content ===
-                    "string"
+                typeof choice.message.content === "string"
             ) {
 
                 return choice.message.content;
@@ -792,8 +799,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (
-                typeof choice.text ===
-                    "string"
+                typeof choice.text === "string"
             ) {
 
                 return choice.text;
@@ -814,24 +820,18 @@ document.addEventListener("DOMContentLoaded", () => {
         text
     ) {
 
-        if (!chatMessages) return null;
+        if (!chatMessages) return;
 
 
         const wrapper =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         wrapper.className =
             `chat-message ${type}`;
 
 
         const bubble =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         bubble.className =
             "chat-bubble";
@@ -870,20 +870,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const wrapper =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         wrapper.className =
             "chat-message ai";
 
 
         const bubble =
-            document.createElement(
-                "div"
-            );
-
+            document.createElement("div");
 
         bubble.className =
             "chat-bubble";
@@ -943,9 +937,7 @@ document.addEventListener("DOMContentLoaded", () => {
        FORMAT MESSAGE
     ===================================================== */
 
-    function formatMessage(
-        text
-    ) {
+    function formatMessage(text) {
 
         if (!text) return "";
 
@@ -956,7 +948,9 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /* Code blocks */
+        /* =================================================
+           CODE BLOCK
+        ================================================= */
 
         safe =
             safe.replace(
@@ -965,7 +959,9 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /* Bold */
+        /* =================================================
+           BOLD
+        ================================================= */
 
         safe =
             safe.replace(
@@ -974,7 +970,9 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /* Inline code */
+        /* =================================================
+           INLINE CODE
+        ================================================= */
 
         safe =
             safe.replace(
@@ -983,7 +981,9 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /* Links */
+        /* =================================================
+           LINKS
+        ================================================= */
 
         safe =
             safe.replace(
@@ -992,7 +992,9 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /* New lines */
+        /* =================================================
+           NEW LINES
+        ================================================= */
 
         safe =
             safe.replace(
@@ -1009,14 +1011,10 @@ document.addEventListener("DOMContentLoaded", () => {
        ESCAPE HTML
     ===================================================== */
 
-    function escapeHTML(
-        text
-    ) {
+    function escapeHTML(text) {
 
         const div =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         div.textContent =
@@ -1027,9 +1025,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function escapeAttribute(
-        text
-    ) {
+    /* =====================================================
+       ESCAPE ATTRIBUTE
+    ===================================================== */
+
+    function escapeAttribute(text) {
 
         return String(text)
             .replace(
@@ -1051,14 +1051,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function stripHTML(
-        text
-    ) {
+    /* =====================================================
+       STRIP HTML
+    ===================================================== */
+
+    function stripHTML(text) {
 
         const div =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         div.innerHTML =
@@ -1074,7 +1074,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       SCROLL CHAT
+       SCROLL
     ===================================================== */
 
     function scrollChat() {
@@ -1102,9 +1102,7 @@ document.addEventListener("DOMContentLoaded", () => {
        LOADING
     ===================================================== */
 
-    function setLoading(
-        state
-    ) {
+    function setLoading(state) {
 
         sending =
             state;
@@ -1254,10 +1252,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         selectedFiles.forEach(
-            (
-                file,
-                index
-            ) => {
+            (file, index) => {
 
                 const item =
                     document.createElement(
@@ -1273,9 +1268,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <span>📎</span>
 
                     <span>
-                        ${escapeHTML(
-                            file.name
-                        )}
+                        ${escapeHTML(file.name)}
                     </span>
 
                     <button
@@ -1371,6 +1364,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             option.dataset.action;
 
 
+                        if (!input) return;
+
+
                         if (
                             action === "image"
                         ) {
@@ -1399,7 +1395,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                         autoResize();
-
 
                         input.focus();
 
@@ -1436,7 +1431,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                     autoResize();
-
 
                     input.focus();
                 }
@@ -1490,12 +1484,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        if (toolsPopup) {
-
-            toolsPopup.classList.remove(
-                "show"
-            );
-        }
+        toolsPopup?.classList.remove(
+            "show"
+        );
 
 
         renderAttachments();
@@ -1562,7 +1553,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 autoResize();
 
-
                 input.focus();
             }
         );
@@ -1580,11 +1570,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             recentChats.lastElementChild.remove();
         }
+
+
+        addCursorHoverEvents();
     }
 
 
     /* =====================================================
-       VOICE RECOGNITION
+       VOICE
     ===================================================== */
 
     if (
@@ -1731,7 +1724,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     } catch (error) {
 
                         console.error(
-                            "Recognition start error:",
+                            "Speech recognition start error:",
                             error
                         );
                     }
@@ -1907,7 +1900,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       KEYBOARD SHORTCUTS
+       KEYBOARD
     ===================================================== */
 
     document.addEventListener(
@@ -1933,6 +1926,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "show"
                 );
 
+
                 closeMobileSidebar();
             }
         }
@@ -1943,9 +1937,7 @@ document.addEventListener("DOMContentLoaded", () => {
        HELPER
     ===================================================== */
 
-    function sleep(
-        ms
-    ) {
+    function sleep(ms) {
 
         return new Promise(
             resolve =>
@@ -1962,22 +1954,13 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================================== */
 
     let aiCursor =
-        document.querySelector(
-            ".ai-cursor"
-        );
+        document.querySelector(".ai-cursor");
 
-
-    /*
-       Create cursor automatically
-       if HTML does not contain it.
-    */
 
     if (!aiCursor) {
 
         aiCursor =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         aiCursor.className =
@@ -2004,12 +1987,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let cursorMouseX =
         window.innerWidth / 2;
 
+
     let cursorMouseY =
         window.innerHeight / 2;
 
 
     let cursorX =
         cursorMouseX;
+
 
     let cursorY =
         cursorMouseY;
@@ -2022,6 +2007,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cursorMouseX =
                 event.clientX;
 
+
             cursorMouseY =
                 event.clientY;
         }
@@ -2029,23 +2015,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       SMOOTH AI CURSOR
+       SMOOTH CURSOR
     ===================================================== */
 
     function animateAICursor() {
 
         cursorX +=
-            (
-                cursorMouseX -
-                cursorX
-            ) * 0.20;
+            (cursorMouseX - cursorX) *
+            0.18;
 
 
         cursorY +=
-            (
-                cursorMouseY -
-                cursorY
-            ) * 0.20;
+            (cursorMouseY - cursorY) *
+            0.18;
 
 
         if (aiCursor) {
@@ -2083,6 +2065,15 @@ document.addEventListener("DOMContentLoaded", () => {
         hoverElements.forEach(
             element => {
 
+                if (
+                    element.dataset.cursorEventsAdded
+                ) return;
+
+
+                element.dataset.cursorEventsAdded =
+                    "true";
+
+
                 element.addEventListener(
                     "mouseenter",
                     () => {
@@ -2103,6 +2094,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         );
                     }
                 );
+
             }
         );
     }
@@ -2112,7 +2104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =====================================================
-       CURSOR CLICK EFFECT
+       CURSOR CLICK
     ===================================================== */
 
     document.addEventListener(
@@ -2141,12 +2133,9 @@ document.addEventListener("DOMContentLoaded", () => {
        CURSOR TRAIL
     ===================================================== */
 
-    const trailCount =
-        6;
+    const trailCount = 6;
 
-
-    const cursorTrails =
-        [];
+    const cursorTrails = [];
 
 
     for (
@@ -2156,9 +2145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
 
         const trail =
-            document.createElement(
-                "div"
-            );
+            document.createElement("div");
 
 
         trail.className =
@@ -2191,45 +2178,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =====================================================
-       TRAIL ANIMATION
-    ===================================================== */
-
     function animateCursorTrail() {
 
         let previousX =
             cursorX;
+
 
         let previousY =
             cursorY;
 
 
         cursorTrails.forEach(
-            (
-                trail,
-                index
-            ) => {
-
-                const speed =
-                    Math.max(
-                        0.08,
-                        0.25 -
-                        index * 0.02
-                    );
-
+            (trail, index) => {
 
                 trail.x +=
-                    (
-                        previousX -
-                        trail.x
-                    ) * speed;
+                    (previousX - trail.x) *
+                    (0.25 - index * 0.02);
 
 
                 trail.y +=
-                    (
-                        previousY -
-                        trail.y
-                    ) * speed;
+                    (previousY - trail.y) *
+                    (0.25 - index * 0.02);
 
 
                 trail.element.style.left =
@@ -2313,10 +2282,5 @@ document.addEventListener("DOMContentLoaded", () => {
         "resize",
         handleCursorDevice
     );
-
-
-    /* =====================================================
-       END
-    ===================================================== */
 
 });
