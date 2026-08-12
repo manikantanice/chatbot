@@ -1487,3 +1487,172 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+
+/* =========================================
+   PREMIUM AI CURSOR
+========================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const cursor = document.querySelector(".ai-cursor");
+
+    if (!cursor) return;
+
+    const core = cursor.querySelector(".cursor-core");
+
+    const trails = document.querySelectorAll(".cursor-trail");
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    let cursorX = mouseX;
+    let cursorY = mouseY;
+
+    const trailPositions = [];
+
+    trails.forEach(() => {
+        trailPositions.push({
+            x: mouseX,
+            y: mouseY
+        });
+    });
+
+
+    /* ================================
+       MOUSE POSITION
+    ================================= */
+
+    document.addEventListener("mousemove", (e) => {
+
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+
+    });
+
+
+    /* ================================
+       SMOOTH CURSOR
+    ================================= */
+
+    function animateCursor() {
+
+        cursorX += (mouseX - cursorX) * 0.18;
+        cursorY += (mouseY - cursorY) * 0.18;
+
+        cursor.style.left = cursorX + "px";
+        cursor.style.top = cursorY + "px";
+
+
+        /* ================================
+           TRAIL
+        ================================= */
+
+        let previousX = cursorX;
+        let previousY = cursorY;
+
+        trails.forEach((trail, index) => {
+
+            const position = trailPositions[index];
+
+            position.x +=
+                (previousX - position.x) *
+                (0.22 - index * 0.02);
+
+            position.y +=
+                (previousY - position.y) *
+                (0.22 - index * 0.02);
+
+            trail.style.left = position.x + "px";
+            trail.style.top = position.y + "px";
+
+            const scale =
+                1 - (index * 0.12);
+
+            const opacity =
+                0.65 - (index * 0.09);
+
+            trail.style.transform =
+                `translate(-50%, -50%) scale(${scale})`;
+
+            trail.style.opacity = opacity;
+
+            previousX = position.x;
+            previousY = position.y;
+
+        });
+
+
+        requestAnimationFrame(animateCursor);
+    }
+
+
+    animateCursor();
+
+
+    /* ================================
+       HOVER DETECTION
+    ================================= */
+
+    const interactiveElements = document.querySelectorAll(
+        "a, button, input, textarea, select, .feature-card, .mani-ai-logo, .new-chat, [role='button']"
+    );
+
+
+    interactiveElements.forEach((element) => {
+
+        element.addEventListener("mouseenter", () => {
+
+            document.body.classList.add("cursor-hover");
+
+        });
+
+
+        element.addEventListener("mouseleave", () => {
+
+            document.body.classList.remove("cursor-hover");
+
+        });
+
+    });
+
+
+    /* ================================
+       CLICK ANIMATION
+    ================================= */
+
+    document.addEventListener("mousedown", () => {
+
+        document.body.classList.add("cursor-click");
+
+    });
+
+
+    document.addEventListener("mouseup", () => {
+
+        document.body.classList.remove("cursor-click");
+
+    });
+
+
+    /* ================================
+       HIDE WHEN MOUSE LEAVES
+    ================================= */
+
+    document.addEventListener("mouseleave", () => {
+
+        cursor.style.opacity = "0";
+
+        trails.forEach((trail) => {
+            trail.style.opacity = "0";
+        });
+
+    });
+
+
+    document.addEventListener("mouseenter", () => {
+
+        cursor.style.opacity = "1";
+
+    });
+
+});
