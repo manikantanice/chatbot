@@ -2085,236 +2085,171 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =====================================================
-       PREMIUM GLOWING CIRCLE CURSOR
-       NO BUTTERFLIES
-       NO CURSOR TRAIL
-    ===================================================== */
+ /* =========================================
+   PREMIUM AI CURSOR
+========================================= */
 
-    let aiCursor =
-        document.querySelector(".ai-cursor");
+document.addEventListener("DOMContentLoaded", () => {
 
+    const cursor = document.querySelector(".ai-cursor");
 
-    if (!aiCursor) {
+    if (!cursor) return;
 
-        aiCursor =
-            document.createElement("div");
+    const core = cursor.querySelector(".cursor-core");
 
+    const trails = document.querySelectorAll(".cursor-trail");
 
-        aiCursor.className =
-            "ai-cursor";
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
 
+    let cursorX = mouseX;
+    let cursorY = mouseY;
 
-        aiCursor.innerHTML = `
-            <div class="cursor-glow"></div>
-            <div class="cursor-ring"></div>
-            <div class="cursor-core"></div>
-        `;
+    const trailPositions = [];
 
-
-        document.body.appendChild(
-            aiCursor
-        );
-
-    }
+    trails.forEach(() => {
+        trailPositions.push({
+            x: mouseX,
+            y: mouseY
+        });
+    });
 
 
-    /* =====================================================
-       CURSOR POSITION
-    ===================================================== */
+    /* ================================
+       MOUSE POSITION
+    ================================= */
 
-    let cursorMouseX =
-        window.innerWidth / 2;
+    document.addEventListener("mousemove", (e) => {
 
+        mouseX = e.clientX;
+        mouseY = e.clientY;
 
-    let cursorMouseY =
-        window.innerHeight / 2;
-
-
-    let cursorX =
-        cursorMouseX;
+    });
 
 
-    let cursorY =
-        cursorMouseY;
-
-
-    document.addEventListener(
-        "mousemove",
-        event => {
-
-            cursorMouseX =
-                event.clientX;
-
-
-            cursorMouseY =
-                event.clientY;
-
-        }
-    );
-
-
-    /* =====================================================
+    /* ================================
        SMOOTH CURSOR
-    ===================================================== */
+    ================================= */
 
-    function animateAICursor() {
+    function animateCursor() {
 
-        cursorX +=
-            (cursorMouseX - cursorX) *
-            0.18;
+        cursorX += (mouseX - cursorX) * 0.18;
+        cursorY += (mouseY - cursorY) * 0.18;
 
-
-        cursorY +=
-            (cursorMouseY - cursorY) *
-            0.18;
+        cursor.style.left = cursorX + "px";
+        cursor.style.top = cursorY + "px";
 
 
-        if (aiCursor) {
+        /* ================================
+           TRAIL
+        ================================= */
 
-            aiCursor.style.left =
-                cursorX + "px";
+        let previousX = cursorX;
+        let previousY = cursorY;
+
+        trails.forEach((trail, index) => {
+
+            const position = trailPositions[index];
+
+            position.x +=
+                (previousX - position.x) *
+                (0.22 - index * 0.02);
+
+            position.y +=
+                (previousY - position.y) *
+                (0.22 - index * 0.02);
+
+            trail.style.left = position.x + "px";
+            trail.style.top = position.y + "px";
+
+            const scale =
+                1 - (index * 0.12);
+
+            const opacity =
+                0.65 - (index * 0.09);
+
+            trail.style.transform =
+                `translate(-50%, -50%) scale(${scale})`;
+
+            trail.style.opacity = opacity;
+
+            previousX = position.x;
+            previousY = position.y;
+
+        });
 
 
-            aiCursor.style.top =
-                cursorY + "px";
-
-        }
-
-
-        requestAnimationFrame(
-            animateAICursor
-        );
-
+        requestAnimationFrame(animateCursor);
     }
 
 
-    animateAICursor();
+    animateCursor();
 
 
-    /* =====================================================
-       CURSOR HOVER
-    ===================================================== */
+    /* ================================
+       HOVER DETECTION
+    ================================= */
 
-    function addCursorHoverEvents() {
-
-        const hoverElements =
-            document.querySelectorAll(
-                "a, button, input, textarea, select, .quick-card, .tool-option, .conversation"
-            );
-
-
-        hoverElements.forEach(
-            element => {
-
-                if (
-                    element.dataset.cursorEventsAdded
-                ) return;
-
-
-                element.dataset.cursorEventsAdded =
-                    "true";
-
-
-                element.addEventListener(
-                    "mouseenter",
-                    () => {
-
-                        document.body.classList.add(
-                            "cursor-hover"
-                        );
-
-                    }
-                );
-
-
-                element.addEventListener(
-                    "mouseleave",
-                    () => {
-
-                        document.body.classList.remove(
-                            "cursor-hover"
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-    }
-
-
-    addCursorHoverEvents();
-
-
-    /* =====================================================
-       CURSOR CLICK
-    ===================================================== */
-
-    document.addEventListener(
-        "mousedown",
-        () => {
-
-            document.body.classList.add(
-                "cursor-click"
-            );
-
-        }
+    const interactiveElements = document.querySelectorAll(
+        "a, button, input, textarea, select, .feature-card, .mani-ai-logo, .new-chat, [role='button']"
     );
 
 
-    document.addEventListener(
-        "mouseup",
-        () => {
+    interactiveElements.forEach((element) => {
 
-            document.body.classList.remove(
-                "cursor-click"
-            );
+        element.addEventListener("mouseenter", () => {
 
-        }
-    );
+            document.body.classList.add("cursor-hover");
+
+        });
 
 
-    /* =====================================================
-       MOBILE CURSOR DISABLE
-    ===================================================== */
+        element.addEventListener("mouseleave", () => {
 
-    function handleCursorDevice() {
+            document.body.classList.remove("cursor-hover");
 
-        const isMobile =
-            window.innerWidth <= 768;
+        });
 
-
-        if (isMobile) {
-
-            if (aiCursor) {
-
-                aiCursor.style.display =
-                    "none";
-
-            }
-
-        } else {
-
-            if (aiCursor) {
-
-                aiCursor.style.display =
-                    "block";
-
-            }
-
-        }
-
-    }
+    });
 
 
-    handleCursorDevice();
+    /* ================================
+       CLICK ANIMATION
+    ================================= */
+
+    document.addEventListener("mousedown", () => {
+
+        document.body.classList.add("cursor-click");
+
+    });
 
 
-    window.addEventListener(
-        "resize",
-        handleCursorDevice
-    );
+    document.addEventListener("mouseup", () => {
+
+        document.body.classList.remove("cursor-click");
+
+    });
+
+
+    /* ================================
+       HIDE WHEN MOUSE LEAVES
+    ================================= */
+
+    document.addEventListener("mouseleave", () => {
+
+        cursor.style.opacity = "0";
+
+        trails.forEach((trail) => {
+            trail.style.opacity = "0";
+        });
+
+    });
+
+
+    document.addEventListener("mouseenter", () => {
+
+        cursor.style.opacity = "1";
+
+    });
 
 });
