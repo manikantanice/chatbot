@@ -3355,3 +3355,121 @@ body.cursor-click .cursor-core {
             rotate(var(--rotate));
     }
 }
+.sparkle-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999998;
+}
+
+.sparkle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #a855f7,
+        0 0 18px #9333ea;
+
+    pointer-events: none;
+
+    animation: sparkleFade 0.9s ease-out forwards;
+}
+
+.sparkle::before,
+.sparkle::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: #c084fc;
+    transform: translate(-50%, -50%);
+}
+
+.sparkle::before {
+    width: 14px;
+    height: 1px;
+}
+
+.sparkle::after {
+    width: 1px;
+    height: 14px;
+}
+
+@keyframes sparkleFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.2) rotate(0deg);
+    }
+
+    20% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.2) rotate(90deg);
+    }
+}
+.sparkle-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999998;
+}
+
+.sparkle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow:
+        0 0 5px #ffffff,
+        0 0 10px #a855f7,
+        0 0 18px #9333ea;
+
+    pointer-events: none;
+
+    animation: sparkleFade 0.9s ease-out forwards;
+}
+
+.sparkle::before,
+.sparkle::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: #c084fc;
+    transform: translate(-50%, -50%);
+}
+
+.sparkle::before {
+    width: 14px;
+    height: 1px;
+}
+
+.sparkle::after {
+    width: 1px;
+    height: 14px;
+}
+
+@keyframes sparkleFade {
+    0% {
+        opacity: 0;
+        transform: scale(0.2) rotate(0deg);
+    }
+
+    20% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.2) rotate(90deg);
+    }
+}
