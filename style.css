@@ -1,38 +1,1159 @@
-/* =========================================
-   CHAT AREA
-========================================= */
+/* =====================================================
+   RESET
+===================================================== */
 
-.chat-area {
-    position: relative;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
     width: 100%;
-    min-height: 100vh;
+    height: 100%;
+}
+
+body {
+    width: 100%;
+    min-height: 100%;
+    overflow: hidden;
+
+    background: #030617;
+    color: #eef1ff;
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+button,
+textarea {
+    font-family: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =====================================================
+   APP
+===================================================== */
+
+.app {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+
     background:
         radial-gradient(
-            circle at 50% 30%,
-            rgba(91, 52, 180, 0.08),
-            transparent 35%
+            circle at 65% 35%,
+            rgba(91, 49, 210, .08),
+            transparent 32%
         ),
+
         #030617;
 }
 
 
-/* =========================================
-   MESSAGES
-========================================= */
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar {
+    position: relative;
+
+    width: 245px;
+    height: calc(100vh - 24px);
+
+    margin: 12px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    border: 1px solid rgba(119, 88, 220, .27);
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            160deg,
+            rgba(20, 27, 57, .94),
+            rgba(7, 14, 32, .97)
+        );
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, .35),
+        inset 0 1px 0 rgba(255,255,255,.025);
+
+    overflow: hidden;
+}
+
+.sidebar::before {
+    content: "";
+
+    position: absolute;
+
+    width: 220px;
+    height: 220px;
+
+    left: -100px;
+    top: -100px;
+
+    background: rgba(105, 55, 255, .12);
+
+    filter: blur(60px);
+
+    pointer-events: none;
+}
+
+.sidebar-top {
+    position: relative;
+    z-index: 2;
+
+    padding: 20px 16px;
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.brand {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 3px 4px 24px;
+}
+
+.brand-logo {
+    position: relative;
+
+    width: 39px;
+    height: 39px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7945ff,
+            #596cff
+        );
+
+    color: #fff;
+
+    font-size: 22px;
+
+    box-shadow:
+        0 8px 25px rgba(100, 60, 255, .3);
+
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+.brand-logo::after {
+    content: "";
+
+    position: absolute;
+
+    inset: -3px;
+
+    border-radius: inherit;
+
+    border: 1px solid rgba(134, 90, 255, .45);
+
+    animation: logoRing 2.5s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes logoRing {
+
+    0%,
+    100% {
+        opacity: .2;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: .7;
+        transform: scale(1.08);
+    }
+}
+
+.brand-name {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -.4px;
+}
+
+.brand-name span {
+    color: #7d6cff;
+}
+
+
+/* =====================================================
+   NEW CHAT
+===================================================== */
+
+.new-chat-btn {
+    width: 100%;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7437ef,
+            #6848f8
+        );
+
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(105, 50, 255, .22);
+
+    transition: .25s ease;
+}
+
+.new-chat-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(105, 50, 255, .38);
+}
+
+.plus-icon {
+    font-size: 19px;
+    font-weight: 300;
+}
+
+
+/* =====================================================
+   SIDEBAR SECTIONS
+===================================================== */
+
+.sidebar-section {
+    margin-top: 26px;
+}
+
+.section-title {
+    margin: 0 7px 10px;
+
+    color: #626d89;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.conversation {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px 11px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #b8c0d7;
+
+    text-align: left;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.conversation:hover {
+    background: rgba(116, 69, 255, .08);
+    color: #fff;
+}
+
+.conversation.active {
+    border-color: rgba(126, 76, 255, .65);
+
+    background:
+        rgba(93, 50, 180, .11);
+
+    color: #f4f1ff;
+}
+
+.conversation-icon {
+    font-size: 16px;
+    color: #a77cff;
+}
+
+.recent-section {
+    opacity: .75;
+}
+
+
+/* =====================================================
+   SIDEBAR BOTTOM
+===================================================== */
+
+.sidebar-bottom {
+    position: relative;
+    z-index: 2;
+
+    padding: 12px;
+}
+
+.sidebar-bottom-btn {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #818ba4;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.sidebar-bottom-btn:hover {
+    background: rgba(255,255,255,.04);
+    color: #fff;
+}
+
+.sidebar-bottom-btn .arrow {
+    margin-left: auto;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main {
+    position: relative;
+
+    flex: 1;
+
+    min-width: 0;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =====================================================
+   TOPBAR
+===================================================== */
+
+.topbar {
+    position: relative;
+    z-index: 50;
+
+    height: 76px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 22px;
+
+    border-bottom: 1px solid rgba(105, 118, 170, .08);
+
+    background:
+        rgba(3, 6, 23, .72);
+
+    backdrop-filter: blur(18px);
+}
+
+.topbar-left,
+.topbar-actions {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-actions {
+    gap: 8px;
+}
+
+
+/* =====================================================
+   MODEL
+===================================================== */
+
+.model-selector {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px 14px;
+
+    border: 1px solid rgba(111, 126, 180, .18);
+
+    border-radius: 11px;
+
+    background: rgba(15, 21, 44, .65);
+
+    color: #dfe3f4;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+.model-selector:hover {
+    border-color: rgba(125, 80, 255, .45);
+    background: rgba(28, 27, 59, .75);
+}
+
+.model-spark {
+    color: #a16cff;
+}
+
+.chevron {
+    color: #727c97;
+}
+
+
+/* =====================================================
+   PRO
+===================================================== */
+
+.pro-btn {
+    padding: 9px 15px;
+
+    border: 1px solid rgba(126, 65, 255, .45);
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(103, 42, 200, .3),
+            rgba(54, 44, 130, .2)
+        );
+
+    color: #d7bfff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+.pro-btn:hover {
+    box-shadow:
+        0 0 22px rgba(120, 60, 255, .2);
+}
+
+
+/* =====================================================
+   TOP ICONS
+===================================================== */
+
+.top-icon {
+    width: 34px;
+    height: 34px;
+
+    display: grid;
+    place-items: center;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #77819a;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.top-icon:hover {
+    color: #fff;
+    background: rgba(255,255,255,.05);
+}
+
+
+/* =====================================================
+   AI SMALL ORB
+===================================================== */
+
+.ai-orb-small {
+    position: relative;
+
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    margin-left: 5px;
+}
+
+.orb-core {
+    position: relative;
+    z-index: 3;
+
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #6b58ff,
+            #41b9ff
+        );
+
+    color: #fff;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    box-shadow:
+        0 0 22px rgba(92, 93, 255, .65);
+
+    animation: aiPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes aiPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 20px rgba(92, 93, 255, .5);
+    }
+
+    50% {
+        box-shadow:
+            0 0 38px rgba(92, 93, 255, .85);
+    }
+}
+
+.orb-ring {
+    position: absolute;
+
+    border: 1px solid rgba(106, 96, 255, .45);
+
+    border-radius: 50%;
+
+    animation: orbRotate 6s linear infinite;
+}
+
+.ring-one {
+    width: 48px;
+    height: 30px;
+}
+
+.ring-two {
+    width: 32px;
+    height: 48px;
+
+    animation-direction: reverse;
+}
+
+@keyframes orbRotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =====================================================
+   MOBILE MENU
+===================================================== */
+
+.mobile-menu-btn {
+    display: none;
+
+    width: 38px;
+    height: 38px;
+
+    margin-right: 8px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: rgba(255,255,255,.05);
+
+    color: #fff;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   CHAT AREA
+===================================================== */
+
+.chat-area {
+    position: relative;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #292451 transparent;
+}
+
+.chat-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-area::-webkit-scrollbar-thumb {
+    background: #252044;
+    border-radius: 20px;
+}
+
+
+/* =====================================================
+   WELCOME
+===================================================== */
+
+.welcome-screen {
+    min-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding:
+        135px
+        25px
+        240px;
+
+    position: relative;
+}
+
+.welcome-screen::before {
+    content: "";
+
+    position: absolute;
+
+    width: 700px;
+    height: 450px;
+
+    top: 80px;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(83, 44, 255, .08),
+            transparent 65%
+        );
+
+    pointer-events: none;
+}
+
+.welcome-title {
+    position: relative;
+    z-index: 2;
+
+    font-size: clamp(42px, 5vw, 57px);
+
+    line-height: 1;
+
+    font-weight: 750;
+
+    letter-spacing: -3px;
+
+    color: #f8f8ff;
+
+    animation: welcomeIn .8s ease both;
+}
+
+.welcome-title span {
+    background:
+        linear-gradient(
+            100deg,
+            #7c68ff,
+            #48b8ff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    background-size: 200% 100%;
+
+    animation: gradientMove 4s ease infinite;
+}
+
+@keyframes gradientMove {
+
+    0%,
+    100% {
+        background-position: 0;
+    }
+
+    50% {
+        background-position: 100%;
+    }
+}
+
+@keyframes welcomeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcome-subtitle {
+    position: relative;
+    z-index: 2;
+
+    margin-top: 14px;
+
+    color: #727c9b;
+
+    font-size: 13px;
+
+    animation: welcomeIn .8s .12s ease both;
+}
+
+.sparkle {
+    color: #ffcf48;
+    margin-left: 4px;
+}
+
+
+/* =====================================================
+   HERO ORB
+===================================================== */
+
+.hero-orb {
+    position: relative;
+
+    width: 300px;
+    height: 190px;
+
+    margin-top: 22px;
+
+    display: grid;
+    place-items: center;
+
+    animation: heroFloat 5s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.hero-core {
+    position: relative;
+    z-index: 5;
+
+    width: 88px;
+    height: 88px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 22%,
+            #d6f4ff 0%,
+            #7db9ff 10%,
+            #6655ed 45%,
+            #36106d 100%
+        );
+
+    box-shadow:
+        0 0 25px rgba(89, 80, 255, .65),
+        0 0 60px rgba(103, 43, 255, .4);
+
+    animation: coreGlow 3s ease-in-out infinite;
+}
+
+.core-shine {
+    position: absolute;
+
+    width: 20px;
+    height: 20px;
+
+    left: 18px;
+    top: 12px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.85);
+
+    filter: blur(4px);
+}
+
+@keyframes coreGlow {
+
+    0%,
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+        filter: brightness(1.15);
+    }
+}
+
+.hero-glow {
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(97, 69, 255, .28),
+            transparent 65%
+        );
+
+    filter: blur(15px);
+}
+
+.hero-orbit {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border: 1px solid rgba(107, 75, 255, .3);
+
+    border-radius: 50%;
+}
+
+.orbit-1 {
+    width: 270px;
+    height: 80px;
+
+    transform: translate(-50%, -50%)
+        rotate(-4deg);
+
+    animation: orbitOne 7s linear infinite;
+}
+
+.orbit-2 {
+    width: 190px;
+    height: 160px;
+
+    transform: translate(-50%, -50%)
+        rotate(45deg);
+
+    animation: orbitTwo 9s linear infinite;
+}
+
+.orbit-3 {
+    width: 125px;
+    height: 185px;
+
+    transform: translate(-50%, -50%)
+        rotate(-45deg);
+
+    opacity: .5;
+
+    animation: orbitTwo 11s linear infinite reverse;
+}
+
+@keyframes orbitOne {
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(356deg);
+    }
+}
+
+@keyframes orbitTwo {
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(405deg);
+    }
+}
+
+
+/* =====================================================
+   QUICK CARDS
+===================================================== */
+
+.quick-cards {
+    position: relative;
+    z-index: 5;
+
+    width: min(900px, 100%);
+
+    display: grid;
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 12px;
+
+    margin-top: 5px;
+}
+
+.quick-card {
+    min-height: 102px;
+
+    padding: 15px;
+
+    border: 1px solid rgba(98, 113, 164, .17);
+
+    border-radius: 13px;
+
+    background:
+        rgba(12, 20, 42, .72);
+
+    color: #fff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        background .3s ease,
+        box-shadow .3s ease;
+}
+
+.quick-card:hover {
+    transform:
+        translateY(-7px);
+
+    border-color:
+        rgba(126, 82, 255, .55);
+
+    background:
+        rgba(23, 26, 57, .9);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.25),
+        0 0 25px rgba(91, 48, 255, .08);
+}
+
+.card-icon {
+    margin-bottom: 11px;
+
+    font-size: 16px;
+}
+
+.card-icon.idea {
+    color: #bb72ff;
+}
+
+.card-icon.write {
+    color: #62a5ff;
+}
+
+.card-icon.code {
+    color: #40e2f2;
+}
+
+.card-icon.data {
+    color: #ff9c3d;
+}
+
+.card-icon.design {
+    color: #ff6db0;
+}
+
+.quick-card strong {
+    display: block;
+
+    font-size: 13px;
+
+    margin-bottom: 6px;
+}
+
+.quick-card span {
+    display: block;
+
+    color: #6f7995;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   CHAT MESSAGES
+===================================================== */
 
 .chat-messages {
     width: min(900px, calc(100% - 40px));
+
     margin: 0 auto;
-    padding: 40px 0 190px;
+
+    padding:
+        40px
+        0
+        230px;
 }
 
-.message {
+.chat-message {
     display: flex;
+
     margin-bottom: 22px;
-    animation: messageIn 0.35s ease both;
+
+    animation:
+        messageIn .35s ease both;
+}
+
+.chat-message.user {
+    justify-content: flex-end;
+}
+
+.chat-bubble {
+    max-width: 75%;
+
+    padding: 14px 17px;
+
+    border-radius: 17px;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+}
+
+.chat-message.user .chat-bubble {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7140e8,
+            #526cff
+        );
+
+    border-bottom-right-radius: 5px;
+
+    box-shadow:
+        0 8px 25px rgba(86, 58, 220, .2);
+}
+
+.chat-message.ai .chat-bubble {
+    color: #dce2f7;
+
+    background:
+        rgba(14, 22, 45, .92);
+
+    border:
+        1px solid rgba(110, 125, 180, .16);
+
+    border-bottom-left-radius: 5px;
+}
+
+.chat-bubble pre {
+    overflow-x: auto;
+
+    margin-top: 12px;
+    padding: 13px;
+
+    border-radius: 10px;
+
+    background: #060a17;
+
+    border: 1px solid rgba(255,255,255,.06);
+}
+
+.chat-bubble code {
+    font-family:
+        Consolas,
+        monospace;
+
+    font-size: 12px;
 }
 
 @keyframes messageIn {
+
     from {
         opacity: 0;
         transform: translateY(12px);
@@ -44,43 +1165,19 @@
     }
 }
 
-.message.user {
-    justify-content: flex-end;
-}
 
-.message-bubble {
-    max-width: 75%;
-    padding: 14px 18px;
-    border-radius: 18px;
-    line-height: 1.6;
-    font-size: 15px;
-}
+/* =====================================================
+   COMPOSER AREA
+===================================================== */
 
-.message.user .message-bubble {
-    background: linear-gradient(
-        135deg,
-        #713cff,
-        #4e7cff
-    );
-    color: #fff;
-}
+.composer-area {
+    position: absolute;
 
-.message.ai .message-bubble {
-    background: rgba(18, 25, 50, 0.9);
-    border: 1px solid rgba(130, 100, 255, 0.18);
-    color: #e8ebff;
-}
+    z-index: 40;
 
-
-/* =========================================
-   COMPOSER WRAPPER
-========================================= */
-
-.composer-wrapper {
-    position: fixed;
-    z-index: 100;
     left: 50%;
-    bottom: 18px;
+    bottom: 16px;
+
     transform: translateX(-50%);
 
     width: min(900px, calc(100% - 40px));
@@ -91,39 +1188,46 @@
 }
 
 
-/* =========================================
-   ATTACHMENT PREVIEW
-========================================= */
+/* =====================================================
+   ATTACHMENTS
+===================================================== */
 
 .attachment-preview {
-    display: flex;
-    gap: 8px;
     width: 100%;
-    margin-bottom: 8px;
+
+    display: flex;
     flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-bottom: 8px;
 }
 
 .attachment-item {
     display: flex;
     align-items: center;
+
     gap: 8px;
 
-    padding: 8px 12px;
+    padding: 7px 10px;
 
-    border-radius: 10px;
+    border:
+        1px solid rgba(120, 75, 255, .25);
 
-    background: rgba(20, 27, 52, 0.95);
+    border-radius: 9px;
 
-    border: 1px solid rgba(140, 100, 255, 0.25);
+    background:
+        rgba(13, 20, 43, .95);
 
-    color: #dfe4ff;
+    color: #bfc7dd;
 
-    font-size: 12px;
+    font-size: 11px;
 
-    animation: attachmentIn .25s ease;
+    animation: attachmentIn .2s ease;
 }
 
 @keyframes attachmentIn {
+
     from {
         opacity: 0;
         transform: scale(.9);
@@ -138,7 +1242,9 @@
 .remove-file {
     border: 0;
     background: transparent;
-    color: #888;
+
+    color: #777f96;
+
     cursor: pointer;
 }
 
@@ -147,45 +1253,44 @@
 }
 
 
-/* =========================================
-   MAIN COMPOSER
-========================================= */
+/* =====================================================
+   COMPOSER
+===================================================== */
 
 .composer {
     position: relative;
 
     width: 100%;
 
-    min-height: 110px;
+    min-height: 105px;
 
-    padding: 18px 16px 10px;
+    padding:
+        17px
+        16px
+        10px;
 
-    border-radius: 18px;
+    border:
+        1px solid rgba(126, 74, 255, .72);
+
+    border-radius: 17px;
 
     background:
         linear-gradient(
             145deg,
-            rgba(10, 17, 39, 0.98),
-            rgba(6, 10, 27, 0.98)
+            rgba(10, 16, 38, .98),
+            rgba(5, 9, 25, .98)
         );
 
-    border: 1px solid rgba(135, 76, 255, 0.65);
-
     box-shadow:
-        0 0 0 1px rgba(110, 70, 255, 0.05),
-        0 15px 50px rgba(0, 0, 0, 0.45),
-        0 0 40px rgba(92, 50, 255, 0.08);
+        0 18px 55px rgba(0,0,0,.42),
+        0 0 35px rgba(91, 49, 255, .07);
 
     transition:
         border-color .3s ease,
-        box-shadow .3s ease,
-        transform .3s ease;
+        box-shadow .3s ease;
 }
 
-
-/* animated glow */
-
-.composer::before {
+.composer::after {
     content: "";
 
     position: absolute;
@@ -200,7 +1305,7 @@
         linear-gradient(
             90deg,
             transparent,
-            rgba(125, 74, 255, .5),
+            rgba(133, 75, 255, .5),
             transparent
         );
 
@@ -208,103 +1313,99 @@
 
     opacity: 0;
 
-    animation: borderFlow 4s linear infinite;
+    animation:
+        composerGlow 4s linear infinite;
 }
 
-@keyframes borderFlow {
-    0% {
+@keyframes composerGlow {
+
+    from {
         background-position: -200% 0;
     }
 
-    100% {
+    to {
         background-position: 200% 0;
     }
 }
 
 .composer:focus-within {
-    border-color: #8654ff;
+    border-color: #8657ff;
 
     box-shadow:
-        0 0 0 1px rgba(130, 80, 255, .15),
-        0 0 35px rgba(110, 60, 255, .15),
-        0 20px 60px rgba(0, 0, 0, .5);
+        0 18px 60px rgba(0,0,0,.5),
+        0 0 45px rgba(100,50,255,.12);
 }
 
-.composer:focus-within::before {
-    opacity: 1;
+.composer:focus-within::after {
+    opacity: .5;
 }
 
 
-/* =========================================
-   TEXTAREA
-========================================= */
+/* =====================================================
+   INPUT
+===================================================== */
 
 .message-input {
     display: block;
 
-    width: calc(100% - 30px);
+    width: calc(100% - 25px);
 
     min-height: 35px;
-    max-height: 180px;
+    max-height: 200px;
 
-    margin: 0 0 20px 0;
+    margin: 0 0 17px;
 
-    padding: 2px 0;
+    padding: 1px 0;
 
     resize: none;
 
     overflow-y: auto;
 
     border: 0;
-    outline: none;
+    outline: 0;
 
     background: transparent;
 
-    color: #f4f5ff;
+    color: #f3f4ff;
 
-    font-family: inherit;
-
-    font-size: 14px;
+    font-size: 13px;
 
     line-height: 1.6;
 }
 
 .message-input::placeholder {
-    color: #707995;
+    color: #707a96;
 }
 
 .message-input::-webkit-scrollbar {
-    width: 4px;
+    width: 3px;
 }
 
 .message-input::-webkit-scrollbar-thumb {
-    background: #6543b8;
-    border-radius: 20px;
+    background: #4c397b;
 }
 
 
-/* =========================================
-   TOP RIGHT +
-========================================= */
+/* =====================================================
+   EXPAND
+===================================================== */
 
 .composer-expand {
     position: absolute;
 
-    top: 20px;
-    right: 16px;
+    top: 16px;
+    right: 14px;
 
     width: 30px;
     height: 30px;
 
-    display: grid;
-    place-items: center;
-
     border: 0;
+
     background: transparent;
 
-    color: #77819e;
+    color: #707a96;
 
-    font-size: 21px;
+    font-size: 20px;
 
     cursor: pointer;
 
@@ -313,13 +1414,14 @@
 
 .composer-expand:hover {
     color: #fff;
+
     transform: rotate(90deg);
 }
 
 
-/* =========================================
+/* =====================================================
    TOOLBAR
-========================================= */
+===================================================== */
 
 .composer-toolbar {
     display: flex;
@@ -333,90 +1435,82 @@
 .composer-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+
+    gap: 6px;
 }
 
-
-/* =========================================
-   TOOL BUTTON
-========================================= */
-
 .tool-btn {
-    position: relative;
-
-    width: 32px;
-    height: 32px;
+    width: 31px;
+    height: 31px;
 
     display: grid;
     place-items: center;
 
     border: 0;
 
-    border-radius: 9px;
+    border-radius: 8px;
 
     background: transparent;
 
-    color: #78839f;
-
-    font-size: 17px;
+    color: #75809a;
 
     cursor: pointer;
 
-    transition:
-        color .25s ease,
-        background .25s ease,
-        transform .25s ease;
+    font-size: 17px;
+
+    transition: .22s ease;
 }
 
 .tool-btn:hover {
     color: #fff;
 
-    background: rgba(120, 75, 255, .13);
+    background:
+        rgba(111, 65, 255, .12);
 
     transform: translateY(-2px);
 }
 
 .tool-btn.active {
-    color: #a875ff;
+    color: #a87cff;
 
-    background: rgba(120, 75, 255, .18);
+    background:
+        rgba(113, 66, 255, .18);
 
     box-shadow:
-        0 0 15px rgba(120, 75, 255, .15);
+        0 0 15px rgba(105, 55, 255, .15);
 }
 
 
-/* =========================================
+/* =====================================================
    GLOBE
-========================================= */
+===================================================== */
 
-.globe-icon {
+.globe {
     width: 13px;
     height: 13px;
 
-    border: 1.5px solid currentColor;
+    border:
+        1.5px solid currentColor;
 
     border-radius: 50%;
-
-    font-size: 0;
 
     position: relative;
 }
 
-.globe-icon::before {
+.globe::before {
     content: "";
 
     position: absolute;
 
     left: 2px;
     right: 2px;
-
     top: 5px;
 
-    border-top: 1px solid currentColor;
+    border-top:
+        1px solid currentColor;
 }
 
-.globe-icon::after {
+.globe::after {
     content: "";
 
     position: absolute;
@@ -426,59 +1520,32 @@
 
     left: 5px;
 
-    width: 1px;
-
-    background: currentColor;
+    border-left:
+        1px solid currentColor;
 }
 
 
-/* =========================================
-   MAGIC BUTTON
-========================================= */
+/* =====================================================
+   MAGIC
+===================================================== */
 
 .magic-btn {
-    color: #9c62ff;
+    color: #a66cff;
 }
 
 .magic-btn:hover {
-    color: #c79cff;
+    color: #d0aaff;
 
     box-shadow:
-        0 0 20px rgba(150, 80, 255, .3);
+        0 0 20px rgba(140, 70, 255, .25);
 }
 
 
-/* =========================================
-   MIC
-========================================= */
-
-.mic-btn.recording {
-    color: #ff4f7b;
-
-    background: rgba(255, 50, 100, .12);
-
-    animation: micPulse 1s infinite;
-}
-
-@keyframes micPulse {
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 50, 100, .25);
-    }
-
-    50% {
-        box-shadow: 0 0 0 8px rgba(255, 50, 100, 0);
-    }
-}
-
-
-/* =========================================
-   SEND BUTTON
-========================================= */
+/* =====================================================
+   SEND
+===================================================== */
 
 .send-btn {
-    position: relative;
-
     width: 40px;
     height: 40px;
 
@@ -492,37 +1559,40 @@
     background:
         linear-gradient(
             135deg,
-            #7942ff,
-            #5d7cff
+            #7041ed,
+            #5b76ff
         );
 
     color: #fff;
 
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 700;
 
     cursor: pointer;
 
     box-shadow:
-        0 5px 18px rgba(95, 60, 255, .35);
+        0 7px 22px rgba(91, 64, 230, .35);
 
     transition:
-        transform .25s ease,
-        box-shadow .25s ease;
+        transform .2s ease,
+        box-shadow .2s ease;
 }
 
 .send-btn:hover {
-    transform: translateY(-3px) scale(1.05);
+    transform:
+        translateY(-3px)
+        scale(1.05);
 
     box-shadow:
-        0 8px 25px rgba(95, 60, 255, .55);
+        0 10px 30px rgba(91, 64, 230, .55);
 }
 
 .send-btn:active {
-    transform: scale(.92);
+    transform: scale(.91);
 }
 
 .send-btn.loading {
+    font-size: 0;
     pointer-events: none;
 }
 
@@ -532,12 +1602,15 @@
     width: 16px;
     height: 16px;
 
-    border: 2px solid rgba(255,255,255,.35);
+    border:
+        2px solid rgba(255,255,255,.3);
+
     border-top-color: #fff;
 
     border-radius: 50%;
 
-    animation: spin .7s linear infinite;
+    animation:
+        spin .7s linear infinite;
 }
 
 @keyframes spin {
@@ -546,34 +1619,31 @@
     }
 }
 
-.send-btn.loading {
-    font-size: 0;
-}
 
-
-/* =========================================
+/* =====================================================
    TOOLS POPUP
-========================================= */
+===================================================== */
 
 .tools-popup {
     position: absolute;
 
-    left: 15px;
-    bottom: calc(100% + 12px);
+    left: 12px;
+    bottom: calc(100% + 11px);
 
-    width: 260px;
+    width: 265px;
 
     padding: 8px;
 
-    border-radius: 15px;
+    border:
+        1px solid rgba(120, 75, 255, .3);
 
-    background: rgba(11, 17, 38, .98);
+    border-radius: 14px;
 
-    border: 1px solid rgba(125, 80, 255, .3);
+    background:
+        rgba(9, 15, 35, .97);
 
     box-shadow:
-        0 20px 50px rgba(0,0,0,.5),
-        0 0 30px rgba(100,50,255,.1);
+        0 20px 60px rgba(0,0,0,.5);
 
     backdrop-filter: blur(20px);
 
@@ -582,14 +1652,12 @@
 
     transform:
         translateY(10px)
-        scale(.96);
+        scale(.95);
 
     transform-origin: bottom left;
 
     transition:
-        opacity .2s ease,
-        visibility .2s ease,
-        transform .2s ease;
+        .22s ease;
 }
 
 .tools-popup.show {
@@ -602,17 +1670,18 @@
 }
 
 .tool-option {
-    display: flex;
-
     width: 100%;
+
+    display: flex;
+    align-items: center;
 
     gap: 12px;
 
-    padding: 12px;
+    padding: 11px;
 
     border: 0;
 
-    border-radius: 10px;
+    border-radius: 9px;
 
     background: transparent;
 
@@ -626,17 +1695,22 @@
 }
 
 .tool-option:hover {
-    background: rgba(120, 70, 255, .12);
+    background:
+        rgba(111, 62, 255, .12);
 }
 
 .tool-option > span {
-    font-size: 20px;
+    width: 25px;
+
+    color: #a878ff;
+
+    font-size: 17px;
 }
 
 .tool-option strong {
     display: block;
 
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .tool-option small {
@@ -644,20 +1718,20 @@
 
     margin-top: 3px;
 
-    color: #77819e;
+    color: #68728c;
 
-    font-size: 11px;
+    font-size: 10px;
 }
 
 
-/* =========================================
+/* =====================================================
    DISCLAIMER
-========================================= */
+===================================================== */
 
 .composer-disclaimer {
-    margin-top: 7px;
+    margin-top: 6px;
 
-    color: #4f5873;
+    color: #454d65;
 
     font-size: 9px;
 
@@ -665,54 +1739,227 @@
 }
 
 
-/* =========================================
-   MOBILE
-========================================= */
+/* =====================================================
+   MOBILE OVERLAY
+===================================================== */
 
-@media (max-width: 600px) {
+.mobile-overlay {
+    display: none;
+}
 
-    .composer-wrapper {
-        width: calc(100% - 20px);
-        bottom: 10px;
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1000px) {
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .quick-cards {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+    .quick-card:nth-child(4),
+    .quick-card:nth-child(5) {
+        display: none;
+    }
+}
+
+
+@media (max-width: 760px) {
+
+    body {
+        overflow: hidden;
+    }
+
+    .sidebar {
+        position: fixed;
+
+        z-index: 200;
+
+        left: 0;
+        top: 0;
+
+        width: 265px;
+        height: 100vh;
+
+        margin: 0;
+
+        border-radius: 0 18px 18px 0;
+
+        transform: translateX(-110%);
+
+        transition:
+            transform .35s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .mobile-overlay {
+        position: fixed;
+
+        z-index: 150;
+
+        inset: 0;
+
+        display: block;
+
+        background:
+            rgba(0,0,0,.55);
+
+        backdrop-filter:
+            blur(4px);
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition: .3s ease;
+    }
+
+    .mobile-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-menu-btn {
+        display: grid;
+        place-items: center;
+    }
+
+    .topbar {
+        height: 65px;
+
+        padding: 0 12px;
+    }
+
+    .topbar-actions {
+        gap: 2px;
+    }
+
+    .pro-btn {
+        display: none;
+    }
+
+    .top-icon:nth-child(2),
+    .top-icon:nth-child(3) {
+        display: none;
+    }
+
+    .ai-orb-small {
+        margin-left: 2px;
+    }
+
+    .welcome-screen {
+        padding:
+            100px
+            15px
+            230px;
+    }
+
+    .welcome-title {
+        font-size: 42px;
+    }
+
+    .welcome-subtitle {
+        text-align: center;
+        font-size: 11px;
+    }
+
+    .hero-orb {
+        transform: scale(.82);
+        margin-top: 0;
+    }
+
+    .quick-cards {
+        width: 100%;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 8px;
+    }
+
+    .quick-card {
+        min-height: 90px;
+    }
+
+    .quick-card:nth-child(n) {
+        display: block;
+    }
+
+    .quick-card:nth-child(5) {
+        display: none;
+    }
+
+    .composer-area {
+        width:
+            calc(100% - 20px);
+
+        bottom: 9px;
     }
 
     .composer {
         min-height: 105px;
-        border-radius: 16px;
-        padding: 15px 12px 9px;
+    }
+
+    .chat-messages {
+        width:
+            calc(100% - 20px);
+
+        padding-bottom: 220px;
+    }
+
+    .chat-bubble {
+        max-width: 88%;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .welcome-screen {
+        padding-top: 80px;
+    }
+
+    .welcome-title {
+        font-size: 36px;
+        letter-spacing: -2px;
+    }
+
+    .hero-orb {
+        transform: scale(.65);
+        margin-top: -15px;
+        margin-bottom: -15px;
+    }
+
+    .quick-card {
+        padding: 11px;
+    }
+
+    .quick-card strong {
+        font-size: 11px;
+    }
+
+    .quick-card span {
+        font-size: 9px;
+    }
+
+    .composer {
+        border-radius: 15px;
     }
 
     .message-input {
-        width: calc(100% - 20px);
-        font-size: 14px;
-    }
-
-    .composer-expand {
-        right: 10px;
-        top: 14px;
-    }
-
-    .tool-btn {
-        width: 30px;
-        height: 30px;
+        font-size: 13px;
     }
 
     .send-btn {
         width: 38px;
         height: 38px;
-    }
-
-    .chat-messages {
-        width: calc(100% - 20px);
-        padding-bottom: 180px;
-    }
-
-    .message-bubble {
-        max-width: 88%;
-    }
-
-    .tools-popup {
-        left: 0;
-        width: 240px;
     }
 }
