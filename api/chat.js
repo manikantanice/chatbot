@@ -170,3 +170,22 @@ export default async function handler(req, res) {
     }
 
 }
+const lastMessage =
+    messages[messages.length - 1]?.content || "";
+
+const wantsImage =
+    /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of/i.test(
+        lastMessage
+    );
+
+if (wantsImage) {
+
+    const imageUrl =
+        `https://gen.pollinations.ai/image/${encodeURIComponent(lastMessage)}?model=flux`;
+
+    return res.status(200).json({
+        type: "image",
+        reply: "✨ Here is the image I created for you:",
+        image: imageUrl
+    });
+}
