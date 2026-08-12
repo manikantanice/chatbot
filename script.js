@@ -1,106 +1,13 @@
-document.addEventListener("DOMContentLoaded", () => {
-
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const input =
-    document.getElementById("messageInput");
-
-const sendBtn =
-    document.getElementById("sendBtn");
-
-const chatArea =
-    document.querySelector(".chat-area");
-
-const chatMessages =
-    document.getElementById("chatMessages");
-
-const welcomeScreen =
-    document.getElementById("welcomeScreen");
-
-const newChatBtn =
-    document.getElementById("newChatBtn");
-
-const currentConversation =
-    document.getElementById("currentConversation");
-
-const recentChats =
-    document.getElementById("recentChats");
-
-const plusBtn =
-    document.getElementById("plusBtn");
-
-const toolsPopup =
-    document.getElementById("toolsPopup");
-
-const webBtn =
-    document.getElementById("webBtn");
-
-const attachBtn =
-    document.getElementById("attachBtn");
-
-const fileInput =
-    document.getElementById("fileInput");
-
-const attachmentPreview =
-    document.getElementById("attachmentPreview");
-
-const magicBtn =
-    document.getElementById("magicBtn");
-
-const micBtn =
-    document.getElementById("micBtn");
-
-const composerExpand =
-    document.getElementById("composerExpand");
-
-const mobileMenuBtn =
-    document.getElementById("mobileMenuBtn");
-
-const sidebar =
-    document.getElementById("sidebar");
-
-const mobileOverlay =
-    document.getElementById("mobileOverlay");
-
-const clearBtn =
-    document.getElementById("clearBtn");
-
-const searchBtn =
-    document.getElementById("searchBtn");
-
-const settingsBtn =
-    document.getElementById("settingsBtn");
-
-const topSettingsBtn =
-    document.getElementById("topSettingsBtn");
-
-const proBtn =
-    document.getElementById("proBtn");
-
-const quickCards =
-    document.querySelectorAll(".quick-card");
-/* =========================================
-   PREMIUM AI CURSOR + SMOOTH TRAIL
-========================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
 
     const cursor = document.querySelector(".ai-cursor");
 
-    if (!cursor) return;
+    if (!cursor) {
+        console.log("AI cursor element not found");
+        return;
+    }
 
-    const core = cursor.querySelector(".cursor-core");
-
-    const trails = Array.from(
-        document.querySelectorAll(".cursor-trail")
-    );
-
-    /* =========================================
-       CURSOR POSITION
-    ========================================= */
+    const trails = document.querySelectorAll(".cursor-trail");
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
@@ -108,294 +15,169 @@ document.addEventListener("DOMContentLoaded", () => {
     let cursorX = mouseX;
     let cursorY = mouseY;
 
+    const trailX = [];
+    const trailY = [];
 
-    /* =========================================
-       TRAIL POSITIONS
-    ========================================= */
-
-    const trailPositions = trails.map(() => ({
-        x: mouseX,
-        y: mouseY
-    }));
+    trails.forEach(function () {
+        trailX.push(mouseX);
+        trailY.push(mouseY);
+    });
 
 
-    /* =========================================
+    /* =========================
        MOUSE MOVE
-    ========================================= */
+    ========================= */
 
-    document.addEventListener("mousemove", (e) => {
+    document.addEventListener("mousemove", function (e) {
 
         mouseX = e.clientX;
         mouseY = e.clientY;
 
         cursor.style.opacity = "1";
 
-        trails.forEach((trail) => {
-            trail.style.opacity = "";
+        trails.forEach(function (trail) {
+            trail.style.opacity = "1";
         });
 
     });
 
 
-    /* =========================================
-       SMOOTH CURSOR ANIMATION
-    ========================================= */
+    /* =========================
+       ANIMATION
+    ========================= */
 
-    function animateCursor() {
+    function animate() {
 
-        /* Main cursor */
+        cursorX += (mouseX - cursorX) * 0.25;
+        cursorY += (mouseY - cursorY) * 0.25;
 
-        cursorX +=
-            (mouseX - cursorX) * 0.20;
+        cursor.style.left = cursorX + "px";
+        cursor.style.top = cursorY + "px";
 
-        cursorY +=
-            (mouseY - cursorY) * 0.20;
-
-
-        cursor.style.left =
-            cursorX + "px";
-
-        cursor.style.top =
-            cursorY + "px";
-
-
-        /* =====================================
-           TRAIL
-        ===================================== */
 
         let targetX = cursorX;
         let targetY = cursorY;
 
 
-        trails.forEach((trail, index) => {
+        trails.forEach(function (trail, index) {
 
-            const position =
-                trailPositions[index];
+            trailX[index] +=
+                (targetX - trailX[index]) * 0.18;
 
-
-            /*
-             * Each trail follows the
-             * previous trail.
-             */
-
-            const speed =
-                Math.max(
-                    0.08,
-                    0.20 - (index * 0.018)
-                );
-
-
-            position.x +=
-                (targetX - position.x) *
-                speed;
-
-
-            position.y +=
-                (targetY - position.y) *
-                speed;
+            trailY[index] +=
+                (targetY - trailY[index]) * 0.18;
 
 
             trail.style.left =
-                position.x + "px";
-
+                trailX[index] + "px";
 
             trail.style.top =
-                position.y + "px";
+                trailY[index] + "px";
 
-
-            /* =================================
-               TRAIL SIZE
-            ================================= */
 
             const scale =
-                Math.max(
-                    0.25,
-                    1 - (index * 0.10)
-                );
-
-
-            /* =================================
-               TRAIL OPACITY
-            ================================= */
+                1 - (index * 0.12);
 
             const opacity =
-                Math.max(
-                    0.08,
-                    0.65 - (index * 0.075)
-                );
+                0.65 - (index * 0.08);
 
 
             trail.style.transform =
-                `translate(-50%, -50%) scale(${scale})`;
-
+                "translate(-50%, -50%) scale(" +
+                scale +
+                ")";
 
             trail.style.opacity =
                 opacity;
 
 
-            /*
-             * IMPORTANT:
-             * Next trail follows THIS trail,
-             * not the main cursor.
-             */
-
-            targetX =
-                position.x;
-
-            targetY =
-                position.y;
+            targetX = trailX[index];
+            targetY = trailY[index];
 
         });
 
 
-        requestAnimationFrame(
-            animateCursor
-        );
+        requestAnimationFrame(animate);
 
     }
 
 
-    animateCursor();
+    animate();
 
 
-    /* =========================================
-       HOVER EFFECT
-    ========================================= */
+    /* =========================
+       HOVER
+    ========================= */
 
-    function addHoverEvents() {
+    document.addEventListener("mouseover", function (e) {
 
-        const interactiveElements =
-            document.querySelectorAll(
-                `
-                a,
-                button,
-                input,
-                textarea,
-                select,
-                .feature-card,
-                .mani-ai-logo,
-                .new-chat,
-                .quick-card,
-                .tool-option,
-                .conversation,
-                [role="button"]
-                `
+        const target =
+            e.target.closest(
+                "a, button, input, textarea, select, .quick-card, .tool-option"
             );
 
-
-        interactiveElements.forEach(
-            (element) => {
-
-                element.addEventListener(
-                    "mouseenter",
-                    () => {
-
-                        document.body.classList.add(
-                            "cursor-hover"
-                        );
-
-                    }
-                );
-
-
-                element.addEventListener(
-                    "mouseleave",
-                    () => {
-
-                        document.body.classList.remove(
-                            "cursor-hover"
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-    }
-
-
-    addHoverEvents();
-
-
-    /* =========================================
-       CLICK ANIMATION
-    ========================================= */
-
-    document.addEventListener(
-        "mousedown",
-        () => {
-
-            document.body.classList.add(
-                "cursor-click"
-            );
-
+        if (target) {
+            document.body.classList.add("cursor-hover");
         }
-    );
+
+    });
 
 
-    document.addEventListener(
-        "mouseup",
-        () => {
+    document.addEventListener("mouseout", function (e) {
 
-            document.body.classList.remove(
-                "cursor-click"
+        const target =
+            e.target.closest(
+                "a, button, input, textarea, select, .quick-card, .tool-option"
             );
 
+        if (target) {
+            document.body.classList.remove("cursor-hover");
         }
-    );
+
+    });
 
 
-    /* =========================================
+    /* =========================
+       CLICK
+    ========================= */
+
+    document.addEventListener("mousedown", function () {
+
+        document.body.classList.add("cursor-click");
+
+    });
+
+
+    document.addEventListener("mouseup", function () {
+
+        document.body.classList.remove("cursor-click");
+
+    });
+
+
+    /* =========================
        MOUSE LEAVE
-    ========================================= */
+    ========================= */
 
-    document.addEventListener(
-        "mouseleave",
-        () => {
+    document.addEventListener("mouseleave", function () {
 
-            cursor.classList.add(
-                "cursor-hidden"
-            );
+        cursor.style.opacity = "0";
 
-            trails.forEach(
-                (trail) => {
+        trails.forEach(function (trail) {
+            trail.style.opacity = "0";
+        });
 
-                    trail.classList.add(
-                        "cursor-hidden"
-                    );
-
-                }
-            );
-
-        }
-    );
+    });
 
 
-    /* =========================================
+    /* =========================
        MOUSE ENTER
-    ========================================= */
+    ========================= */
 
-    document.addEventListener(
-        "mouseenter",
-        () => {
+    document.addEventListener("mouseenter", function () {
 
-            cursor.classList.remove(
-                "cursor-hidden"
-            );
+        cursor.style.opacity = "1";
 
-
-            trails.forEach(
-                (trail) => {
-
-                    trail.classList.remove(
-                        "cursor-hidden"
-                    );
-
-                }
-            );
-
-        }
-    );
+    });
 
 });
