@@ -3272,3 +3272,21 @@ body.cursor-click .cursor-core {
         transform: translateY(-6px);
     }
 }
+.ai-image-message {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.generated-ai-image {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 16px;
+    display: block;
+    box-shadow: 0 10px 40px rgba(100, 70, 255, 0.25);
+    transition: transform 0.3s ease;
+}
+
+.generated-ai-image:hover {
+    transform: scale(1.02);
+}
