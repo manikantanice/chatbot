@@ -1,107 +1,207 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =========================================
+    /* =================================================
        ELEMENTS
-    ========================================= */
+    ================================================= */
 
-    const input = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const chatMessages = document.getElementById("chatMessages");
+    const input =
+        document.getElementById("messageInput");
 
-    const plusBtn = document.getElementById("plusBtn");
-    const toolsPopup = document.getElementById("toolsPopup");
+    const sendBtn =
+        document.getElementById("sendBtn");
 
-    const webBtn = document.getElementById("webBtn");
+    const chatArea =
+        document.querySelector(".chat-area");
 
-    const attachBtn = document.getElementById("attachBtn");
-    const fileInput = document.getElementById("fileInput");
+    const chatMessages =
+        document.getElementById("chatMessages");
+
+    const welcomeScreen =
+        document.getElementById("welcomeScreen");
+
+    const newChatBtn =
+        document.getElementById("newChatBtn");
+
+    const currentConversation =
+        document.getElementById("currentConversation");
+
+    const recentChats =
+        document.getElementById("recentChats");
+
+    const plusBtn =
+        document.getElementById("plusBtn");
+
+    const toolsPopup =
+        document.getElementById("toolsPopup");
+
+    const webBtn =
+        document.getElementById("webBtn");
+
+    const attachBtn =
+        document.getElementById("attachBtn");
+
+    const fileInput =
+        document.getElementById("fileInput");
 
     const attachmentPreview =
         document.getElementById("attachmentPreview");
 
-    const magicBtn = document.getElementById("magicBtn");
+    const magicBtn =
+        document.getElementById("magicBtn");
 
-    const micBtn = document.getElementById("micBtn");
+    const micBtn =
+        document.getElementById("micBtn");
 
     const composerExpand =
         document.getElementById("composerExpand");
 
+    const mobileMenuBtn =
+        document.getElementById("mobileMenuBtn");
 
-    /* =========================================
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const mobileOverlay =
+        document.getElementById("mobileOverlay");
+
+    const clearBtn =
+        document.getElementById("clearBtn");
+
+    const searchBtn =
+        document.getElementById("searchBtn");
+
+    const settingsBtn =
+        document.getElementById("settingsBtn");
+
+    const topSettingsBtn =
+        document.getElementById("topSettingsBtn");
+
+    const proBtn =
+        document.getElementById("proBtn");
+
+    const quickCards =
+        document.querySelectorAll(".quick-card");
+
+
+    /* =================================================
        STATE
-    ========================================= */
+    ================================================= */
+
+    let conversation = [];
 
     let selectedFiles = [];
 
     let webMode = false;
 
-    let isSending = false;
+    let sending = false;
 
-    let conversation = [];
+    let recognition = null;
 
 
-    /* =========================================
-       AUTO RESIZE TEXTAREA
-    ========================================= */
+    /* =================================================
+       INITIALIZE
+    ================================================= */
+
+    input.focus();
+
+    autoResize();
+
+
+    /* =================================================
+       TEXTAREA AUTO RESIZE
+    ================================================= */
 
     function autoResize() {
 
         input.style.height = "auto";
 
         input.style.height =
-            Math.min(input.scrollHeight, 180) + "px";
+            Math.min(input.scrollHeight, 200) + "px";
     }
 
-    input.addEventListener("input", autoResize);
+
+    input.addEventListener(
+        "input",
+        autoResize
+    );
 
 
-    /* =========================================
-       ENTER TO SEND
-    ========================================= */
+    /* =================================================
+       ENTER SEND
+    ================================================= */
 
-    input.addEventListener("keydown", (event) => {
+    input.addEventListener(
+        "keydown",
+        event => {
 
-        if (
-            event.key === "Enter" &&
-            !event.shiftKey
-        ) {
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            sendMessage();
+                sendMessage();
+            }
+
         }
+    );
 
-    });
 
-
-    /* =========================================
+    /* =================================================
        SEND BUTTON
-    ========================================= */
+    ================================================= */
 
-    sendBtn.addEventListener("click", sendMessage);
+    sendBtn.addEventListener(
+        "click",
+        sendMessage
+    );
 
 
-    /* =========================================
+    /* =================================================
        SEND MESSAGE
-    ========================================= */
+    ================================================= */
 
     async function sendMessage() {
 
-        if (isSending) return;
+        if (sending) return;
+
 
         const message =
             input.value.trim();
 
-        if (!message) return;
+
+        if (!message && selectedFiles.length === 0) {
+            input.focus();
+            return;
+        }
 
 
-        /* USER MESSAGE */
+        /* ---------------------------------------------
+           Hide welcome
+        --------------------------------------------- */
+
+        welcomeScreen.style.display = "none";
+
+
+        /* ---------------------------------------------
+           Add user message
+        --------------------------------------------- */
+
+        const displayMessage =
+            message ||
+            "Attached file(s)";
+
 
         addMessage(
             "user",
-            message
+            displayMessage
         );
 
+
+        /* ---------------------------------------------
+           Conversation
+        --------------------------------------------- */
 
         conversation.push({
             role: "user",
@@ -109,61 +209,78 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 
-        /* CLEAR INPUT */
+        /* ---------------------------------------------
+           Clear
+        --------------------------------------------- */
 
         input.value = "";
 
         autoResize();
 
 
-        /* CLOSE TOOLS */
-
         toolsPopup.classList.remove("show");
 
 
-        /* LOADING */
+        /* ---------------------------------------------
+           Loading
+        --------------------------------------------- */
 
         setLoading(true);
 
 
         try {
 
+            /*
+             * Existing API endpoint
+             */
+
             const response =
-                await fetch("/api/chat", {
+                await fetch(
+                    "/api/chat",
+                    {
+                        method: "POST",
 
-                    method: "POST",
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                        body: JSON.stringify({
 
-                    body: JSON.stringify({
+                            message: message,
 
-                        message: message,
+                            messages:
+                                conversation,
 
-                        messages:
-                            conversation,
+                            webSearch:
+                                webMode,
 
-                        webSearch:
-                            webMode,
+                            /*
+                             * File information.
+                             *
+                             * Your existing chat.js
+                             * can ignore this if it
+                             * doesn't use files.
+                             */
 
-                        files:
-                            selectedFiles.map(file => ({
-                                name: file.name,
-                                type: file.type,
-                                size: file.size
-                            }))
+                            files:
+                                selectedFiles.map(
+                                    file => ({
+                                        name: file.name,
+                                        type: file.type,
+                                        size: file.size
+                                    })
+                                )
 
-                    })
-
-                });
+                        })
+                    }
+                );
 
 
             if (!response.ok) {
 
                 throw new Error(
-                    `Server error: ${response.status}`
+                    `API error ${response.status}`
                 );
             }
 
@@ -172,25 +289,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 await response.json();
 
 
-            /*
-             * Support different API response formats
-             */
+            /* -----------------------------------------
+               Detect response
+            ----------------------------------------- */
 
             const reply =
-                data.reply ||
-                data.message ||
-                data.response ||
-                data.content ||
-                "I couldn't generate a response.";
+                getReplyFromResponse(data);
 
 
-            /* AI MESSAGE */
+            /* -----------------------------------------
+               AI typing
+            ----------------------------------------- */
 
-            await typeMessage(
-                "ai",
+            await typeAIMessage(
                 reply
             );
 
+
+            /* -----------------------------------------
+               Save
+            ----------------------------------------- */
 
             conversation.push({
                 role: "assistant",
@@ -198,143 +316,264 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
 
+            /* -----------------------------------------
+               Save recent
+            ----------------------------------------- */
+
+            saveRecentChat(message);
+
+
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Chat API Error:",
+                error
+            );
+
 
             addMessage(
                 "ai",
-                "⚠️ Something went wrong. Please try again."
+                "⚠️ I couldn't connect to the AI right now. Please try again."
             );
 
         } finally {
 
             setLoading(false);
 
+            selectedFiles = [];
+
+            fileInput.value = "";
+
+            renderAttachments();
+
         }
 
     }
 
 
-    /* =========================================
-       ADD MESSAGE
-    ========================================= */
+    /* =================================================
+       GET API RESPONSE
+    ================================================= */
 
-    function addMessage(type, text) {
+    function getReplyFromResponse(data) {
+
+        if (!data) {
+
+            return "I didn't receive a response.";
+        }
+
+
+        if (typeof data === "string") {
+
+            return data;
+        }
+
+
+        /*
+         * Common API formats
+         */
+
+        if (typeof data.reply === "string") {
+            return data.reply;
+        }
+
+        if (typeof data.message === "string") {
+            return data.message;
+        }
+
+        if (typeof data.response === "string") {
+            return data.response;
+        }
+
+        if (typeof data.content === "string") {
+            return data.content;
+        }
+
+
+        /*
+         * OpenAI-style response
+         */
+
+        if (
+            data.choices &&
+            data.choices[0]
+        ) {
+
+            const choice =
+                data.choices[0];
+
+
+            if (
+                choice.message &&
+                typeof choice.message.content === "string"
+            ) {
+
+                return choice.message.content;
+            }
+
+
+            if (
+                typeof choice.text === "string"
+            ) {
+
+                return choice.text;
+            }
+
+        }
+
+
+        return "I couldn't generate a response.";
+
+    }
+
+
+    /* =================================================
+       ADD MESSAGE
+    ================================================= */
+
+    function addMessage(
+        type,
+        text
+    ) {
 
         const wrapper =
             document.createElement("div");
 
+
         wrapper.className =
-            `message ${type}`;
+            `chat-message ${type}`;
 
 
         const bubble =
             document.createElement("div");
 
+
         bubble.className =
-            "message-bubble";
+            "chat-bubble";
 
 
         bubble.innerHTML =
             formatMessage(text);
 
 
-        wrapper.appendChild(bubble);
+        wrapper.appendChild(
+            bubble
+        );
 
-        chatMessages.appendChild(wrapper);
+
+        chatMessages.appendChild(
+            wrapper
+        );
 
 
-        scrollToBottom();
+        scrollChat();
+
 
         return bubble;
     }
 
 
-    /* =========================================
-       TYPEWRITER AI MESSAGE
-    ========================================= */
+    /* =================================================
+       AI TYPEWRITER
+    ================================================= */
 
-    async function typeMessage(type, text) {
+    async function typeAIMessage(
+        text
+    ) {
 
         const wrapper =
             document.createElement("div");
 
+
         wrapper.className =
-            `message ${type}`;
+            "chat-message ai";
 
 
         const bubble =
             document.createElement("div");
 
+
         bubble.className =
-            "message-bubble";
+            "chat-bubble";
 
 
-        wrapper.appendChild(bubble);
+        wrapper.appendChild(
+            bubble
+        );
 
-        chatMessages.appendChild(wrapper);
 
-
-        const formatted =
-            formatMessage(text);
+        chatMessages.appendChild(
+            wrapper
+        );
 
 
         /*
-         * Simple typewriter effect
+         * Type plain text first
          */
 
-        let index = 0;
-
-        const temp =
-            document.createElement("div");
-
-        temp.innerHTML = formatted;
-
-        const plainText =
-            temp.textContent ||
-            temp.innerText ||
-            text;
+        const plain =
+            stripHTML(text);
 
 
-        while (index < plainText.length) {
+        let current = "";
+
+
+        for (
+            let i = 0;
+            i < plain.length;
+            i++
+        ) {
+
+            current += plain[i];
 
             bubble.textContent =
-                plainText.substring(
-                    0,
-                    index + 1
-                );
+                current;
 
-            index++;
 
-            scrollToBottom();
+            scrollChat();
 
-            await sleep(8);
+
+            /*
+             * Slightly variable typing
+             */
+
+            await sleep(
+                plain[i] === " "
+                    ? 5
+                    : 9
+            );
+
         }
 
 
         /*
-         * Restore formatted HTML
+         * Final formatted output
          */
 
         bubble.innerHTML =
-            formatted;
+            formatMessage(text);
 
-        scrollToBottom();
+
+        scrollChat();
 
     }
 
 
-    /* =========================================
-       MESSAGE FORMATTER
-    ========================================= */
+    /* =================================================
+       FORMAT MESSAGE
+    ================================================= */
 
-    function formatMessage(text) {
+    function formatMessage(
+        text
+    ) {
 
         if (!text) return "";
 
+
         let safe =
-            escapeHTML(text);
+            escapeHTML(
+                String(text)
+            );
 
 
         /*
@@ -360,6 +599,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /*
+         * Inline code
+         */
+
+        safe =
+            safe.replace(
+                /`([^`]+)`/g,
+                "<code>$1</code>"
+            );
+
+
+        /*
          * New lines
          */
 
@@ -374,122 +624,161 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================
-       HTML ESCAPE
-    ========================================= */
+    /* =================================================
+       ESCAPE HTML
+    ================================================= */
 
-    function escapeHTML(text) {
+    function escapeHTML(
+        text
+    ) {
 
         const div =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
-        div.textContent = text;
+        div.textContent =
+            text;
 
         return div.innerHTML;
     }
 
 
-    /* =========================================
-       SCROLL
-    ========================================= */
+    function stripHTML(
+        text
+    ) {
 
-    function scrollToBottom() {
+        const div =
+            document.createElement(
+                "div"
+            );
 
-        requestAnimationFrame(() => {
+        div.innerHTML =
+            text;
 
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: "smooth"
-            });
-
-        });
+        return (
+            div.textContent ||
+            div.innerText ||
+            ""
+        );
 
     }
 
 
-    /* =========================================
+    /* =================================================
+       SCROLL
+    ================================================= */
+
+    function scrollChat() {
+
+        requestAnimationFrame(
+            () => {
+
+                chatArea.scrollTo({
+                    top:
+                        chatArea.scrollHeight,
+                    behavior:
+                        "smooth"
+                });
+
+            }
+        );
+
+    }
+
+
+    /* =================================================
        LOADING
-    ========================================= */
+    ================================================= */
 
-    function setLoading(state) {
+    function setLoading(
+        state
+    ) {
 
-        isSending = state;
+        sending = state;
 
         sendBtn.classList.toggle(
             "loading",
             state
         );
 
-        sendBtn.disabled = state;
-
     }
 
 
-    /* =========================================
-       PLUS TOOLS
-    ========================================= */
+    /* =================================================
+       PLUS BUTTON
+    ================================================= */
 
-    plusBtn.addEventListener("click", (event) => {
+    plusBtn.addEventListener(
+        "click",
+        event => {
 
-        event.stopPropagation();
+            event.stopPropagation();
 
-        toolsPopup.classList.toggle("show");
-
-    });
-
-
-    /* =========================================
-       CLOSE POPUP
-    ========================================= */
-
-    document.addEventListener("click", (event) => {
-
-        if (
-            !toolsPopup.contains(event.target) &&
-            !plusBtn.contains(event.target)
-        ) {
-
-            toolsPopup.classList.remove(
+            toolsPopup.classList.toggle(
                 "show"
             );
 
         }
-
-    });
-
-
-    /* =========================================
-       WEB SEARCH
-    ========================================= */
-
-    webBtn.addEventListener("click", () => {
-
-        webMode = !webMode;
-
-        webBtn.classList.toggle(
-            "active",
-            webMode
-        );
+    );
 
 
-        if (webMode) {
+    document.addEventListener(
+        "click",
+        event => {
 
-            input.placeholder =
-                "Search the web with Mini AI...";
+            if (
+                !toolsPopup.contains(
+                    event.target
+                ) &&
+                !plusBtn.contains(
+                    event.target
+                )
+            ) {
 
-        } else {
+                toolsPopup.classList.remove(
+                    "show"
+                );
 
-            input.placeholder =
-                "Message Mini AI...";
+            }
 
         }
+    );
 
-    });
+
+    /* =================================================
+       WEB MODE
+    ================================================= */
+
+    webBtn.addEventListener(
+        "click",
+        () => {
+
+            webMode =
+                !webMode;
 
 
-    /* =========================================
-       FILE UPLOAD
-    ========================================= */
+            webBtn.classList.toggle(
+                "active",
+                webMode
+            );
+
+
+            input.placeholder =
+                webMode
+                    ? "Search the web with Mini AI..."
+                    : "Message Mini AI...";
+
+
+            input.focus();
+
+        }
+    );
+
+
+    /* =================================================
+       FILE ATTACH
+    ================================================= */
 
     attachBtn.addEventListener(
         "click",
@@ -510,9 +799,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     fileInput.files
                 );
 
+
             selectedFiles.push(
                 ...files
             );
+
 
             renderAttachments();
 
@@ -520,19 +811,24 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    /* =========================================
-       RENDER ATTACHMENTS
-    ========================================= */
+    /* =================================================
+       FILE PREVIEW
+    ================================================= */
 
     function renderAttachments() {
 
-        attachmentPreview.innerHTML = "";
+        attachmentPreview.innerHTML =
+            "";
+
 
         selectedFiles.forEach(
             (file, index) => {
 
                 const item =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
+
 
                 item.className =
                     "attachment-item";
@@ -547,9 +843,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     </span>
 
                     <button
+                        type="button"
                         class="remove-file"
                         data-index="${index}"
-                        type="button"
                     >
                         ×
                     </button>
@@ -566,36 +862,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         document
-            .querySelectorAll(".remove-file")
-            .forEach(button => {
+            .querySelectorAll(
+                ".remove-file"
+            )
+            .forEach(
+                button => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                    button.addEventListener(
+                        "click",
+                        () => {
 
-                        const index =
-                            Number(
-                                button.dataset.index
+                            const index =
+                                Number(
+                                    button.dataset.index
+                                );
+
+
+                            selectedFiles.splice(
+                                index,
+                                1
                             );
 
-                        selectedFiles.splice(
-                            index,
-                            1
-                        );
 
-                        renderAttachments();
+                            renderAttachments();
 
-                    }
-                );
+                        }
+                    );
 
-            });
+                }
+            );
 
     }
 
 
-    /* =========================================
-       MAGIC AI BUTTON
-    ========================================= */
+    /* =================================================
+       MAGIC AI
+    ================================================= */
 
     magicBtn.addEventListener(
         "click",
@@ -612,65 +914,231 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    /* =========================================
+    /* =================================================
        TOOL OPTIONS
-    ========================================= */
+    ================================================= */
 
     document
-        .querySelectorAll(".tool-option")
-        .forEach(option => {
+        .querySelectorAll(
+            ".tool-option"
+        )
+        .forEach(
+            option => {
 
-            option.addEventListener(
+                option.addEventListener(
+                    "click",
+                    () => {
+
+                        const action =
+                            option.dataset.action;
+
+
+                        if (
+                            action === "image"
+                        ) {
+
+                            input.value =
+                                "Create an image of ";
+
+                        }
+
+
+                        if (
+                            action === "code"
+                        ) {
+
+                            input.value =
+                                "Write code for ";
+
+                        }
+
+
+                        if (
+                            action === "summarize"
+                        ) {
+
+                            input.value =
+                                "Summarize this: ";
+
+                        }
+
+
+                        autoResize();
+
+                        input.focus();
+
+                        toolsPopup.classList.remove(
+                            "show"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =================================================
+       QUICK CARDS
+    ================================================= */
+
+    quickCards.forEach(
+        card => {
+
+            card.addEventListener(
                 "click",
                 () => {
 
-                    const action =
-                        option.dataset.action;
+                    const prompt =
+                        card.dataset.prompt;
 
 
-                    if (action === "image") {
-
-                        input.value =
-                            "Create an image of ";
-
-                    }
-
-
-                    if (action === "code") {
-
-                        input.value =
-                            "Write code for ";
-
-                    }
-
-
-                    if (action === "summarize") {
-
-                        input.value =
-                            "Summarize this: ";
-
-                    }
+                    input.value =
+                        prompt;
 
 
                     autoResize();
 
                     input.focus();
 
-                    toolsPopup.classList.remove(
-                        "show"
-                    );
-
                 }
             );
 
-        });
+        }
+    );
 
 
-    /* =========================================
-       VOICE INPUT
-    ========================================= */
+    /* =================================================
+       NEW CHAT
+    ================================================= */
 
-    let recognition = null;
+    newChatBtn.addEventListener(
+        "click",
+        newChat
+    );
+
+
+    currentConversation.addEventListener(
+        "click",
+        () => {
+
+            input.focus();
+
+        }
+    );
+
+
+    function newChat() {
+
+        conversation = [];
+
+        selectedFiles = [];
+
+        chatMessages.innerHTML =
+            "";
+
+        welcomeScreen.style.display =
+            "flex";
+
+        input.value =
+            "";
+
+        autoResize();
+
+        renderAttachments();
+
+        toolsPopup.classList.remove(
+            "show"
+        );
+
+        input.focus();
+
+        closeMobileSidebar();
+
+    }
+
+
+    /* =================================================
+       RECENT CHAT
+    ================================================= */
+
+    function saveRecentChat(
+        message
+    ) {
+
+        if (!message) return;
+
+
+        const item =
+            document.createElement(
+                "button"
+            );
+
+
+        item.type =
+            "button";
+
+
+        item.className =
+            "conversation";
+
+
+        item.innerHTML = `
+
+            <span class="conversation-icon">
+                ◇
+            </span>
+
+            <span>
+                ${escapeHTML(
+                    message.substring(
+                        0,
+                        24
+                    )
+                )}
+            </span>
+
+        `;
+
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                input.value =
+                    message;
+
+                autoResize();
+
+                input.focus();
+
+            }
+        );
+
+
+        recentChats.prepend(
+            item
+        );
+
+
+        /*
+         * Keep only 5 recent chats
+         */
+
+        while (
+            recentChats.children.length > 5
+        ) {
+
+            recentChats.lastElementChild.remove();
+
+        }
+
+    }
+
+
+    /* =================================================
+       VOICE
+    ================================================= */
 
     if (
         "SpeechRecognition" in window ||
@@ -686,33 +1154,43 @@ document.addEventListener("DOMContentLoaded", () => {
             new SpeechRecognition();
 
 
-        recognition.continuous = false;
+        recognition.continuous =
+            false;
 
-        recognition.interimResults = true;
+        recognition.interimResults =
+            true;
 
-        recognition.lang = "en-US";
+        recognition.lang =
+            "en-US";
 
 
-        recognition.onstart = () => {
+        recognition.onstart =
+            () => {
 
-            micBtn.classList.add(
-                "recording"
-            );
+                micBtn.classList.add(
+                    "active"
+                );
 
-            input.placeholder =
-                "Listening...";
+                input.placeholder =
+                    "Listening...";
 
-        };
+            };
 
 
         recognition.onresult =
-            (event) => {
+            event => {
 
-                let transcript = "";
+                let transcript =
+                    "";
+
 
                 for (
-                    let i = event.resultIndex;
-                    i < event.results.length;
+                    let i =
+                        event.resultIndex;
+
+                    i <
+                    event.results.length;
+
                     i++
                 ) {
 
@@ -722,36 +1200,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 }
 
+
                 input.value =
                     transcript;
+
 
                 autoResize();
 
             };
 
 
-        recognition.onend = () => {
+        recognition.onend =
+            () => {
 
-            micBtn.classList.remove(
-                "recording"
-            );
+                micBtn.classList.remove(
+                    "active"
+                );
 
-            input.placeholder =
-                "Message Mini AI...";
+                input.placeholder =
+                    webMode
+                        ? "Search the web with Mini AI..."
+                        : "Message Mini AI...";
 
-        };
+            };
 
 
         recognition.onerror =
-            (error) => {
+            error => {
 
                 console.error(
-                    "Speech recognition:",
+                    "Voice error:",
                     error
                 );
 
                 micBtn.classList.remove(
-                    "recording"
+                    "active"
                 );
 
             };
@@ -775,7 +1258,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 micBtn.classList.contains(
-                    "recording"
+                    "active"
                 )
             ) {
 
@@ -791,9 +1274,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    /* =========================================
-       COMPOSER EXPAND
-    ========================================= */
+    /* =================================================
+       EXPAND COMPOSER
+    ================================================= */
 
     composerExpand.addEventListener(
         "click",
@@ -801,27 +1284,158 @@ document.addEventListener("DOMContentLoaded", () => {
 
             input.focus();
 
-            input.style.maxHeight =
-                "300px";
-
             input.style.height =
-                "200px";
+                "180px";
 
         }
     );
 
 
-    /* =========================================
-       KEYBOARD SHORTCUT
-    ========================================= */
+    /* =================================================
+       MOBILE SIDEBAR
+    ================================================= */
+
+    mobileMenuBtn.addEventListener(
+        "click",
+        openMobileSidebar
+    );
+
+
+    mobileOverlay.addEventListener(
+        "click",
+        closeMobileSidebar
+    );
+
+
+    function openMobileSidebar() {
+
+        sidebar.classList.add(
+            "open"
+        );
+
+        mobileOverlay.classList.add(
+            "show"
+        );
+
+    }
+
+
+    function closeMobileSidebar() {
+
+        sidebar.classList.remove(
+            "open"
+        );
+
+        mobileOverlay.classList.remove(
+            "show"
+        );
+
+    }
+
+
+    /* =================================================
+       CLEAR CHAT
+    ================================================= */
+
+    clearBtn.addEventListener(
+        "click",
+        () => {
+
+            if (
+                conversation.length === 0
+            ) {
+
+                return;
+            }
+
+
+            const confirmed =
+                confirm(
+                    "Clear this conversation?"
+                );
+
+
+            if (confirmed) {
+
+                newChat();
+
+            }
+
+        }
+    );
+
+
+    /* =================================================
+       SEARCH
+    ================================================= */
+
+    searchBtn.addEventListener(
+        "click",
+        () => {
+
+            input.focus();
+
+            input.placeholder =
+                "Search your conversation...";
+
+        }
+    );
+
+
+    /* =================================================
+       SETTINGS
+    ================================================= */
+
+    settingsBtn.addEventListener(
+        "click",
+        () => {
+
+            alert(
+                "Settings panel coming soon."
+            );
+
+        }
+    );
+
+
+    topSettingsBtn.addEventListener(
+        "click",
+        () => {
+
+            alert(
+                "Settings panel coming soon."
+            );
+
+        }
+    );
+
+
+    /* =================================================
+       PRO
+    ================================================= */
+
+    proBtn.addEventListener(
+        "click",
+        () => {
+
+            alert(
+                "Pro features coming soon."
+            );
+
+        }
+    );
+
+
+    /* =================================================
+       KEYBOARD SHORTCUTS
+    ================================================= */
 
     document.addEventListener(
         "keydown",
-        (event) => {
+        event => {
 
             /*
              * Ctrl + K
-             * Focus composer
              */
 
             if (
@@ -840,11 +1454,15 @@ document.addEventListener("DOMContentLoaded", () => {
              * Escape
              */
 
-            if (event.key === "Escape") {
+            if (
+                event.key === "Escape"
+            ) {
 
                 toolsPopup.classList.remove(
                     "show"
                 );
+
+                closeMobileSidebar();
 
             }
 
@@ -852,15 +1470,18 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    /* =========================================
+    /* =================================================
        HELPER
-    ========================================= */
+    ================================================= */
 
     function sleep(ms) {
 
         return new Promise(
             resolve =>
-                setTimeout(resolve, ms)
+                setTimeout(
+                    resolve,
+                    ms
+                )
         );
 
     }
