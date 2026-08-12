@@ -2091,39 +2091,6 @@ button {
     animation: glowPulse 2s ease-in-out infinite;
 }
 
-
-/* =========================
-   SHINE
-========================= */
-
-.ai-core::after {
-    content: "";
-
-    position: absolute;
-
-    width: 20px;
-    height: 100%;
-
-    top: 0;
-    left: -35px;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.8),
-        transparent
-    );
-
-    transform: skewX(-20deg);
-
-    animation: aiShine 3s ease-in-out infinite;
-}
-
-
-/* =========================
-   PARTICLES
-========================= */
-
 .ai-particle {
     position: absolute;
 
