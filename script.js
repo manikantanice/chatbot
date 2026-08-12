@@ -2284,32 +2284,61 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 });
-document.addEventListener("mousemove", function (e) {
+const sparkleContainer =
+    document.querySelector(".sparkle-container");
 
-    const container = document.querySelector(".butterfly-container");
+let lastSparkleTime = 0;
 
-    if (!container) return;
+document.addEventListener("mousemove", (e) => {
 
-    const butterfly = document.createElement("span");
+    const now = Date.now();
 
-    butterfly.className = "butterfly";
-    butterfly.innerHTML = "🦋";
+    // Don't create too many sparkles
+    if (now - lastSparkleTime < 100) {
+        return;
+    }
 
-    butterfly.style.left = e.clientX + "px";
-    butterfly.style.top = e.clientY + "px";
+    lastSparkleTime = now;
 
-    const moveX = (Math.random() - 0.5) * 100;
-    const moveY = -30 - Math.random() * 100;
-    const rotate = (Math.random() - 0.5) * 60;
+    // Create 1 small sparkle
+    const sparkle = document.createElement("span");
 
-    butterfly.style.setProperty("--move-x", moveX + "px");
-    butterfly.style.setProperty("--move-y", moveY + "px");
-    butterfly.style.setProperty("--rotate", rotate + "deg");
+    sparkle.className = "sparkle";
 
-    container.appendChild(butterfly);
+    sparkle.style.left =
+        (e.clientX + (Math.random() * 30 - 15)) + "px";
+
+    sparkle.style.top =
+        (e.clientY + (Math.random() * 30 - 15)) + "px";
+
+    sparkleContainer.appendChild(sparkle);
 
     setTimeout(() => {
-        butterfly.remove();
-    }, 1800);
+        sparkle.remove();
+    }, 900);
+});
+
+
+const butterflies = document.querySelectorAll(".butterfly");
+
+document.addEventListener("mousemove", (e) => {
+
+    const positions = [
+        { x: 12, y: -8 },
+        { x: -14, y: -12 },
+        { x: 15, y: 10 },
+        { x: -12, y: 14 }
+    ];
+
+    butterflies.forEach((butterfly, index) => {
+
+        butterfly.style.left =
+            (e.clientX + positions[index].x) + "px";
+
+        butterfly.style.top =
+            (e.clientY + positions[index].y) + "px";
+
+        butterfly.style.opacity = "1";
+    });
 
 });
