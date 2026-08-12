@@ -3311,3 +3311,47 @@ body.cursor-click .cursor-core {
 .generated-ai-image:hover {
     transform: scale(1.02);
 }
+.butterfly-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999999;
+    overflow: hidden;
+}
+
+.butterfly {
+    position: fixed;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    font-size: 14px;
+    line-height: 1;
+    animation: butterflyFly 1.8s ease-out forwards;
+    filter: drop-shadow(0 0 5px rgba(180, 120, 255, 0.8));
+}
+
+@keyframes butterflyFly {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.3) rotate(0deg);
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(
+                var(--move-x),
+                var(--move-y)
+            )
+            scale(1)
+            rotate(var(--rotate));
+    }
+}
