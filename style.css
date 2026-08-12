@@ -3220,3 +3220,153 @@ body.cursor-click .cursor-core {
         display: none;
     }
 }
+
+
+
+/* =========================================
+   MOVING LIGHT INSIDE CARD
+========================================= */
+
+.quick-card::before {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        rgba(130, 80, 255, .20),
+        transparent 70%
+    );
+
+    left: var(--mouse-x, 50%);
+    top: var(--mouse-y, 50%);
+
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+
+.quick-card:hover::before {
+    opacity: 1;
+}
+
+
+/* =========================================
+   PREMIUM HOVER
+========================================= */
+
+.quick-card:hover {
+    transform:
+        translateY(-10px)
+        scale(1.035);
+
+    border-color: rgba(150, 110, 255, .7);
+
+    box-shadow:
+        0 15px 40px rgba(70, 30, 180, .25),
+        0 0 35px rgba(120, 70, 255, .12);
+}
+
+
+/* =========================================
+   SHINE EFFECT
+========================================= */
+
+.quick-card::after {
+    content: "";
+    position: absolute;
+
+    top: -100%;
+    left: -120%;
+
+    width: 70%;
+    height: 300%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.08),
+        transparent
+    );
+
+    transform: rotate(20deg);
+    transition: left .8s ease;
+
+    pointer-events: none;
+}
+
+.quick-card:hover::after {
+    left: 150%;
+}
+
+
+/* =========================================
+   ICON ANIMATION
+========================================= */
+
+.quick-card svg,
+.quick-card i {
+    transition:
+        transform .5s cubic-bezier(.2,.8,.2,1),
+        filter .4s ease;
+}
+
+.quick-card:hover svg,
+.quick-card:hover i {
+    transform:
+        rotate(-8deg)
+        scale(1.18);
+
+    filter:
+        drop-shadow(0 0 10px rgba(150,100,255,.8));
+}
+
+
+/* =========================================
+   TEXT ANIMATION
+========================================= */
+
+.quick-card h3,
+.quick-card h4 {
+    transition:
+        transform .4s ease,
+        letter-spacing .4s ease;
+}
+
+.quick-card:hover h3,
+.quick-card:hover h4 {
+    transform: translateX(4px);
+    letter-spacing: .3px;
+}
+
+
+/* =========================================
+   MAKE OTHER CARDS FADE WHEN ONE IS HOVERED
+========================================= */
+
+.quick-cards:has(quick-card:hover)
+.quick-card:not(:hover) {
+    opacity: .45;
+    transform: scale(.97);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .quick-card:hover {
+        transform: translateY(-5px) scale(1.01);
+    }
+
+    .quick-cards:has(quick-card:hover)
+    .quick-card:not(:hover) {
+        opacity: 1;
+        transform: none;
+    }
+}
+
