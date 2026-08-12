@@ -1,36 +1,71 @@
 export default async function handler(req, res) {
+
+    /* =====================================================
+       METHOD CHECK
+    ===================================================== */
+
     if (req.method !== "POST") {
+
         return res.status(405).json({
             error: "Method not allowed"
         });
+
     }
 
+
     try {
-        const body = req.body || {};
-
-        const messages = body.messages;
-
-        if (!messages || !Array.isArray(messages)) {
-            return res.status(400).json({
-                error: "Messages are missing."
-            });
-        }
 
         /* =====================================================
-           GET LAST USER MESSAGE
+           REQUEST BODY
+        ===================================================== */
+
+        const body =
+            req.body || {};
+
+
+        const messages =
+            body.messages;
+
+
+        const webSearch =
+            body.webSearch || false;
+
+
+        /* =====================================================
+           VALIDATE MESSAGES
+        ===================================================== */
+
+        if (
+            !messages ||
+            !Array.isArray(messages)
+        ) {
+
+            return res.status(400).json({
+
+                error:
+                    "Messages are missing."
+            });
+
+        }
+
+
+        /* =====================================================
+           LAST USER MESSAGE
         ===================================================== */
 
         const lastMessage =
             messages[messages.length - 1]?.content || "";
+
 
         /* =====================================================
            IMAGE REQUEST DETECTION
         ===================================================== */
 
         const wantsImage =
-            /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of|create image|make picture|generate picture|show me an image/i.test(
+            /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of|create image|make picture|generate picture|show me an image|show image|generate photo|create photo|make photo|create a photo/i.test(
                 lastMessage
             );
+
 
         /* =====================================================
            IMAGE GENERATION
@@ -38,37 +73,192 @@ export default async function handler(req, res) {
 
         if (wantsImage) {
 
-            const prompt = encodeURIComponent(lastMessage);
+            const pollinationsKey =
+                process.env.POLLINATIONS_API_KEY;
 
-            const imageUrl =
-                `https://gen.pollinations.ai/image/${prompt}?model=flux`;
 
-            return res.status(200).json({
+            /* =================================================
+               CHECK POLLINATIONS KEY
+            ================================================= */
 
-                type: "image",
+            if (!pollinationsKey) {
 
-                reply:
-                    "✨ Here is the image I created for you:",
+                console.error(
+                    "POLLINATIONS_API_KEY is missing."
+                );
 
-                image:
-                    imageUrl
-            });
+
+                return res.status(500).json({
+
+                    error:
+                        "POLLINATIONS_API_KEY is not configured in Vercel."
+                });
+
+            }
+
+
+            try {
+
+                /* =============================================
+                   IMAGE PROMPT
+                ============================================= */
+
+                const imagePrompt =
+                    lastMessage
+                        .replace(
+                            /^(please\s*)?(create|generate|make|draw|show me)\s+(an?\s+)?(image|picture|photo)\s*(of\s*)?/i,
+                            ""
+                        )
+                        .trim();
+
+
+                const finalPrompt =
+                    imagePrompt ||
+                    lastMessage;
+
+
+                console.log(
+                    "Generating image:",
+                    finalPrompt
+                );
+
+
+                /* =============================================
+                   POLLINATIONS REQUEST
+                ============================================= */
+
+                const imageUrl =
+                    `https://gen.pollinations.ai/image/${encodeURIComponent(finalPrompt)}?model=flux`;
+
+
+                const imageResponse =
+                    await fetch(
+                        imageUrl,
+                        {
+
+                            method:
+                                "GET",
+
+                            headers: {
+
+                                "Authorization":
+                                    `Bearer ${pollinationsKey}`,
+
+                                "Accept":
+                                    "image/*"
+                            }
+                        }
+                    );
+
+
+                /* =============================================
+                   IMAGE ERROR
+                ============================================= */
+
+                if (
+                    !imageResponse.ok
+                ) {
+
+                    const errorText =
+                        await imageResponse.text();
+
+
+                    console.error(
+                        "Pollinations error:",
+                        imageResponse.status,
+                        errorText
+                    );
+
+
+                    return res.status(500).json({
+
+                        error:
+                            "Image generation failed. Please check your Pollinations API key."
+                    });
+
+                }
+
+
+                /* =============================================
+                   GET IMAGE DATA
+                ============================================= */
+
+                const imageBuffer =
+                    await imageResponse.arrayBuffer();
+
+
+                const base64Image =
+                    Buffer
+                        .from(imageBuffer)
+                        .toString("base64");
+
+
+                const contentType =
+                    imageResponse.headers.get(
+                        "content-type"
+                    ) ||
+                    "image/jpeg";
+
+
+                const imageData =
+                    `data:${contentType};base64,${base64Image}`;
+
+
+                /* =============================================
+                   RETURN IMAGE
+                ============================================= */
+
+                return res.status(200).json({
+
+                    type:
+                        "image",
+
+                    reply:
+                        "✨ Here is the image I created for you:",
+
+                    image:
+                        imageData
+                });
+
+
+            } catch (imageError) {
+
+                console.error(
+                    "IMAGE GENERATION ERROR:",
+                    imageError
+                );
+
+
+                return res.status(500).json({
+
+                    error:
+                        imageError.message ||
+                        "Image generation failed."
+                });
+
+            }
+
         }
 
+
         /* =====================================================
-           GROQ API
+           GROQ API KEY
         ===================================================== */
 
-        const apiKey =
+        const groqApiKey =
             process.env.GROQ_API_KEY;
 
-        if (!apiKey) {
+
+        if (!groqApiKey) {
 
             return res.status(500).json({
+
                 error:
                     "GROQ_API_KEY is not configured in Vercel."
             });
+
         }
+
 
         /* =====================================================
            GROQ REQUEST
@@ -78,90 +268,107 @@ export default async function handler(req, res) {
             await fetch(
                 "https://api.groq.com/openai/v1/chat/completions",
                 {
-                    method: "POST",
+
+                    method:
+                        "POST",
 
                     headers: {
+
                         "Content-Type":
                             "application/json",
 
                         "Authorization":
-                            "Bearer " + apiKey
+                            `Bearer ${groqApiKey}`
                     },
 
-                    body: JSON.stringify({
+                    body:
+                        JSON.stringify({
 
-                        model:
-                            "llama-3.3-70b-versatile",
+                            model:
+                                "llama-3.3-70b-versatile",
 
-                        messages:
-                            messages,
+                            messages:
+                                messages,
 
-                        temperature:
-                            0.7,
+                            temperature:
+                                0.7,
 
-                        max_tokens:
-                            1500
-                    })
+                            max_tokens:
+                                1500
+                        })
                 }
             );
 
+
         /* =====================================================
-           READ RESPONSE
+           READ GROQ RESPONSE
         ===================================================== */
 
-        const text =
+        const responseText =
             await groqResponse.text();
 
-        let data;
+
+        let groqData;
+
 
         try {
 
-            data =
-                JSON.parse(text);
+            groqData =
+                JSON.parse(responseText);
 
-        } catch {
+        } catch (parseError) {
 
             console.error(
-                "Invalid Groq response:",
-                text
+                "Groq invalid response:",
+                responseText
             );
+
 
             return res.status(500).json({
 
                 error:
                     "Groq returned an invalid response."
             });
-        }
 
+        }
         /* =====================================================
            GROQ ERROR
         ===================================================== */
-
-        if (!groqResponse.ok) {
+        if (
+            !groqResponse.ok
+        ) {
 
             console.error(
-                "Groq API error:",
-                data
+                "Groq API Error:",
+                groqData
             );
+
 
             return res.status(
                 groqResponse.status
             ).json({
 
                 error:
-                    data.error?.message ||
-                    "Groq API error"
+                    groqData?.error?.message ||
+                    "Groq API error."
             });
+
         }
 
+
         /* =====================================================
-           GET AI REPLY
+           GET GROQ REPLY
         ===================================================== */
 
         const reply =
-            data
+            groqData
                 ?.choices?.[0]
                 ?.message?.content;
+
+
+        /* =====================================================
+           NO REPLY
+        ===================================================== */
 
         if (!reply) {
 
@@ -170,32 +377,34 @@ export default async function handler(req, res) {
                 error:
                     "No reply received from Groq."
             });
+
         }
 
+
         /* =====================================================
-           NORMAL RESPONSE
+           NORMAL CHAT RESPONSE
         ===================================================== */
 
-        return res.status(200).json({
-
-            type: "text",
-
+     return res.status(200).json({
+            type:
+                "text",
             reply:
-                reply
+                reply,
+            webSearch:
+                webSearch
         });
-
     } catch (error) {
-
+        /* =====================================================
+           GENERAL ERROR
+        ===================================================== */
         console.error(
             "API ERROR:",
             error
         );
-
         return res.status(500).json({
-
             error:
                 error.message ||
-                "Server error"
+                "Server error."
         });
     }
 }
