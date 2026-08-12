@@ -169,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const message =
             input?.value.trim() || "";
 
+
         if (
             !message &&
             selectedFiles.length === 0
@@ -185,7 +186,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ================================================= */
 
         if (welcomeScreen) {
-            welcomeScreen.style.display = "none";
+
+            welcomeScreen.style.display =
+                "none";
+
         }
 
 
@@ -208,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
             role: "user",
 
             content: message
+
         });
 
 
@@ -220,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
             input.value = "";
 
             autoResize();
+
         }
 
 
@@ -232,6 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
             toolsPopup.classList.remove(
                 "show"
             );
+
         }
 
 
@@ -259,11 +266,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             "Content-Type":
                                 "application/json"
+
                         },
 
                         body: JSON.stringify({
 
-                            message: message,
+                            message:
+                                message,
 
                             messages:
                                 conversation,
@@ -283,9 +292,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                                         size:
                                             file.size
+
                                     })
                                 )
+
                         })
+
                     }
                 );
 
@@ -295,6 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ================================================= */
 
             let data = null;
+
 
             try {
 
@@ -311,6 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(
                     `Server returned an invalid response (${response.status}).`
                 );
+
             }
 
 
@@ -336,6 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(
                     serverError
                 );
+
             }
 
 
@@ -362,12 +377,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     content:
                         data.reply ||
                         "Generated image."
+
                 });
 
 
                 saveRecentChat(message);
 
                 return;
+
             }
 
 
@@ -384,6 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(
                     "The AI returned an empty response."
                 );
+
             }
 
 
@@ -397,6 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 role: "assistant",
 
                 content: reply
+
             });
 
 
@@ -430,12 +449,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (fileInput) {
+
                 fileInput.value = "";
+
             }
 
 
             renderAttachments();
+
         }
+
     }
 
 
@@ -451,12 +474,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const wrapper =
             document.createElement("div");
 
+
         wrapper.className =
             "chat-message ai image-message";
 
 
         const bubble =
             document.createElement("div");
+
 
         bubble.className =
             "chat-bubble ai-image-bubble";
@@ -465,8 +490,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const text =
             document.createElement("div");
 
+
         text.className =
             "image-response-text";
+
 
         text.textContent =
             message;
@@ -475,8 +502,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const loading =
             document.createElement("div");
 
+
         loading.className =
             "image-loading";
+
 
         loading.innerHTML = `
             <div class="image-loader">
@@ -507,6 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const image =
             new Image();
 
+
         image.src =
             imageUrl;
 
@@ -518,6 +548,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const imageContainer =
                 document.createElement("div");
+
 
             imageContainer.className =
                 "generated-image-container";
@@ -594,10 +625,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         link.click();
 
-
                         link.remove();
+
                     }
                 );
+
             }
 
 
@@ -646,15 +678,20 @@ document.addEventListener("DOMContentLoaded", () => {
                                 error
                             );
 
+
                             copyBtn.textContent =
                                 "⚠️ Copy failed";
+
                         }
+
                     }
                 );
+
             }
 
 
             scrollChat();
+
         };
 
 
@@ -670,7 +707,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
 
+
             scrollChat();
+
         };
 
 
@@ -688,11 +727,13 @@ document.addEventListener("DOMContentLoaded", () => {
                             ⚠️ Image generation is taking too long.
                         </div>
                     `;
+
                 }
 
             },
             30000
         );
+
     }
 
 
@@ -705,6 +746,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!data) {
 
             return "I didn't receive a response.";
+
         }
 
 
@@ -713,6 +755,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             return data;
+
         }
 
 
@@ -725,6 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             return `⚠️ ${data.error}`;
+
         }
 
 
@@ -737,6 +781,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             return data.reply;
+
         }
 
 
@@ -749,6 +794,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             return data.message;
+
         }
 
 
@@ -761,6 +807,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             return data.response;
+
         }
 
 
@@ -773,6 +820,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             return data.content;
+
         }
 
 
@@ -795,6 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
 
                 return choice.message.content;
+
             }
 
 
@@ -803,11 +852,14 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
 
                 return choice.text;
+
             }
+
         }
 
 
         return "I couldn't generate a response.";
+
     }
 
 
@@ -826,12 +878,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const wrapper =
             document.createElement("div");
 
+
         wrapper.className =
             `chat-message ${type}`;
 
 
         const bubble =
             document.createElement("div");
+
 
         bubble.className =
             "chat-bubble";
@@ -855,6 +909,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         return bubble;
+
     }
 
 
@@ -872,12 +927,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const wrapper =
             document.createElement("div");
 
+
         wrapper.className =
             "chat-message ai";
 
 
         const bubble =
             document.createElement("div");
+
 
         bubble.className =
             "chat-bubble";
@@ -922,6 +979,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ? 5
                     : 8
             );
+
         }
 
 
@@ -930,6 +988,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         scrollChat();
+
     }
 
 
@@ -1004,6 +1063,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         return safe;
+
     }
 
 
@@ -1022,6 +1082,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         return div.innerHTML;
+
     }
 
 
@@ -1032,22 +1093,27 @@ document.addEventListener("DOMContentLoaded", () => {
     function escapeAttribute(text) {
 
         return String(text)
+
             .replace(
                 /&/g,
                 "&amp;"
             )
+
             .replace(
                 /"/g,
                 "&quot;"
             )
+
             .replace(
                 /</g,
                 "&lt;"
             )
+
             .replace(
                 />/g,
                 "&gt;"
             );
+
     }
 
 
@@ -1070,6 +1136,7 @@ document.addEventListener("DOMContentLoaded", () => {
             div.innerText ||
             ""
         );
+
     }
 
 
@@ -1092,9 +1159,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     behavior:
                         "smooth"
+
                 });
+
             }
         );
+
     }
 
 
@@ -1114,7 +1184,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 "loading",
                 state
             );
+
         }
+
     }
 
 
@@ -1137,6 +1209,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 toolsPopup.classList.toggle(
                     "show"
                 );
+
             }
         );
 
@@ -1157,9 +1230,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     toolsPopup.classList.remove(
                         "show"
                     );
+
                 }
+
             }
         );
+
     }
 
 
@@ -1192,9 +1268,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                     input.focus();
+
                 }
+
             }
         );
+
     }
 
 
@@ -1212,6 +1291,7 @@ document.addEventListener("DOMContentLoaded", () => {
             () => {
 
                 fileInput.click();
+
             }
         );
 
@@ -1232,8 +1312,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 renderAttachments();
+
             }
         );
+
     }
 
 
@@ -1284,6 +1366,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 attachmentPreview.appendChild(
                     item
                 );
+
             }
         );
 
@@ -1312,10 +1395,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                             renderAttachments();
+
                         }
                     );
+
                 }
             );
+
     }
 
 
@@ -1340,8 +1426,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 autoResize();
+
             }
         );
+
     }
 
 
@@ -1373,6 +1461,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             input.value =
                                 "Create an image of ";
+
                         }
 
 
@@ -1382,6 +1471,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             input.value =
                                 "Write code for ";
+
                         }
 
 
@@ -1391,6 +1481,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             input.value =
                                 "Summarize this: ";
+
                         }
 
 
@@ -1402,8 +1493,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         toolsPopup?.classList.remove(
                             "show"
                         );
+
                     }
                 );
+
             }
         );
 
@@ -1433,8 +1526,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     autoResize();
 
                     input.focus();
+
                 }
             );
+
         }
     );
 
@@ -1449,6 +1544,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             newChat
         );
+
     }
 
 
@@ -1463,6 +1559,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             chatMessages.innerHTML =
                 "";
+
         }
 
 
@@ -1470,6 +1567,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             welcomeScreen.style.display =
                 "flex";
+
         }
 
 
@@ -1481,6 +1579,7 @@ document.addEventListener("DOMContentLoaded", () => {
             autoResize();
 
             input.focus();
+
         }
 
 
@@ -1491,8 +1590,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         renderAttachments();
 
-
         closeMobileSidebar();
+
     }
 
 
@@ -1554,6 +1653,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 autoResize();
 
                 input.focus();
+
             }
         );
 
@@ -1569,10 +1669,12 @@ document.addEventListener("DOMContentLoaded", () => {
         ) {
 
             recentChats.lastElementChild.remove();
+
         }
 
 
         addCursorHoverEvents();
+
     }
 
 
@@ -1618,7 +1720,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     input.placeholder =
                         "Listening...";
+
                 }
+
             };
 
 
@@ -1642,6 +1746,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     transcript +=
                         event.results[i][0]
                             .transcript;
+
                 }
 
 
@@ -1652,7 +1757,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                     autoResize();
+
                 }
+
             };
 
 
@@ -1670,7 +1777,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         webMode
                             ? "Search the web with Mini AI..."
                             : "Message Mini AI...";
+
                 }
+
             };
 
 
@@ -1686,7 +1795,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 micBtn?.classList.remove(
                     "active"
                 );
+
             };
+
     }
 
 
@@ -1704,6 +1815,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                     return;
+
                 }
 
 
@@ -1727,10 +1839,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             "Speech recognition start error:",
                             error
                         );
+
                     }
+
                 }
+
             }
         );
+
     }
 
 
@@ -1751,9 +1867,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     input.style.height =
                         "180px";
+
                 }
+
             }
         );
+
     }
 
 
@@ -1767,6 +1886,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             openMobileSidebar
         );
+
     }
 
 
@@ -1776,6 +1896,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             closeMobileSidebar
         );
+
     }
 
 
@@ -1789,6 +1910,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mobileOverlay?.classList.add(
             "show"
         );
+
     }
 
 
@@ -1802,6 +1924,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mobileOverlay?.classList.remove(
             "show"
         );
+
     }
 
 
@@ -1829,9 +1952,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (confirmed) {
 
                     newChat();
+
                 }
+
             }
         );
+
     }
 
 
@@ -1852,9 +1978,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     input.placeholder =
                         "Search your conversation...";
+
                 }
+
             }
         );
+
     }
 
 
@@ -1869,6 +1998,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(
                 "Settings panel coming soon."
             );
+
         }
     );
 
@@ -1880,6 +2010,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(
                 "Settings panel coming soon."
             );
+
         }
     );
 
@@ -1895,6 +2026,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(
                 "Pro features coming soon."
             );
+
         }
     );
 
@@ -1915,6 +2047,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 event.preventDefault();
 
                 input?.focus();
+
             }
 
 
@@ -1928,7 +2061,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 closeMobileSidebar();
+
             }
+
         }
     );
 
@@ -1946,11 +2081,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     ms
                 )
         );
+
     }
 
 
     /* =====================================================
-       PREMIUM AI CUSTOM CURSOR
+       PREMIUM GLOWING CIRCLE CURSOR
+       NO BUTTERFLIES
+       NO CURSOR TRAIL
     ===================================================== */
 
     let aiCursor =
@@ -1977,6 +2115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.appendChild(
             aiCursor
         );
+
     }
 
 
@@ -2010,6 +2149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             cursorMouseY =
                 event.clientY;
+
         }
     );
 
@@ -2038,12 +2178,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             aiCursor.style.top =
                 cursorY + "px";
+
         }
 
 
         requestAnimationFrame(
             animateAICursor
         );
+
     }
 
 
@@ -2081,6 +2223,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         document.body.classList.add(
                             "cursor-hover"
                         );
+
                     }
                 );
 
@@ -2092,11 +2235,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         document.body.classList.remove(
                             "cursor-hover"
                         );
+
                     }
                 );
 
             }
         );
+
     }
 
 
@@ -2114,6 +2259,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.add(
                 "cursor-click"
             );
+
         }
     );
 
@@ -2125,107 +2271,9 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.remove(
                 "cursor-click"
             );
+
         }
     );
-
-
-    /* =====================================================
-       CURSOR TRAIL
-    ===================================================== */
-
-    const trailCount = 6;
-
-    const cursorTrails = [];
-
-
-    for (
-        let i = 0;
-        i < trailCount;
-        i++
-    ) {
-
-        const trail =
-            document.createElement("div");
-
-
-        trail.className =
-            "cursor-trail";
-
-
-        trail.style.opacity =
-            String(
-                0.35 -
-                i * 0.04
-            );
-
-
-        document.body.appendChild(
-            trail
-        );
-
-
-        cursorTrails.push({
-
-            element:
-                trail,
-
-            x:
-                cursorX,
-
-            y:
-                cursorY
-        });
-    }
-
-
-    function animateCursorTrail() {
-
-        let previousX =
-            cursorX;
-
-
-        let previousY =
-            cursorY;
-
-
-        cursorTrails.forEach(
-            (trail, index) => {
-
-                trail.x +=
-                    (previousX - trail.x) *
-                    (0.25 - index * 0.02);
-
-
-                trail.y +=
-                    (previousY - trail.y) *
-                    (0.25 - index * 0.02);
-
-
-                trail.element.style.left =
-                    trail.x + "px";
-
-
-                trail.element.style.top =
-                    trail.y + "px";
-
-
-                previousX =
-                    trail.x;
-
-
-                previousY =
-                    trail.y;
-            }
-        );
-
-
-        requestAnimationFrame(
-            animateCursorTrail
-        );
-    }
-
-
-    animateCursorTrail();
 
 
     /* =====================================================
@@ -2244,16 +2292,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 aiCursor.style.display =
                     "none";
+
             }
-
-
-            cursorTrails.forEach(
-                trail => {
-
-                    trail.element.style.display =
-                        "none";
-                }
-            );
 
         } else {
 
@@ -2261,286 +2301,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 aiCursor.style.display =
                     "block";
+
             }
 
-
-            cursorTrails.forEach(
-                trail => {
-
-                    trail.element.style.display =
-                        "block";
-                }
-            );
         }
+
     }
+
+
     handleCursorDevice();
+
+
     window.addEventListener(
         "resize",
         handleCursorDevice
     );
 
 });
-/* =========================================
-   PREMIUM CURSOR + 4 BUTTERFLIES
-========================================= */
-
-const butterflyCount = 4;
-
-const butterflies = [];
-
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-
-
-/* =========================================
-   MOUSE POSITION
-========================================= */
-
-document.addEventListener("mousemove", (e) => {
-
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-
-});
-
-
-/* =========================================
-   CREATE 4 BUTTERFLIES
-========================================= */
-
-for (let i = 0; i < butterflyCount; i++) {
-
-    const butterfly =
-        document.createElement("div");
-
-    butterfly.className =
-        "cursor-butterfly";
-
-    document.body.appendChild(
-        butterfly
-    );
-
-
-    butterflies.push({
-
-        element: butterfly,
-
-        x: mouseX,
-
-        y: mouseY,
-
-        angle:
-            (Math.PI * 2 / butterflyCount) * i,
-
-        distance:
-            25 + (i * 8),
-
-        speed:
-            0.025 + (i * 0.004),
-
-        phase:
-            Math.random() * Math.PI * 2
-
-    });
-}
-
-
-/* =========================================
-   BUTTERFLY ANIMATION
-========================================= */
-
-function animateButterflies() {
-
-    butterflies.forEach(
-        (butterfly, index) => {
-
-            butterfly.phase +=
-                butterfly.speed;
-
-
-            /*
-             * Each butterfly gets
-             * slightly different movement
-             */
-
-            const waveX =
-                Math.sin(
-                    butterfly.phase * 1.7 +
-                    index
-                ) * 18;
-
-
-            const waveY =
-                Math.cos(
-                    butterfly.phase * 2.1 +
-                    index
-                ) * 14;
-
-
-            /*
-             * Circular formation
-             */
-
-            const targetX =
-                mouseX +
-                Math.cos(
-                    butterfly.angle +
-                    butterfly.phase * .35
-                ) *
-                butterfly.distance +
-                waveX;
-
-
-            const targetY =
-                mouseY +
-                Math.sin(
-                    butterfly.angle +
-                    butterfly.phase * .35
-                ) *
-                butterfly.distance +
-                waveY;
-
-
-            /*
-             * Smooth following
-             */
-
-            butterfly.x +=
-                (targetX - butterfly.x) *
-                0.08;
-
-
-            butterfly.y +=
-                (targetY - butterfly.y) *
-                0.08;
-
-
-            butterfly.element.style.left =
-                butterfly.x + "px";
-
-
-            butterfly.element.style.top =
-                butterfly.y + "px";
-
-
-            /*
-             * Butterfly rotation
-             */
-
-            const rotation =
-                Math.sin(
-                    butterfly.phase * 2
-                ) * 18;
-
-
-            butterfly.element.style.transform =
-                `translate(-50%, -50%)
-                 rotate(${rotation}deg)
-                 scale(${0.75 + index * 0.05})`;
-        }
-    );
-
-
-    requestAnimationFrame(
-        animateButterflies
-    );
-}
-
-
-animateButterflies();
-
-
-/* =========================================
-   SPARKLES
-========================================= */
-
-let lastSparkle =
-    0;
-
-
-document.addEventListener(
-    "mousemove",
-    (e) => {
-
-        const now =
-            Date.now();
-
-
-        /*
-         * Limit sparkles
-         */
-
-        if (
-            now - lastSparkle <
-            90
-        ) {
-            return;
-        }
-
-
-        lastSparkle =
-            now;
-
-
-        const sparkle =
-            document.createElement(
-                "span"
-            );
-
-
-        sparkle.className =
-            "cursor-sparkle";
-
-
-        /*
-         * Small random offset
-         */
-
-        sparkle.style.left =
-            (
-                e.clientX +
-                (Math.random() * 35 - 17)
-            ) + "px";
-
-
-        sparkle.style.top =
-            (
-                e.clientY +
-                (Math.random() * 35 - 17)
-            ) + "px";
-
-
-        /*
-         * Random size
-         */
-
-        const size =
-            2 +
-            Math.random() * 4;
-
-
-        sparkle.style.width =
-            size + "px";
-
-
-        sparkle.style.height =
-            size + "px";
-
-
-        document.body.appendChild(
-            sparkle
-        );
-
-
-        setTimeout(
-            () => {
-
-                sparkle.remove();
-
-            },
-            900
-        );
-
-    }
-);
-
