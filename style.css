@@ -2818,225 +2818,6 @@ select {
     }
 }
 
-/* =====================================================
-   PREMIUM AI CURSOR — FIXED
-===================================================== */
-
-/* Hide browser cursor */
-html,
-body,
-button,
-a,
-input,
-textarea,
-select,
-[role="button"] {
-    cursor: none !important;
-}
-/* =========================================
-   AI CURSOR
-========================================= */
-
-.ai-cursor {
-    position: fixed;
-    width: 18px;
-    height: 18px;
-    pointer-events: none;
-    z-index: 999999;
-    transform: translate(-50%, -50%);
-}
-
-.cursor-core {
-    width: 6px;
-    height: 6px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow:
-        0 0 8px #ffffff,
-        0 0 18px #a855f7;
-}
-
-.cursor-ring {
-    position: absolute;
-    inset: 0;
-    border: 1px solid rgba(192, 132, 252, 0.7);
-    border-radius: 50%;
-    animation: cursorPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes cursorPulse {
-    0%, 100% {
-        transform: scale(.8);
-        opacity: .4;
-    }
-
-    50% {
-        transform: scale(1.4);
-        opacity: .9;
-    }
-}
-
-
-/* =========================================
-   BUTTERFLIES
-========================================= */
-
-.cursor-butterfly {
-    position: fixed;
-    pointer-events: none;
-    z-index: 999997;
-
-    width: 14px;
-    height: 14px;
-
-    color: #c084fc;
-
-    font-size: 14px;
-
-    transform: translate(-50%, -50%);
-
-    filter:
-        drop-shadow(0 0 4px #a855f7)
-        drop-shadow(0 0 9px #9333ea);
-
-    will-change: transform, left, top;
-}
-
-.cursor-butterfly::before {
-    content: "🦋";
-}
-
-
-/* =========================================
-   BUTTERFLY FLIGHT
-========================================= */
-
-@keyframes butterflyFloat {
-
-    0% {
-        margin-top: 0;
-        transform: translate(-50%, -50%) rotate(-8deg);
-    }
-
-    25% {
-        margin-top: -8px;
-        transform: translate(-50%, -50%) rotate(8deg);
-    }
-
-    50% {
-        margin-top: 2px;
-        transform: translate(-50%, -50%) rotate(-5deg);
-    }
-
-    75% {
-        margin-top: -7px;
-        transform: translate(-50%, -50%) rotate(7deg);
-    }
-
-    100% {
-        margin-top: 0;
-        transform: translate(-50%, -50%) rotate(-8deg);
-    }
-}
-
-
-/* =========================================
-   SPARKLES
-========================================= */
-
-.cursor-sparkle {
-    position: fixed;
-
-    width: 4px;
-    height: 4px;
-
-    border-radius: 50%;
-
-    pointer-events: none;
-
-    z-index: 999996;
-
-    background: #ffffff;
-
-    box-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #c084fc,
-        0 0 18px #9333ea;
-
-    transform: translate(-50%, -50%);
-
-    animation:
-        sparkleAnimation .9s ease-out forwards;
-}
-
-.cursor-sparkle::before,
-.cursor-sparkle::after {
-    content: "";
-
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    background: #d8b4fe;
-}
-
-.cursor-sparkle::before {
-    width: 14px;
-    height: 1px;
-}
-
-.cursor-sparkle::after {
-    width: 1px;
-    height: 14px;
-}
-
-
-@keyframes sparkleAnimation {
-
-    0% {
-        opacity: 0;
-        transform:
-            translate(-50%, -50%)
-            scale(.2)
-            rotate(0deg);
-    }
-
-    20% {
-        opacity: 1;
-        transform:
-            translate(-50%, -50%)
-            scale(1)
-            rotate(45deg);
-    }
-
-    100% {
-        opacity: 0;
-        transform:
-            translate(-50%, -50%)
-            scale(.1)
-            rotate(90deg);
-    }
-}
-
-
-/* Mobile disable */
-
-@media (max-width: 768px) {
-
-    .ai-cursor,
-    .cursor-butterfly,
-    .cursor-sparkle {
-        display: none !important;
-    }
-}
-
 .quick-card {
     position: relative;
     overflow: hidden;
@@ -3129,165 +2910,159 @@ select,
 .generated-ai-image:hover {
     transform: scale(1.02);
 }
-.butterfly-container {
+
+
+/* =========================================
+   PREMIUM GLOWING CIRCLE CURSOR
+========================================= */
+
+.ai-cursor {
     position: fixed;
-    inset: 0;
+    width: 22px;
+    height: 22px;
+
     pointer-events: none;
     z-index: 999999;
-    overflow: hidden;
+
+    transform: translate(-50%, -50%);
+
+    transition:
+        width 0.2s ease,
+        height 0.2s ease;
 }
 
-.butterfly {
-    position: fixed;
-    width: 14px;
-    height: 14px;
-    pointer-events: none;
-    font-size: 14px;
-    line-height: 1;
-    animation: butterflyFly 1.8s ease-out forwards;
-    filter: drop-shadow(0 0 5px rgba(180, 120, 255, 0.8));
+
+/* Outer glowing ring */
+
+.cursor-ring {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    left: 0;
+    top: 0;
+
+    border-radius: 50%;
+
+    border: 1px solid rgba(192, 132, 252, 0.85);
+
+    box-shadow:
+        0 0 8px rgba(168, 85, 247, 0.65),
+        0 0 18px rgba(147, 51, 234, 0.45),
+        inset 0 0 8px rgba(192, 132, 252, 0.25);
+
+    animation: cursorGlow 2s ease-in-out infinite;
 }
 
-@keyframes butterflyFly {
-    0% {
-        opacity: 0;
-        transform: translate(0, 0) scale(0.3) rotate(0deg);
-    }
 
-    15% {
-        opacity: 1;
+/* Center dot */
+
+.cursor-core {
+    position: absolute;
+
+    width: 6px;
+    height: 6px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 5px #ffffff,
+        0 0 12px #c084fc,
+        0 0 22px #a855f7;
+}
+
+
+/* Soft outer glow */
+
+.cursor-glow {
+    position: absolute;
+
+    width: 42px;
+    height: 42px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: rgba(168, 85, 247, 0.08);
+
+    filter: blur(7px);
+
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+
+/* Ring animation */
+
+@keyframes cursorGlow {
+
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.65;
     }
 
     50% {
+        transform: scale(1.15);
         opacity: 1;
     }
+}
 
+
+/* Glow animation */
+
+@keyframes glowPulse {
+
+    0%,
     100% {
-        opacity: 0;
-        transform:
-            translate(
-                var(--move-x),
-                var(--move-y)
-            )
-            scale(1)
-            rotate(var(--rotate));
-    }
-}
-.sparkle-container {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 999998;
-}
-
-.sparkle {
-    position: fixed;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #a855f7,
-        0 0 18px #9333ea;
-
-    pointer-events: none;
-
-    animation: sparkleFade 0.9s ease-out forwards;
-}
-
-.sparkle::before,
-.sparkle::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    background: #c084fc;
-    transform: translate(-50%, -50%);
-}
-
-.sparkle::before {
-    width: 14px;
-    height: 1px;
-}
-
-.sparkle::after {
-    width: 1px;
-    height: 14px;
-}
-
-@keyframes sparkleFade {
-    0% {
-        opacity: 0;
-        transform: scale(0.2) rotate(0deg);
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.35;
     }
 
-    20% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    100% {
-        opacity: 0;
-        transform: scale(0.2) rotate(90deg);
+    50% {
+        transform: translate(-50%, -50%) scale(1.15);
+        opacity: 0.75;
     }
 }
-.sparkle-container {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 999998;
+
+
+/* Hover */
+
+body.cursor-hover .ai-cursor {
+    width: 30px;
+    height: 30px;
 }
 
-.sparkle {
-    position: fixed;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow:
-        0 0 5px #ffffff,
-        0 0 10px #a855f7,
-        0 0 18px #9333ea;
-
-    pointer-events: none;
-
-    animation: sparkleFade 0.9s ease-out forwards;
+body.cursor-hover .cursor-core {
+    width: 5px;
+    height: 5px;
 }
 
-.sparkle::before,
-.sparkle::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    background: #c084fc;
-    transform: translate(-50%, -50%);
+
+/* Click */
+
+body.cursor-click .ai-cursor {
+    width: 17px;
+    height: 17px;
 }
 
-.sparkle::before {
-    width: 14px;
-    height: 1px;
-}
 
-.sparkle::after {
-    width: 1px;
-    height: 14px;
-}
+/* Mobile */
 
-@keyframes sparkleFade {
-    0% {
-        opacity: 0;
-        transform: scale(0.2) rotate(0deg);
-    }
+@media (max-width: 768px) {
 
-    20% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    100% {
-        opacity: 0;
-        transform: scale(0.2) rotate(90deg);
+    .ai-cursor {
+        display: none !important;
     }
 }
