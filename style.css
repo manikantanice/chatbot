@@ -2817,6 +2817,7 @@ select {
         right: 25px;
     }
 }
+
 /* =====================================================
    PREMIUM AI CURSOR — FIXED
 ===================================================== */
@@ -2832,392 +2833,209 @@ select,
 [role="button"] {
     cursor: none !important;
 }
-
-/* =====================================================
-   MAIN AI CURSOR
-===================================================== */
+/* =========================================
+   AI CURSOR
+========================================= */
 
 .ai-cursor {
     position: fixed;
-    left: 0;
-    top: 0;
-
-    width: 36px;
-    height: 36px;
-
+    width: 18px;
+    height: 18px;
     pointer-events: none;
-
     z-index: 999999;
+    transform: translate(-50%, -50%);
+}
 
-    transform: translate3d(-50%, -50%, 0);
+.cursor-core {
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow:
+        0 0 8px #ffffff,
+        0 0 18px #a855f7;
+}
 
-    opacity: 1;
+.cursor-ring {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(192, 132, 252, 0.7);
+    border-radius: 50%;
+    animation: cursorPulse 1.5s ease-in-out infinite;
+}
 
-    will-change: left, top, transform;
+@keyframes cursorPulse {
+    0%, 100% {
+        transform: scale(.8);
+        opacity: .4;
+    }
 
-    mix-blend-mode: screen;
+    50% {
+        transform: scale(1.4);
+        opacity: .9;
+    }
 }
 
 
-/* =====================================================
-   CENTER DOT
-===================================================== */
+/* =========================================
+   BUTTERFLIES
+========================================= */
 
-.cursor-core {
-    position: absolute;
+.cursor-butterfly {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999997;
 
-    left: 50%;
-    top: 50%;
+    width: 14px;
+    height: 14px;
 
-    width: 7px;
-    height: 7px;
+    color: #c084fc;
+
+    font-size: 14px;
 
     transform: translate(-50%, -50%);
 
+    filter:
+        drop-shadow(0 0 4px #a855f7)
+        drop-shadow(0 0 9px #9333ea);
+
+    will-change: transform, left, top;
+}
+
+.cursor-butterfly::before {
+    content: "🦋";
+}
+
+
+/* =========================================
+   BUTTERFLY FLIGHT
+========================================= */
+
+@keyframes butterflyFloat {
+
+    0% {
+        margin-top: 0;
+        transform: translate(-50%, -50%) rotate(-8deg);
+    }
+
+    25% {
+        margin-top: -8px;
+        transform: translate(-50%, -50%) rotate(8deg);
+    }
+
+    50% {
+        margin-top: 2px;
+        transform: translate(-50%, -50%) rotate(-5deg);
+    }
+
+    75% {
+        margin-top: -7px;
+        transform: translate(-50%, -50%) rotate(7deg);
+    }
+
+    100% {
+        margin-top: 0;
+        transform: translate(-50%, -50%) rotate(-8deg);
+    }
+}
+
+
+/* =========================================
+   SPARKLES
+========================================= */
+
+.cursor-sparkle {
+    position: fixed;
+
+    width: 4px;
+    height: 4px;
+
     border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: 999996;
 
     background: #ffffff;
 
     box-shadow:
         0 0 5px #ffffff,
-        0 0 12px #a78bfa,
-        0 0 25px #7c3aed,
-        0 0 40px rgba(124, 58, 237, .8);
+        0 0 10px #c084fc,
+        0 0 18px #9333ea;
 
-    animation: cursorCorePulse 1.6s ease-in-out infinite;
+    transform: translate(-50%, -50%);
 
-    z-index: 5;
+    animation:
+        sparkleAnimation .9s ease-out forwards;
 }
 
+.cursor-sparkle::before,
+.cursor-sparkle::after {
+    content: "";
 
-/* =====================================================
-   OUTER AI RING
-===================================================== */
-
-.cursor-ring {
     position: absolute;
 
     left: 50%;
     top: 50%;
 
-    width: 32px;
-    height: 32px;
-
     transform: translate(-50%, -50%);
 
-    border-radius: 50%;
+    background: #d8b4fe;
+}
 
-    border: 1px solid rgba(167, 139, 250, .85);
+.cursor-sparkle::before {
+    width: 14px;
+    height: 1px;
+}
 
-    background: rgba(124, 58, 237, .025);
-
-    box-shadow:
-        0 0 10px rgba(139, 92, 246, .45),
-        0 0 25px rgba(99, 102, 241, .2),
-        inset 0 0 10px rgba(139, 92, 246, .12);
-
-    animation: cursorRingRotate 6s linear infinite;
-
-    transition:
-        width .25s cubic-bezier(.2,.8,.2,1),
-        height .25s cubic-bezier(.2,.8,.2,1),
-        border-color .25s ease,
-        background .25s ease,
-        box-shadow .25s ease;
-
-    z-index: 2;
+.cursor-sparkle::after {
+    width: 1px;
+    height: 14px;
 }
 
 
-/* =====================================================
-   AI GLOW
-===================================================== */
+@keyframes sparkleAnimation {
 
-.cursor-glow {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    width: 70px;
-    height: 70px;
-
-    transform: translate(-50%, -50%);
-
-    border-radius: 50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(124, 58, 237, .28) 0%,
-            rgba(99, 102, 241, .14) 35%,
-            transparent 70%
-        );
-
-    filter: blur(10px);
-
-    opacity: .7;
-
-    animation: cursorGlowPulse 2.2s ease-in-out infinite;
-
-    z-index: -1;
-}
-
-
-/* =====================================================
-   ORBIT DOT 1
-===================================================== */
-
-.cursor-ring::before {
-    content: "";
-
-    position: absolute;
-
-    width: 4px;
-    height: 4px;
-
-    top: -2px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    border-radius: 50%;
-
-    background: #c4b5fd;
-
-    box-shadow:
-        0 0 6px #c4b5fd,
-        0 0 14px #8b5cf6;
-}
-
-
-/* =====================================================
-   ORBIT DOT 2
-===================================================== */
-
-.cursor-ring::after {
-    content: "";
-
-    position: absolute;
-
-    width: 3px;
-    height: 3px;
-
-    right: -1px;
-    bottom: 4px;
-
-    border-radius: 50%;
-
-    background: #38bdf8;
-
-    box-shadow:
-        0 0 6px #38bdf8,
-        0 0 12px rgba(56, 189, 248, .7);
-}
-
-
-/* =====================================================
-   CURSOR TRAIL
-===================================================== */
-
-.cursor-trail {
-    position: fixed;
-
-    width: 5px;
-    height: 5px;
-
-    border-radius: 50%;
-
-    pointer-events: none;
-
-    z-index: 999998;
-
-    background:
-        radial-gradient(
-            circle,
-            #ffffff 0%,
-            #a78bfa 40%,
-            transparent 75%
-        );
-
-    box-shadow:
-        0 0 8px #8b5cf6,
-        0 0 18px rgba(124, 58, 237, .65);
-
-    transform:
-        translate3d(-50%, -50%, 0)
-        scale(.7);
-
-    opacity: .5;
-
-    will-change: left, top, transform, opacity;
-}
-
-
-/* =====================================================
-   HOVER
-===================================================== */
-
-body.cursor-hover .cursor-ring {
-
-    width: 52px;
-    height: 52px;
-
-    border-color: rgba(192, 132, 252, .95);
-
-    background:
-        rgba(124, 58, 237, .08);
-
-    box-shadow:
-        0 0 15px rgba(139, 92, 246, .55),
-        0 0 35px rgba(99, 102, 241, .3),
-        inset 0 0 15px rgba(139, 92, 246, .18);
-}
-
-
-body.cursor-hover .cursor-core {
-
-    width: 9px;
-    height: 9px;
-
-    background: #c4b5fd;
-
-    box-shadow:
-        0 0 8px #ffffff,
-        0 0 20px #a78bfa,
-        0 0 40px #6366f1;
-}
-
-
-body.cursor-hover .cursor-glow {
-
-    width: 105px;
-    height: 105px;
-
-    opacity: 1;
-}
-
-
-/* =====================================================
-   CLICK
-===================================================== */
-
-body.cursor-click .cursor-ring {
-
-    width: 65px;
-    height: 65px;
-
-    border-color: #38bdf8;
-
-    background:
-        rgba(56, 189, 248, .08);
-
-    box-shadow:
-        0 0 20px rgba(56, 189, 248, .6),
-        0 0 45px rgba(56, 189, 248, .25);
-}
-
-
-body.cursor-click .cursor-core {
-
-    transform:
-        translate(-50%, -50%)
-        scale(.55);
-}
-
-
-/* =====================================================
-   CORE ANIMATION
-===================================================== */
-
-@keyframes cursorCorePulse {
-
-    0%,
-    100% {
-        opacity: .8;
-
+    0% {
+        opacity: 0;
         transform:
             translate(-50%, -50%)
-            scale(1);
-    }
-
-    50% {
-        opacity: 1;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.25);
-    }
-}
-
-
-/* =====================================================
-   RING ROTATION
-===================================================== */
-
-@keyframes cursorRingRotate {
-
-    from {
-        transform:
-            translate(-50%, -50%)
+            scale(.2)
             rotate(0deg);
     }
 
-    to {
+    20% {
+        opacity: 1;
         transform:
             translate(-50%, -50%)
-            rotate(360deg);
+            scale(1)
+            rotate(45deg);
     }
-}
 
-
-/* =====================================================
-   GLOW
-===================================================== */
-
-@keyframes cursorGlowPulse {
-
-    0%,
     100% {
-        opacity: .45;
-
+        opacity: 0;
         transform:
             translate(-50%, -50%)
-            scale(.85);
-    }
-
-    50% {
-        opacity: .9;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.15);
+            scale(.1)
+            rotate(90deg);
     }
 }
 
 
-/* =====================================================
-   MOBILE
-===================================================== */
+/* Mobile disable */
 
 @media (max-width: 768px) {
 
-    html,
-    body,
-    button,
-    a,
-    input,
-    textarea,
-    select {
-        cursor: auto !important;
-    }
-
     .ai-cursor,
-    .cursor-trail {
+    .cursor-butterfly,
+    .cursor-sparkle {
         display: none !important;
     }
 }
-
 
 .quick-card {
     position: relative;
