@@ -40,7 +40,22 @@ button {
     -webkit-tap-highlight-color: transparent;
 }
 
+html,
+body,
+button,
+a,
+input,
+textarea,
+select {
+    cursor: none !important;
+}
 
+.ai-cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 999999;
+    transform: translate(-50%, -50%);
+}
 /* =====================================================
    APP
 ===================================================== */
