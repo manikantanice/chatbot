@@ -2319,3 +2319,535 @@ button {
         height: 28px;
     }
 }
+/* =========================================
+   MANI AI — PREMIUM ANIMATED BRAND LOGO
+========================================= */
+
+.mani-ai-logo {
+    position: relative;
+    width: 430px;
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 25px auto 45px;
+
+    perspective: 800px;
+}
+
+
+/* =========================================
+   MAIN TEXT
+========================================= */
+
+.mani-ai-text {
+    position: relative;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 62px;
+    font-weight: 900;
+
+    letter-spacing: -4px;
+
+    animation: maniTextFloat 4s ease-in-out infinite;
+
+    filter:
+        drop-shadow(0 0 8px rgba(99,102,241,.5))
+        drop-shadow(0 0 25px rgba(124,58,237,.25));
+}
+
+
+/* MANI */
+
+.mani-main {
+    color: #ffffff;
+
+    position: relative;
+
+    text-shadow:
+        0 0 5px rgba(255,255,255,.25),
+        0 0 25px rgba(255,255,255,.08);
+}
+
+
+/* AI */
+
+.mani-ai {
+    margin-left: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #c4b5fd 0%,
+            #8b5cf6 25%,
+            #6366f1 55%,
+            #38bdf8 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    position: relative;
+
+    text-shadow: none;
+
+    animation: maniAIColor 3s ease-in-out infinite;
+}
+
+
+/* =========================================
+   AI SHINE EFFECT
+========================================= */
+
+.mani-ai::after {
+    content: "";
+
+    position: absolute;
+
+    top: -10px;
+    left: -30px;
+
+    width: 20px;
+    height: 90px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.9),
+        transparent
+    );
+
+    transform: skewX(-20deg);
+
+    filter: blur(3px);
+
+    opacity: 0;
+
+    animation: maniShine 3.5s ease-in-out infinite;
+}
+
+
+/* =========================================
+   GLOW RINGS
+========================================= */
+
+.mani-ai-ring {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    transform-style: preserve-3d;
+}
+
+
+/* horizontal ring */
+
+.ring-one {
+
+    width: 410px;
+    height: 75px;
+
+    border:
+        1px solid rgba(124,58,237,.28);
+
+    transform:
+        translate(-50%, -50%)
+        rotateX(65deg);
+
+    animation:
+        maniRingOne 7s linear infinite;
+}
+
+
+/* vertical ring */
+
+.ring-two {
+
+    width: 280px;
+    height: 100px;
+
+    border:
+        1px solid rgba(56,189,248,.2);
+
+    transform:
+        translate(-50%, -50%)
+        rotateY(65deg)
+        rotateZ(25deg);
+
+    animation:
+        maniRingTwo 9s linear infinite;
+}
+
+
+/* =========================================
+   CENTER GLOW
+========================================= */
+
+.mani-ai-logo::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 260px;
+    height: 100px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(99,102,241,.25),
+            rgba(124,58,237,.12),
+            transparent 70%
+        );
+
+    filter: blur(25px);
+
+    animation: maniGlow 3s ease-in-out infinite;
+}
+
+
+/* =========================================
+   ENERGY LINE
+========================================= */
+
+.mani-ai-line {
+
+    position: absolute;
+
+    width: 190px;
+    height: 1px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #6366f1,
+            #a78bfa,
+            #38bdf8,
+            transparent
+        );
+
+    opacity: .35;
+
+    filter: blur(.5px);
+
+    animation: maniEnergy 2.5s ease-in-out infinite;
+}
+
+
+/* =========================================
+   PARTICLES
+========================================= */
+
+.mani-particle {
+
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #8b5cf6;
+
+    box-shadow:
+        0 0 6px #8b5cf6,
+        0 0 15px #6366f1;
+
+    animation:
+        maniParticle 4s ease-in-out infinite;
+}
+
+
+/* particle positions */
+
+.particle-one {
+    left: 55px;
+    top: 45px;
+    animation-delay: 0s;
+}
+
+.particle-two {
+    right: 60px;
+    top: 35px;
+    animation-delay: 1s;
+}
+
+.particle-three {
+    left: 95px;
+    bottom: 35px;
+    animation-delay: 1.8s;
+}
+
+.particle-four {
+    right: 100px;
+    bottom: 30px;
+    animation-delay: 2.6s;
+}
+
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+@keyframes maniTextFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translateY(-5px)
+            scale(1.015);
+    }
+}
+
+
+@keyframes maniAIColor {
+
+    0%,
+    100% {
+        filter:
+            brightness(1)
+            saturate(1);
+    }
+
+    50% {
+        filter:
+            brightness(1.35)
+            saturate(1.3);
+    }
+}
+
+
+@keyframes maniShine {
+
+    0% {
+        left: -30px;
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    45% {
+        left: 100%;
+        opacity: 0;
+    }
+
+    100% {
+        left: 100%;
+        opacity: 0;
+    }
+}
+
+
+@keyframes maniRingOne {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            rotateX(65deg)
+            rotateZ(0deg);
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            rotateX(65deg)
+            rotateZ(360deg);
+    }
+}
+
+
+@keyframes maniRingTwo {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            rotateY(65deg)
+            rotateZ(25deg);
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            rotateY(65deg)
+            rotateZ(385deg);
+    }
+}
+
+
+@keyframes maniGlow {
+
+    0%,
+    100% {
+        opacity: .55;
+        transform:
+            translate(-50%, -50%)
+            scale(.9);
+    }
+
+    50% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+    }
+}
+
+
+@keyframes maniEnergy {
+
+    0%,
+    100% {
+        opacity: .15;
+        width: 120px;
+    }
+
+    50% {
+        opacity: .7;
+        width: 250px;
+    }
+}
+
+
+@keyframes maniParticle {
+
+    0%,
+    100% {
+        transform:
+            translate(0, 0)
+            scale(.5);
+
+        opacity: .2;
+    }
+
+    25% {
+        transform:
+            translate(10px, -15px)
+            scale(1);
+
+        opacity: 1;
+    }
+
+    50% {
+        transform:
+            translate(-8px, -25px)
+            scale(.7);
+
+        opacity: .6;
+    }
+
+    75% {
+        transform:
+            translate(15px, -8px)
+            scale(1.2);
+
+        opacity: 1;
+    }
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+.mani-ai-logo:hover .mani-ai-text {
+
+    transform: scale(1.06);
+
+    filter:
+        drop-shadow(0 0 12px rgba(99,102,241,.8))
+        drop-shadow(0 0 35px rgba(124,58,237,.5));
+
+    transition: .4s ease;
+}
+
+
+.mani-ai-logo:hover .ring-one {
+    animation-duration: 2.5s;
+}
+
+
+.mani-ai-logo:hover .ring-two {
+    animation-duration: 3s;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .mani-ai-logo {
+        width: 300px;
+        height: 110px;
+
+        margin: 15px auto 30px;
+    }
+
+    .mani-ai-text {
+        font-size: 44px;
+        letter-spacing: -3px;
+    }
+
+    .ring-one {
+        width: 280px;
+        height: 55px;
+    }
+
+    .ring-two {
+        width: 210px;
+        height: 75px;
+    }
+
+    .mani-ai-line {
+        width: 130px;
+    }
+
+    .particle-one {
+        left: 25px;
+    }
+
+    .particle-two {
+        right: 25px;
+    }
+}
