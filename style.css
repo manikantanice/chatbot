@@ -3268,3 +3268,33 @@ body.cursor-click .cursor-core {
 .quick-card:hover .icon {
     transform: translateY(-4px) rotate(8deg) scale(1.15);
 }
+
+.quick-card {
+    animation: aiFloat 4s ease-in-out infinite;
+}
+
+.quick-card:nth-child(2) {
+    animation-delay: .4s;
+}
+
+.quick-card:nth-child(3) {
+    animation-delay: .8s;
+}
+
+.quick-card:nth-child(4) {
+    animation-delay: 1.2s;
+}
+
+.quick-card:nth-child(5) {
+    animation-delay: 1.6s;
+}
+
+@keyframes aiFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
