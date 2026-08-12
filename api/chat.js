@@ -1,89 +1,47 @@
 export default async function handler(req, res) {
-
-    // =====================================================
-    // METHOD CHECK
-    // =====================================================
-
     if (req.method !== "POST") {
-
         return res.status(405).json({
             error: "Method not allowed"
         });
-
     }
 
-
     try {
+        const body = req.body || {};
 
-        // =====================================================
-        // API KEY
-        // =====================================================
+        const messages = body.messages;
 
-        const apiKey =
-            process.env.GROQ_API_KEY;
-
-
-        if (!apiKey) {
-
-            return res.status(500).json({
-                error:
-                    "GROQ_API_KEY is not configured in Vercel."
-            });
-
-        }
-
-
-        // =====================================================
-        // REQUEST BODY
-        // =====================================================
-
-        const body =
-            req.body || {};
-
-
-        const messages =
-            body.messages;
-
-
-        if (
-            !messages ||
-            !Array.isArray(messages)
-        ) {
-
+        if (!messages || !Array.isArray(messages)) {
             return res.status(400).json({
-                error:
-                    "Messages are missing."
+                error: "Messages are missing."
             });
-
         }
 
-
-        // =====================================================
-        // LAST USER MESSAGE
-        // =====================================================
+        /* =====================================================
+           GET LAST USER MESSAGE
+        ===================================================== */
 
         const lastMessage =
             messages[messages.length - 1]?.content || "";
 
-
-        // =====================================================
-        // IMAGE REQUEST DETECTION
-        // =====================================================
+        /* =====================================================
+           IMAGE REQUEST DETECTION
+        ===================================================== */
 
         const wantsImage =
-            /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of|create an animated image|make an animated image/i
-                .test(lastMessage);
+            /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of|create image|make picture|generate picture|show me an image/i.test(
+                lastMessage
+            );
 
-
-        // =====================================================
-        // IMAGE GENERATION
-        // =====================================================
+        /* =====================================================
+           IMAGE GENERATION
+        ===================================================== */
 
         if (wantsImage) {
 
-            const imageUrl =
-                `https://gen.pollinations.ai/image/${encodeURIComponent(lastMessage)}?model=flux`;
+            const prompt = encodeURIComponent(lastMessage);
 
+            const imageUrl =
+                `https://gen.pollinations.ai/image/${prompt}?model=flux`;
 
             return res.status(200).json({
 
@@ -94,65 +52,67 @@ export default async function handler(req, res) {
 
                 image:
                     imageUrl
-
             });
-
         }
 
+        /* =====================================================
+           GROQ API
+        ===================================================== */
 
-        // =====================================================
-        // GROQ CHAT
-        // =====================================================
+        const apiKey =
+            process.env.GROQ_API_KEY;
+
+        if (!apiKey) {
+
+            return res.status(500).json({
+                error:
+                    "GROQ_API_KEY is not configured in Vercel."
+            });
+        }
+
+        /* =====================================================
+           GROQ REQUEST
+        ===================================================== */
 
         const groqResponse =
             await fetch(
                 "https://api.groq.com/openai/v1/chat/completions",
                 {
-
                     method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json",
 
                         "Authorization":
-                            "Bearer " +
-                            apiKey
-
+                            "Bearer " + apiKey
                     },
 
-                    body:
-                        JSON.stringify({
+                    body: JSON.stringify({
 
-                            model:
-                                "llama-3.3-70b-versatile",
+                        model:
+                            "llama-3.3-70b-versatile",
 
-                            messages:
-                                messages,
+                        messages:
+                            messages,
 
-                            temperature:
-                                0.7,
+                        temperature:
+                            0.7,
 
-                            max_tokens:
-                                1500
-
-                        })
-
+                        max_tokens:
+                            1500
+                    })
                 }
             );
 
-
-        // =====================================================
-        // READ RESPONSE
-        // =====================================================
+        /* =====================================================
+           READ RESPONSE
+        ===================================================== */
 
         const text =
             await groqResponse.text();
 
-
         let data;
-
 
         try {
 
@@ -170,20 +130,17 @@ export default async function handler(req, res) {
 
                 error:
                     "Groq returned an invalid response."
-
             });
-
         }
 
-
-        // =====================================================
-        // GROQ ERROR
-        // =====================================================
+        /* =====================================================
+           GROQ ERROR
+        ===================================================== */
 
         if (!groqResponse.ok) {
 
             console.error(
-                "Groq API Error:",
+                "Groq API error:",
                 data
             );
 
@@ -194,22 +151,17 @@ export default async function handler(req, res) {
                 error:
                     data.error?.message ||
                     "Groq API error"
-
             });
-
         }
 
-
-        // =====================================================
-        // GET AI REPLY
-        // =====================================================
+        /* =====================================================
+           GET AI REPLY
+        ===================================================== */
 
         const reply =
             data
-                .choices?.[0]
-                ?.message
-                ?.content;
-
+                ?.choices?.[0]
+                ?.message?.content;
 
         if (!reply) {
 
@@ -217,48 +169,33 @@ export default async function handler(req, res) {
 
                 error:
                     "No reply received from Groq."
-
             });
-
         }
 
-
-        // =====================================================
-        // SUCCESS
-        // =====================================================
+        /* =====================================================
+           NORMAL RESPONSE
+        ===================================================== */
 
         return res.status(200).json({
 
-            type:
-                "text",
+            type: "text",
 
             reply:
                 reply
-
         });
 
-
     } catch (error) {
-
-
-        // =====================================================
-        // SERVER ERROR
-        // =====================================================
 
         console.error(
             "API ERROR:",
             error
         );
 
-
         return res.status(500).json({
 
             error:
                 error.message ||
                 "Server error"
-
         });
-
     }
-
 }
