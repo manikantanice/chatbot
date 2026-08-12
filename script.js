@@ -2284,3 +2284,32 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 });
+document.addEventListener("mousemove", function (e) {
+
+    const container = document.querySelector(".butterfly-container");
+
+    if (!container) return;
+
+    const butterfly = document.createElement("span");
+
+    butterfly.className = "butterfly";
+    butterfly.innerHTML = "🦋";
+
+    butterfly.style.left = e.clientX + "px";
+    butterfly.style.top = e.clientY + "px";
+
+    const moveX = (Math.random() - 0.5) * 100;
+    const moveY = -30 - Math.random() * 100;
+    const rotate = (Math.random() - 0.5) * 60;
+
+    butterfly.style.setProperty("--move-x", moveX + "px");
+    butterfly.style.setProperty("--move-y", moveY + "px");
+    butterfly.style.setProperty("--rotate", rotate + "deg");
+
+    container.appendChild(butterfly);
+
+    setTimeout(() => {
+        butterfly.remove();
+    }, 1800);
+
+});
