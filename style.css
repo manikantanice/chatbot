@@ -1891,3 +1891,488 @@ textarea {
         font-size: 10px;
     }
 }
+
+
+/* =========================================
+   PREMIUM ANIMATED AI LOGO
+========================================= */
+
+.ai-logo {
+    width: 70px;
+    height: 70px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    isolation: isolate;
+}
+
+
+/* =========================================
+   OUTER GLOW
+========================================= */
+
+.ai-glow {
+    position: absolute;
+
+    width: 45px;
+    height: 45px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(168, 85, 247, 0.9),
+            rgba(59, 130, 246, 0.35),
+            transparent 70%
+        );
+
+    filter: blur(12px);
+
+    animation: aiGlow 2.5s ease-in-out infinite;
+
+    z-index: -2;
+}
+
+@keyframes aiGlow {
+
+    0%,
+    100% {
+        transform: scale(.8);
+        opacity: .65;
+    }
+
+    50% {
+        transform: scale(1.35);
+        opacity: 1;
+    }
+}
+
+
+/* =========================================
+   AI CORE
+========================================= */
+
+.ai-core {
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #6366f1 45%,
+            #06b6d4
+        );
+
+    box-shadow:
+        0 0 15px rgba(124, 58, 237, .65),
+        0 0 35px rgba(59, 130, 246, .35),
+        inset 0 1px 1px rgba(255,255,255,.5);
+
+    animation: coreFloat 3s ease-in-out infinite;
+
+    z-index: 5;
+
+    overflow: hidden;
+}
+
+
+/* glass shine */
+
+.ai-core::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 80px;
+    height: 20px;
+
+    top: -10px;
+    left: -20px;
+
+    background: rgba(255,255,255,.35);
+
+    filter: blur(10px);
+
+    transform: rotate(-35deg);
+
+    animation: logoShine 3s ease-in-out infinite;
+}
+
+@keyframes logoShine {
+
+    0% {
+        transform:
+            translateX(-60px)
+            rotate(-35deg);
+    }
+
+    50% {
+        transform:
+            translateX(60px)
+            rotate(-35deg);
+    }
+
+    100% {
+        transform:
+            translateX(60px)
+            rotate(-35deg);
+    }
+}
+
+
+/* =========================================
+   AI TEXT
+========================================= */
+
+.ai-letter {
+
+    font-family:
+        Inter,
+        Arial,
+        sans-serif;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    color: white;
+
+    text-shadow:
+        0 0 8px rgba(255,255,255,.8),
+        0 0 18px rgba(255,255,255,.3);
+
+    position: relative;
+
+    z-index: 2;
+
+    animation: letterPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes letterPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+@keyframes coreFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-3px) rotate(2deg);
+    }
+}
+
+
+/* =========================================
+   ORBIT RINGS
+========================================= */
+
+.ai-orbit {
+
+    position: absolute;
+
+    border-radius: 50%;
+
+    border: 1px solid;
+
+    pointer-events: none;
+}
+
+
+/* first ring */
+
+.ai-orbit-1 {
+
+    width: 58px;
+    height: 58px;
+
+    border-color:
+        rgba(168,85,247,.8)
+        transparent
+        rgba(59,130,246,.6)
+        transparent;
+
+    transform: rotate(25deg);
+
+    animation:
+        orbitOne 4s linear infinite;
+}
+
+@keyframes orbitOne {
+
+    from {
+        transform:
+            rotate(0deg)
+            scaleX(1);
+    }
+
+    to {
+        transform:
+            rotate(360deg)
+            scaleX(1);
+    }
+}
+
+
+/* second ring */
+
+.ai-orbit-2 {
+
+    width: 68px;
+    height: 38px;
+
+    border-color:
+        transparent
+        rgba(34,211,238,.8)
+        transparent
+        rgba(168,85,247,.6);
+
+    transform: rotate(55deg);
+
+    animation:
+        orbitTwo 5s linear infinite;
+}
+
+@keyframes orbitTwo {
+
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+
+/* third ring */
+
+.ai-orbit-3 {
+
+    width: 62px;
+    height: 62px;
+
+    border-color:
+        rgba(99,102,241,.45)
+        transparent
+        transparent
+        rgba(34,211,238,.45);
+
+    animation:
+        orbitThree 7s linear infinite;
+}
+
+@keyframes orbitThree {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================
+   FLOATING PARTICLES
+========================================= */
+
+.ai-particle {
+
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: #c084fc;
+
+    box-shadow:
+        0 0 8px #a855f7,
+        0 0 15px #7c3aed;
+
+    z-index: 6;
+}
+
+
+/* particle 1 */
+
+.p1 {
+
+    top: 3px;
+    left: 34px;
+
+    animation:
+        particleOne 3s ease-in-out infinite;
+}
+
+@keyframes particleOne {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            scale(1);
+        opacity: .5;
+    }
+
+    50% {
+        transform:
+            translateY(-7px)
+            scale(1.5);
+        opacity: 1;
+    }
+}
+
+
+/* particle 2 */
+
+.p2 {
+
+    right: 2px;
+    top: 30px;
+
+    background: #22d3ee;
+
+    box-shadow:
+        0 0 8px #22d3ee,
+        0 0 15px #06b6d4;
+
+    animation:
+        particleTwo 3.5s ease-in-out infinite;
+}
+
+@keyframes particleTwo {
+
+    0%,
+    100% {
+        transform:
+            translateX(0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translateX(7px)
+            scale(1.5);
+    }
+}
+
+
+/* particle 3 */
+
+.p3 {
+
+    bottom: 3px;
+    left: 25px;
+
+    background: #818cf8;
+
+    animation:
+        particleThree 4s ease-in-out infinite;
+}
+
+@keyframes particleThree {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(7px);
+    }
+}
+
+
+/* particle 4 */
+
+.p4 {
+
+    left: 2px;
+    top: 23px;
+
+    background: #38bdf8;
+
+    animation:
+        particleFour 3.2s ease-in-out infinite;
+}
+
+@keyframes particleFour {
+
+    0%,
+    100% {
+        transform:
+            translateX(0);
+    }
+
+    50% {
+        transform:
+            translateX(-7px);
+    }
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+.ai-logo:hover .ai-core {
+
+    transform:
+        scale(1.12)
+        rotate(-4deg);
+
+    box-shadow:
+        0 0 20px rgba(168,85,247,.9),
+        0 0 45px rgba(59,130,246,.6),
+        0 0 80px rgba(34,211,238,.25);
+
+    transition: .35s;
+}
+
+.ai-logo:hover .ai-orbit {
+
+    animation-duration: 1.5s;
+}
+
+.ai-logo:hover .ai-glow {
+
+    filter: blur(18px);
+
+    transform: scale(1.4);
+
+    transition: .35s;
+}
