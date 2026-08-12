@@ -963,7 +963,7 @@ button {
 .quick-cards {
     position: relative;
     z-index: 5;
-    width: min(950px, 100%);
+    width: min(980px, 100%);
     display: grid;
     grid-template-columns:
         repeat(5, 1fr);
