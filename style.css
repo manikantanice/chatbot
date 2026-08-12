@@ -54,7 +54,7 @@ select {
     position: fixed;
     pointer-events: none;
     z-index: 999999;
-    transform: translate(-50%, -50%);
+    transform: translate(-60%, -60%);
 }
 /* =====================================================
    APP
@@ -68,7 +68,7 @@ select {
 
     background:
         radial-gradient(
-            circle at 65% 35%,
+            circle at 75% 45%,
             rgba(91, 49, 210, .08),
             transparent 32%
         ),
@@ -83,58 +83,41 @@ select {
 
 .sidebar {
     position: relative;
-
     width: 245px;
     height: calc(100vh - 24px);
-
     margin: 12px;
-
     flex-shrink: 0;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
     border: 1px solid rgba(119, 88, 220, .27);
-
     border-radius: 20px;
-
     background:
         linear-gradient(
             160deg,
             rgba(20, 27, 57, .94),
             rgba(7, 14, 32, .97)
         );
-
     box-shadow:
         0 20px 60px rgba(0, 0, 0, .35),
         inset 0 1px 0 rgba(255,255,255,.025);
-
     overflow: hidden;
 }
-
 .sidebar::before {
     content: "";
-
     position: absolute;
-
     width: 220px;
     height: 220px;
-
     left: -100px;
     top: -100px;
-
     background: rgba(105, 55, 255, .12);
-
     filter: blur(60px);
-
     pointer-events: none;
 }
 
 .sidebar-top {
     position: relative;
     z-index: 2;
-
     padding: 20px 16px;
 }
 
@@ -146,23 +129,17 @@ select {
 .brand {
     display: flex;
     align-items: center;
-
     gap: 10px;
-
     padding: 3px 4px 24px;
 }
 
 .brand-logo {
     position: relative;
-
     width: 39px;
     height: 39px;
-
     display: grid;
     place-items: center;
-
     border-radius: 11px;
-
     background:
         linear-gradient(
             135deg,
