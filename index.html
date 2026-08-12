@@ -1,625 +1,152 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- CHAT AREA -->
+<main class="chat-area">
 
-<head>
+    <div class="chat-messages" id="chatMessages">
+        <!-- Messages will appear here -->
+    </div>
 
-    <meta charset="UTF-8">
+    <!-- AI COMPOSER -->
+    <div class="composer-wrapper">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+        <!-- Attachment Preview -->
+        <div class="attachment-preview" id="attachmentPreview"></div>
 
-    <title>Mini AI</title>
+        <div class="composer" id="composer">
 
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    >
+            <!-- Textarea -->
+            <textarea
+                id="messageInput"
+                class="message-input"
+                rows="1"
+                placeholder="Message Mini AI..."
+                autocomplete="off"
+            ></textarea>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
-
-</head>
-
-
-<body>
-
-<div class="app">
-
-
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
-
-    <aside class="sidebar" id="sidebar">
-
-        <!-- LOGO -->
-
-        <div class="logo-area">
-
-            <div class="mini-ai-logo">
-
-                <span>AI</span>
-
-                <div class="logo-orbit orbit-a"></div>
-                <div class="logo-orbit orbit-b"></div>
-
-            </div>
-
-            <div class="brand-name">
-                Mini <span>AI</span>
-            </div>
-
-        </div>
-
-
-        <!-- NEW CHAT -->
-
-        <button
-            class="new-chat"
-            id="newChat"
-        >
-
-            <i class="fa-solid fa-plus"></i>
-
-            <span>New Chat</span>
-
-        </button>
-
-
-        <!-- TODAY -->
-
-        <div class="side-title">
-            Today
-        </div>
-
-
-        <div
-            class="chat-item active"
-            id="currentChat"
-        >
-
-            <i class="fa-regular fa-message"></i>
-
-            <span>New conversation</span>
-
-        </div>
-
-
-        <!-- RECENT -->
-
-        <div class="side-title">
-            Recent
-        </div>
-
-
-        <div
-            class="recent-list"
-            id="recentList"
-        ></div>
-
-
-        <!-- SIDEBAR BOTTOM -->
-
-        <div class="sidebar-bottom">
-
-            <div class="bottom-ai">
-
-                <div class="mini-ai-logo small">
-
-                    <span>AI</span>
-
-                    <div class="logo-orbit orbit-a"></div>
-                    <div class="logo-orbit orbit-b"></div>
-
-                </div>
-
-            </div>
-
-
+            <!-- Top right button -->
             <button
-                class="settings-button"
-                id="settingsButton"
+                type="button"
+                class="composer-expand"
+                id="composerExpand"
+                title="More options"
             >
-
-                <i class="fa-solid fa-gear"></i>
-
-                <span>Settings</span>
-
-                <i class="fa-solid fa-chevron-right"></i>
-
+                +
             </button>
+
+            <!-- Bottom toolbar -->
+            <div class="composer-toolbar">
+
+                <div class="composer-left">
+
+                    <!-- PLUS -->
+                    <button
+                        type="button"
+                        class="tool-btn"
+                        id="plusBtn"
+                        title="Tools"
+                    >
+                        +
+                    </button>
+
+                    <!-- WEB -->
+                    <button
+                        type="button"
+                        class="tool-btn"
+                        id="webBtn"
+                        title="Web search"
+                    >
+                        <span class="globe-icon">●</span>
+                    </button>
+
+                    <!-- FILE -->
+                    <button
+                        type="button"
+                        class="tool-btn"
+                        id="attachBtn"
+                        title="Attach file"
+                    >
+                        📎
+                    </button>
+
+                    <input
+                        type="file"
+                        id="fileInput"
+                        hidden
+                        multiple
+                    >
+
+                    <!-- AI -->
+                    <button
+                        type="button"
+                        class="tool-btn magic-btn"
+                        id="magicBtn"
+                        title="AI tools"
+                    >
+                        ✨
+                    </button>
+
+                </div>
+
+                <div class="composer-right">
+
+                    <!-- VOICE -->
+                    <button
+                        type="button"
+                        class="tool-btn mic-btn"
+                        id="micBtn"
+                        title="Voice input"
+                    >
+                        🎙
+                    </button>
+
+                    <!-- SEND -->
+                    <button
+                        type="button"
+                        class="send-btn"
+                        id="sendBtn"
+                        title="Send"
+                    >
+                        ↑
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Tools Popup -->
+            <div class="tools-popup" id="toolsPopup">
+
+                <button class="tool-option" data-action="image">
+                    <span>🖼️</span>
+                    <div>
+                        <strong>Generate Image</strong>
+                        <small>Create an image with AI</small>
+                    </div>
+                </button>
+
+                <button class="tool-option" data-action="code">
+                    <span>💻</span>
+                    <div>
+                        <strong>Code</strong>
+                        <small>Write or debug code</small>
+                    </div>
+                </button>
+
+                <button class="tool-option" data-action="summarize">
+                    <span>📝</span>
+                    <div>
+                        <strong>Summarize</strong>
+                        <small>Summarize text</small>
+                    </div>
+                </button>
+
+            </div>
 
         </div>
 
-    </aside>
+        <div class="composer-disclaimer">
+            Mini AI can make mistakes. Check important information.
+        </div>
 
+    </div>
 
-
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-
-    <main class="main">
-
-
-        <!-- =================================================
-             TOP BAR
-        ================================================== -->
-
-        <header class="topbar">
-
-
-            <button
-                class="mobile-menu"
-                id="menuBtn"
-            >
-                <i class="fa-solid fa-bars"></i>
-            </button>
-
-
-            <!-- MODEL -->
-
-            <button class="model-selector">
-
-                <div class="model-icon">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                </div>
-
-                <span>GPT-4o</span>
-
-                <i class="fa-solid fa-chevron-down"></i>
-
-            </button>
-
-
-            <!-- TOP ACTIONS -->
-
-            <div class="top-actions">
-
-
-                <button class="pro-btn">
-
-                    <i class="fa-solid fa-bolt"></i>
-
-                    Pro
-
-                </button>
-
-
-                <button
-                    class="icon-button"
-                    title="Search"
-                >
-
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                </button>
-
-
-                <button
-                    class="icon-button"
-                    title="Library"
-                >
-
-                    <i class="fa-solid fa-book-open"></i>
-
-                </button>
-
-
-                <button
-                    class="icon-button"
-                    id="githubButton"
-                    title="GitHub"
-                >
-
-                    <i class="fa-brands fa-github"></i>
-
-                </button>
-
-
-                <button
-                    class="icon-button"
-                    id="themeButton"
-                    title="Toggle theme"
-                >
-
-                    <i class="fa-regular fa-sun"></i>
-
-                </button>
-
-
-                <!-- AI LOGO -->
-
-                <div class="top-ai-logo">
-
-                    <div class="mini-ai-logo">
-
-                        <span>AI</span>
-
-                        <div class="logo-orbit orbit-a"></div>
-                        <div class="logo-orbit orbit-b"></div>
-
-                    </div>
-
-                </div>
-
-
-            </div>
-
-        </header>
-
-
-
-        <!-- =================================================
-             CHAT AREA
-        ================================================== -->
-
-        <section class="chat-area">
-
-
-            <!-- BACKGROUND PARTICLES -->
-
-            <div class="background-grid"></div>
-
-            <div class="floating-particles">
-
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 WELCOME SCREEN
-            ================================================== -->
-
-            <div
-                class="welcome-screen"
-                id="welcomeScreen"
-            >
-
-
-                <div class="welcome-badge">
-
-                    <div class="badge-ai">
-                        AI
-                    </div>
-
-                    <span>
-                        Your intelligent workspace
-                    </span>
-
-                </div>
-
-
-                <h1>
-
-                    Hello,
-                    <span>Ai</span>
-
-                </h1>
-
-
-                <p>
-
-                    Your AI assistant is ready
-                    to help you today
-
-                    <span class="sparkle">
-                        ✦
-                    </span>
-
-                </p>
-
-
-
-                <!-- BIG AI ORB -->
-
-                <div class="ai-orb-area">
-
-                    <div class="orb-ring ring-one"></div>
-                    <div class="orb-ring ring-two"></div>
-                    <div class="orb-ring ring-three"></div>
-
-                    <div class="orb-energy energy-one"></div>
-                    <div class="orb-energy energy-two"></div>
-
-                    <div class="ai-orb">
-
-                        <div class="orb-highlight"></div>
-
-                        <div class="orb-inner"></div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- QUICK ACTIONS -->
-
-                <div class="quick-actions">
-
-
-                    <button
-                        class="action-card"
-                        data-prompt="Give me 10 creative ideas for "
-                    >
-
-                        <div class="action-icon purple">
-                            <i class="fa-regular fa-lightbulb"></i>
-                        </div>
-
-                        <h3>
-                            Get Ideas
-                        </h3>
-
-                        <p>
-                            Brainstorm anything
-                        </p>
-
-                    </button>
-
-
-
-                    <button
-                        class="action-card"
-                        data-prompt="Help me write professional content about "
-                    >
-
-                        <div class="action-icon blue">
-                            <i class="fa-solid fa-pen-nib"></i>
-                        </div>
-
-                        <h3>
-                            Write Content
-                        </h3>
-
-                        <p>
-                            Blogs, emails, scripts
-                        </p>
-
-                    </button>
-
-
-
-                    <button
-                        class="action-card"
-                        data-prompt="Help me solve this coding problem: "
-                    >
-
-                        <div class="action-icon cyan">
-                            <i class="fa-solid fa-code"></i>
-                        </div>
-
-                        <h3>
-                            Code Help
-                        </h3>
-
-                        <p>
-                            Debug, explain, solve
-                        </p>
-
-                    </button>
-
-
-
-                    <button
-                        class="action-card"
-                        data-prompt="Help me analyze this data: "
-                    >
-
-                        <div class="action-icon orange">
-                            <i class="fa-solid fa-chart-column"></i>
-                        </div>
-
-                        <h3>
-                            Analyze Data
-                        </h3>
-
-                        <p>
-                            Charts, insights, trends
-                        </p>
-
-                    </button>
-
-
-
-                    <button
-                        class="action-card"
-                        data-prompt="Give me modern UI/UX ideas for "
-                    >
-
-                        <div class="action-icon pink">
-                            <i class="fa-solid fa-palette"></i>
-                        </div>
-
-                        <h3>
-                            Design & UI
-                        </h3>
-
-                        <p>
-                            Layouts, UI ideas
-                        </p>
-
-                    </button>
-
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 MESSAGES
-            ================================================== -->
-
-            <div
-                class="messages"
-                id="chatMessages"
-            ></div>
-
-
-
-            <!-- =================================================
-                 COMPOSER
-            ================================================== -->
-
-            <div class="composer-wrapper">
-
-
-                <div class="composer">
-
-
-                    <div class="composer-main">
-
-
-                        <textarea
-                            id="userInput"
-                            rows="1"
-                            maxlength="8000"
-                            placeholder="Message Mini AI..."
-                        ></textarea>
-
-
-                        <button
-                            class="composer-plus"
-                            type="button"
-                            title="More"
-                        >
-
-                            <i class="fa-solid fa-plus"></i>
-
-                        </button>
-
-                    </div>
-
-
-
-                    <div class="composer-bottom">
-
-
-                        <div class="composer-tools">
-
-
-                            <button
-                                type="button"
-                                title="Add"
-                            >
-
-                                <i class="fa-solid fa-plus"></i>
-
-                            </button>
-
-
-                            <button
-                                type="button"
-                                title="Web"
-                                id="webButton"
-                            >
-
-                                <i class="fa-solid fa-globe"></i>
-
-                            </button>
-
-
-                            <button
-                                type="button"
-                                title="Attach"
-                            >
-
-                                <i class="fa-solid fa-paperclip"></i>
-
-                            </button>
-
-
-                            <button
-                                type="button"
-                                title="AI Mode"
-                                class="magic-button"
-                            >
-
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
-
-                            </button>
-
-
-                        </div>
-
-
-
-                        <div class="send-tools">
-
-
-                            <button
-                                class="mic-button"
-                                id="micButton"
-                                type="button"
-                                title="Voice"
-                            >
-
-                                <i class="fa-solid fa-microphone"></i>
-
-                            </button>
-
-
-                            <button
-                                class="send-button"
-                                id="sendButton"
-                                type="button"
-                                title="Send"
-                            >
-
-                                <i class="fa-solid fa-arrow-up"></i>
-
-                            </button>
-
-
-                        </div>
-
-
-                    </div>
-
-
-                </div>
-
-
-                <div class="disclaimer">
-
-                    Mini AI can make mistakes.
-                    Check important information.
-
-                </div>
-
-
-            </div>
-
-
-        </section>
-
-    </main>
-
-</div>
-
-
-
-<!-- =====================================================
-     SCRIPT
-====================================================== -->
-
-<script src="script.js"></script>
-
-</body>
-
-</html>
+</main>
