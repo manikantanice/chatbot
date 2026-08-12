@@ -1,412 +1,413 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =====================================================
-       ELEMENTS
-    ===================================================== */
 
-    const input = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const chatArea = document.querySelector(".chat-area");
-    const chatMessages = document.getElementById("chatMessages");
-    const welcomeScreen = document.getElementById("welcomeScreen");
+/* =====================================================
+   ELEMENTS
+===================================================== */
 
-    const newChatBtn = document.getElementById("newChatBtn");
-    const currentConversation =
-        document.getElementById("currentConversation");
+const input =
+    document.getElementById("messageInput");
 
-    const recentChats =
-        document.getElementById("recentChats");
+const sendBtn =
+    document.getElementById("sendBtn");
 
-    const plusBtn =
-        document.getElementById("plusBtn");
+const chatArea =
+    document.querySelector(".chat-area");
 
-    const toolsPopup =
-        document.getElementById("toolsPopup");
+const chatMessages =
+    document.getElementById("chatMessages");
 
-    const webBtn =
-        document.getElementById("webBtn");
+const welcomeScreen =
+    document.getElementById("welcomeScreen");
 
-    const attachBtn =
-        document.getElementById("attachBtn");
+const newChatBtn =
+    document.getElementById("newChatBtn");
 
-    const fileInput =
-        document.getElementById("fileInput");
+const currentConversation =
+    document.getElementById("currentConversation");
 
-    const attachmentPreview =
-        document.getElementById("attachmentPreview");
+const recentChats =
+    document.getElementById("recentChats");
 
-    const magicBtn =
-        document.getElementById("magicBtn");
+const plusBtn =
+    document.getElementById("plusBtn");
 
-    const micBtn =
-        document.getElementById("micBtn");
+const toolsPopup =
+    document.getElementById("toolsPopup");
 
-    const composerExpand =
-        document.getElementById("composerExpand");
+const webBtn =
+    document.getElementById("webBtn");
 
-    const mobileMenuBtn =
-        document.getElementById("mobileMenuBtn");
+const attachBtn =
+    document.getElementById("attachBtn");
 
-    const sidebar =
-        document.getElementById("sidebar");
+const fileInput =
+    document.getElementById("fileInput");
 
-    const mobileOverlay =
-        document.getElementById("mobileOverlay");
+const attachmentPreview =
+    document.getElementById("attachmentPreview");
 
-    const clearBtn =
-        document.getElementById("clearBtn");
+const magicBtn =
+    document.getElementById("magicBtn");
 
-    const searchBtn =
-        document.getElementById("searchBtn");
+const micBtn =
+    document.getElementById("micBtn");
 
-    const settingsBtn =
-        document.getElementById("settingsBtn");
+const composerExpand =
+    document.getElementById("composerExpand");
 
-    const topSettingsBtn =
-        document.getElementById("topSettingsBtn");
+const mobileMenuBtn =
+    document.getElementById("mobileMenuBtn");
 
-    const proBtn =
-        document.getElementById("proBtn");
+const sidebar =
+    document.getElementById("sidebar");
 
-    const quickCards =
-        document.querySelectorAll(".quick-card");
+const mobileOverlay =
+    document.getElementById("mobileOverlay");
 
+const clearBtn =
+    document.getElementById("clearBtn");
 
-    /* =====================================================
-       STATE
-    ===================================================== */
+const searchBtn =
+    document.getElementById("searchBtn");
 
-    let conversation = [];
-    let selectedFiles = [];
-    let webMode = false;
-    let sending = false;
-    let recognition = null;
+const settingsBtn =
+    document.getElementById("settingsBtn");
 
+const topSettingsBtn =
+    document.getElementById("topSettingsBtn");
 
-    /* =====================================================
-       INIT
-    ===================================================== */
+const proBtn =
+    document.getElementById("proBtn");
 
-    if (input) {
-        input.focus();
-        autoResize();
-    }
+const quickCards =
+    document.querySelectorAll(".quick-card");
 
 
-    /* =====================================================
-       TEXTAREA RESIZE
-    ===================================================== */
+/* =====================================================
+   PREMIUM AI CURSOR ELEMENTS
+===================================================== */
 
-    function autoResize() {
+const cursor =
+    document.querySelector(".ai-cursor");
 
-        if (!input) return;
+const cursorCore =
+    cursor?.querySelector(".cursor-core");
 
-        input.style.height = "auto";
-
-        input.style.height =
-            Math.min(input.scrollHeight, 200) + "px";
-    }
-
-
-    if (input) {
-
-        input.addEventListener(
-            "input",
-            autoResize
-        );
-
-    }
+const cursorTrails =
+    document.querySelectorAll(".cursor-trail");
 
 
-    /* =====================================================
-       ENTER TO SEND
-    ===================================================== */
+/* =====================================================
+   STATE
+===================================================== */
 
-    if (input) {
+let conversation = [];
 
-        input.addEventListener(
-            "keydown",
-            event => {
+let selectedFiles = [];
 
-                if (
-                    event.key === "Enter" &&
-                    !event.shiftKey
-                ) {
+let webMode = false;
 
-                    event.preventDefault();
+let sending = false;
 
-                    sendMessage();
-                }
+let recognition = null;
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+if (input) {
+
+    input.focus();
+
+    autoResize();
+
+}
+
+
+/* =====================================================
+   TEXTAREA RESIZE
+===================================================== */
+
+function autoResize() {
+
+    if (!input) return;
+
+    input.style.height = "auto";
+
+    input.style.height =
+        Math.min(
+            input.scrollHeight,
+            200
+        ) + "px";
+
+}
+
+
+if (input) {
+
+    input.addEventListener(
+        "input",
+        autoResize
+    );
+
+}
+
+
+/* =====================================================
+   ENTER TO SEND
+===================================================== */
+
+if (input) {
+
+    input.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
 
             }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SEND BUTTON
+===================================================== */
+
+if (sendBtn) {
+
+    sendBtn.addEventListener(
+        "click",
+        sendMessage
+    );
+
+}
+
+
+/* =====================================================
+   SEND MESSAGE
+===================================================== */
+
+async function sendMessage() {
+
+    if (sending) return;
+
+
+    const message =
+        input?.value.trim() || "";
+
+
+    if (
+        !message &&
+        selectedFiles.length === 0
+    ) {
+
+        input?.focus();
+
+        return;
+
+    }
+
+
+    /* =================================================
+       HIDE WELCOME SCREEN
+    ================================================= */
+
+    if (welcomeScreen) {
+
+        welcomeScreen.style.display =
+            "none";
+
+    }
+
+
+    /* =================================================
+       ADD USER MESSAGE
+    ================================================= */
+
+    addMessage(
+        "user",
+        message || "Attached file(s)"
+    );
+
+
+    /* =================================================
+       ADD TO CONVERSATION
+    ================================================= */
+
+    conversation.push({
+
+        role: "user",
+
+        content: message
+
+    });
+
+
+    /* =================================================
+       CLEAR INPUT
+    ================================================= */
+
+    if (input) {
+
+        input.value = "";
+
+        autoResize();
+
+    }
+
+
+    /* =================================================
+       CLOSE TOOLS POPUP
+    ================================================= */
+
+    if (toolsPopup) {
+
+        toolsPopup.classList.remove(
+            "show"
         );
 
     }
 
 
-    /* =====================================================
-       SEND BUTTON
-    ===================================================== */
+    /* =================================================
+       LOADING
+    ================================================= */
 
-    if (sendBtn) {
-
-        sendBtn.addEventListener(
-            "click",
-            sendMessage
-        );
-
-    }
+    setLoading(true);
 
 
-    /* =====================================================
-       SEND MESSAGE
-    ===================================================== */
-
-    async function sendMessage() {
-
-        if (sending) return;
-
-        const message =
-            input?.value.trim() || "";
-
-
-        if (
-            !message &&
-            selectedFiles.length === 0
-        ) {
-
-            input?.focus();
-
-            return;
-        }
+    try {
 
 
         /* =================================================
-           HIDE WELCOME SCREEN
+           API REQUEST
         ================================================= */
 
-        if (welcomeScreen) {
+        const response =
+            await fetch(
+                "/api/chat",
+                {
 
-            welcomeScreen.style.display =
-                "none";
+                    method: "POST",
 
-        }
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        message:
+                            message,
+
+                        messages:
+                            conversation,
+
+                        webSearch:
+                            webMode,
+
+                        files:
+                            selectedFiles.map(
+                                file => ({
+
+                                    name:
+                                        file.name,
+
+                                    type:
+                                        file.type,
+
+                                    size:
+                                        file.size
+
+                                })
+                            )
+
+                    })
+
+                }
+            );
 
 
         /* =================================================
-           ADD USER MESSAGE
+           READ RESPONSE
         ================================================= */
 
-        addMessage(
-            "user",
-            message || "Attached file(s)"
-        );
+        let data = null;
 
 
-        /* =================================================
-           ADD TO CONVERSATION
-        ================================================= */
+        try {
 
-        conversation.push({
+            data =
+                await response.json();
 
-            role: "user",
+        } catch (jsonError) {
 
-            content: message
+            console.error(
+                "Invalid JSON response:",
+                jsonError
+            );
 
-        });
-
-
-        /* =================================================
-           CLEAR INPUT
-        ================================================= */
-
-        if (input) {
-
-            input.value = "";
-
-            autoResize();
-
-        }
-
-
-        /* =================================================
-           CLOSE TOOLS POPUP
-        ================================================= */
-
-        if (toolsPopup) {
-
-            toolsPopup.classList.remove(
-                "show"
+            throw new Error(
+                `Server returned an invalid response (${response.status}).`
             );
 
         }
 
 
         /* =================================================
-           LOADING
+           API ERROR
         ================================================= */
 
-        setLoading(true);
+        if (!response.ok) {
+
+            console.error(
+                "API Error:",
+                response.status,
+                data
+            );
 
 
-        try {
-
-            /* =================================================
-               API REQUEST
-            ================================================= */
-
-            const response =
-                await fetch(
-                    "/api/chat",
-                    {
-
-                        method: "POST",
-
-                        headers: {
-
-                            "Content-Type":
-                                "application/json"
-
-                        },
-
-                        body: JSON.stringify({
-
-                            message:
-                                message,
-
-                            messages:
-                                conversation,
-
-                            webSearch:
-                                webMode,
-
-                            files:
-                                selectedFiles.map(
-                                    file => ({
-
-                                        name:
-                                            file.name,
-
-                                        type:
-                                            file.type,
-
-                                        size:
-                                            file.size
-
-                                    })
-                                )
-
-                        })
-
-                    }
-                );
+            const serverError =
+                data?.error ||
+                data?.message ||
+                `API error ${response.status}`;
 
 
-            /* =================================================
-               READ RESPONSE
-            ================================================= */
+            throw new Error(
+                serverError
+            );
 
-            let data = null;
-
-
-            try {
-
-                data =
-                    await response.json();
-
-            } catch (jsonError) {
-
-                console.error(
-                    "Invalid JSON response:",
-                    jsonError
-                );
-
-                throw new Error(
-                    `Server returned an invalid response (${response.status}).`
-                );
-
-            }
+        }
 
 
-            /* =================================================
-               API ERROR
-            ================================================= */
+        /* =================================================
+           IMAGE RESPONSE
+        ================================================= */
 
-            if (!response.ok) {
+        if (
+            data?.type === "image" &&
+            data?.image
+        ) {
 
-                console.error(
-                    "API Error:",
-                    response.status,
-                    data
-                );
-
-
-                const serverError =
-                    data?.error ||
-                    data?.message ||
-                    `API error ${response.status}`;
-
-
-                throw new Error(
-                    serverError
-                );
-
-            }
-
-
-            /* =================================================
-               IMAGE RESPONSE
-            ================================================= */
-
-            if (
-                data?.type === "image" &&
-                data?.image
-            ) {
-
-                await showGeneratedImage(
-                    data.image,
-                    data.reply ||
-                    "✨ Here is your generated image."
-                );
-
-
-                conversation.push({
-
-                    role: "assistant",
-
-                    content:
-                        data.reply ||
-                        "Generated image."
-
-                });
-
-
-                saveRecentChat(message);
-
-                return;
-
-            }
-
-
-            /* =================================================
-               NORMAL TEXT RESPONSE
-            ================================================= */
-
-            const reply =
-                getReplyFromResponse(data);
-
-
-            if (!reply) {
-
-                throw new Error(
-                    "The AI returned an empty response."
-                );
-
-            }
-
-
-            await typeAIMessage(
-                reply
+            await showGeneratedImage(
+                data.image,
+                data.reply ||
+                "✨ Here is your generated image."
             );
 
 
@@ -414,1085 +415,1027 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 role: "assistant",
 
-                content: reply
+                content:
+                    data.reply ||
+                    "Generated image."
 
             });
 
 
             saveRecentChat(message);
 
+            return;
 
-        } catch (error) {
+        }
 
-            console.error(
-                "Chat API Error:",
-                error
+
+        /* =================================================
+           NORMAL TEXT RESPONSE
+        ================================================= */
+
+        const reply =
+            getReplyFromResponse(data);
+
+
+        if (!reply) {
+
+            throw new Error(
+                "The AI returned an empty response."
+            );
+
+        }
+
+
+        await typeAIMessage(
+            reply
+        );
+
+
+        conversation.push({
+
+            role: "assistant",
+
+            content: reply
+
+        });
+
+
+        saveRecentChat(message);
+
+
+    } catch (error) {
+
+        console.error(
+            "Chat API Error:",
+            error
+        );
+
+
+        const errorMessage =
+            error?.message ||
+            "Something went wrong while connecting to the AI.";
+
+
+        addMessage(
+            "ai",
+            `⚠️ ${errorMessage}`
+        );
+
+
+    } finally {
+
+        setLoading(false);
+
+        selectedFiles = [];
+
+
+        if (fileInput) {
+
+            fileInput.value = "";
+
+        }
+
+
+        renderAttachments();
+
+    }
+
+}
+
+
+/* =====================================================
+   SHOW GENERATED IMAGE
+===================================================== */
+
+async function showGeneratedImage(
+    imageUrl,
+    message
+) {
+
+    const wrapper =
+        document.createElement("div");
+
+
+    wrapper.className =
+        "chat-message ai image-message";
+
+
+    const bubble =
+        document.createElement("div");
+
+
+    bubble.className =
+        "chat-bubble ai-image-bubble";
+
+
+    const text =
+        document.createElement("div");
+
+
+    text.className =
+        "image-response-text";
+
+
+    text.textContent =
+        message;
+
+
+    const loading =
+        document.createElement("div");
+
+
+    loading.className =
+        "image-loading";
+
+
+    loading.innerHTML = `
+        <div class="image-loader">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <small>Creating your image...</small>
+    `;
+
+
+    bubble.appendChild(text);
+
+    bubble.appendChild(loading);
+
+    wrapper.appendChild(bubble);
+
+    chatMessages.appendChild(wrapper);
+
+    scrollChat();
+
+
+    /* =================================================
+       PRELOAD IMAGE
+    ================================================= */
+
+    const image =
+        new Image();
+
+
+    image.src =
+        imageUrl;
+
+
+    image.onload = () => {
+
+        loading.remove();
+
+
+        const imageContainer =
+            document.createElement("div");
+
+
+        imageContainer.className =
+            "generated-image-container";
+
+
+        imageContainer.innerHTML = `
+            <img
+                src="${escapeAttribute(imageUrl)}"
+                alt="AI generated image"
+                class="generated-ai-image"
+            />
+
+            <div class="image-actions">
+
+                <button
+                    type="button"
+                    class="image-action-btn download-image"
+                >
+                    ↓ Save Image
+                </button>
+
+                <button
+                    type="button"
+                    class="image-action-btn copy-image"
+                >
+                    ⧉ Copy Image URL
+                </button>
+
+            </div>
+        `;
+
+
+        bubble.appendChild(
+            imageContainer
+        );
+
+
+        /* =================================================
+           DOWNLOAD IMAGE
+        ================================================= */
+
+        const downloadBtn =
+            imageContainer.querySelector(
+                ".download-image"
             );
 
 
-            const errorMessage =
-                error?.message ||
-                "Something went wrong while connecting to the AI.";
+        if (downloadBtn) {
+
+            downloadBtn.addEventListener(
+                "click",
+                () => {
+
+                    const link =
+                        document.createElement("a");
 
 
-            addMessage(
-                "ai",
-                `⚠️ ${errorMessage}`
+                    link.href =
+                        imageUrl;
+
+
+                    link.target =
+                        "_blank";
+
+
+                    link.download =
+                        "mani-ai-generated-image.png";
+
+
+                    document.body.appendChild(
+                        link
+                    );
+
+
+                    link.click();
+
+                    link.remove();
+
+                }
+            );
+
+        }
+
+
+        /* =================================================
+           COPY IMAGE URL
+        ================================================= */
+
+        const copyBtn =
+            imageContainer.querySelector(
+                ".copy-image"
             );
 
 
-        } finally {
+        if (copyBtn) {
 
-            setLoading(false);
+            copyBtn.addEventListener(
+                "click",
+                async () => {
 
-            selectedFiles = [];
+                    try {
+
+                        await navigator.clipboard.writeText(
+                            imageUrl
+                        );
 
 
-            if (fileInput) {
+                        copyBtn.textContent =
+                            "✓ Copied";
 
-                fileInput.value = "";
+
+                        setTimeout(
+                            () => {
+
+                                copyBtn.textContent =
+                                    "⧉ Copy Image URL";
+
+                            },
+                            1500
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Copy error:",
+                            error
+                        );
+
+
+                        copyBtn.textContent =
+                            "⚠️ Copy failed";
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        scrollChat();
+
+    };
+
+
+    /* =================================================
+       IMAGE LOAD ERROR
+    ================================================= */
+
+    image.onerror = () => {
+
+        loading.innerHTML = `
+            <div class="image-error">
+                ⚠️ Image could not be loaded.
+            </div>
+        `;
+
+
+        scrollChat();
+
+    };
+
+
+    /* =================================================
+       TIMEOUT SAFETY
+    ================================================= */
+
+    setTimeout(
+        () => {
+
+            if (!image.complete) {
+
+                loading.innerHTML = `
+                    <div class="image-error">
+                        ⚠️ Image generation is taking too long.
+                    </div>
+                `;
 
             }
+
+        },
+        30000
+    );
+
+}
+
+
+/* =====================================================
+   API RESPONSE
+===================================================== */
+
+function getReplyFromResponse(data) {
+
+    if (!data) {
+
+        return "I didn't receive a response.";
+
+    }
+
+
+    if (
+        typeof data === "string"
+    ) {
+
+        return data;
+
+    }
+
+
+    /* =================================================
+       ERROR RESPONSE
+    ================================================= */
+
+    if (
+        typeof data.error === "string"
+    ) {
+
+        return `⚠️ ${data.error}`;
+
+    }
+
+
+    /* =================================================
+       REPLY
+    ================================================= */
+
+    if (
+        typeof data.reply === "string"
+    ) {
+
+        return data.reply;
+
+    }
+
+
+    /* =================================================
+       MESSAGE
+    ================================================= */
+
+    if (
+        typeof data.message === "string"
+    ) {
+
+        return data.message;
+
+    }
+
+
+    /* =================================================
+       RESPONSE
+    ================================================= */
+
+    if (
+        typeof data.response === "string"
+    ) {
+
+        return data.response;
+
+    }
+
+
+    /* =================================================
+       CONTENT
+    ================================================= */
+
+    if (
+        typeof data.content === "string"
+    ) {
+
+        return data.content;
+
+    }
+
+
+    /* =================================================
+       OPENAI STYLE RESPONSE
+    ================================================= */
+
+    if (
+        data.choices &&
+        data.choices[0]
+    ) {
+
+        const choice =
+            data.choices[0];
+
+
+        if (
+            choice.message &&
+            typeof choice.message.content === "string"
+        ) {
+
+            return choice.message.content;
+
+        }
+
+
+        if (
+            typeof choice.text === "string"
+        ) {
+
+            return choice.text;
+
+        }
+
+    }
+
+
+    return "I couldn't generate a response.";
+
+}
+
+
+/* =====================================================
+   ADD MESSAGE
+===================================================== */
+
+function addMessage(
+    type,
+    text
+) {
+
+    if (!chatMessages) return;
+
+
+    const wrapper =
+        document.createElement("div");
+
+
+    wrapper.className =
+        `chat-message ${type}`;
+
+
+    const bubble =
+        document.createElement("div");
+
+
+    bubble.className =
+        "chat-bubble";
+
+
+    bubble.innerHTML =
+        formatMessage(text);
+
+
+    wrapper.appendChild(
+        bubble
+    );
+
+
+    chatMessages.appendChild(
+        wrapper
+    );
+
+
+    scrollChat();
+
+
+    return bubble;
+
+}
+
+
+/* =====================================================
+   AI TYPEWRITER
+===================================================== */
+
+async function typeAIMessage(
+    text
+) {
+
+    if (!chatMessages) return;
+
+
+    const wrapper =
+        document.createElement("div");
+
+
+    wrapper.className =
+        "chat-message ai";
+
+
+    const bubble =
+        document.createElement("div");
+
+
+    bubble.className =
+        "chat-bubble";
+
+
+    wrapper.appendChild(
+        bubble
+    );
+
+
+    chatMessages.appendChild(
+        wrapper
+    );
+
+
+    const plain =
+        stripHTML(text);
+
+
+    let current = "";
+
+
+    for (
+        let i = 0;
+        i < plain.length;
+        i++
+    ) {
+
+        current +=
+            plain[i];
+
+
+        bubble.textContent =
+            current;
+
+
+        scrollChat();
+
+
+        await sleep(
+            plain[i] === " "
+                ? 5
+                : 8
+        );
+
+    }
+
+
+    bubble.innerHTML =
+        formatMessage(text);
+
+
+    scrollChat();
+
+}
+
+
+/* =====================================================
+   FORMAT MESSAGE
+===================================================== */
+
+function formatMessage(text) {
+
+    if (!text) return "";
+
+
+    let safe =
+        escapeHTML(
+            String(text)
+        );
+
+
+    /* =================================================
+       CODE BLOCK
+    ================================================= */
+
+    safe =
+        safe.replace(
+            /```([\s\S]*?)```/g,
+            "<pre><code>$1</code></pre>"
+        );
+
+
+    /* =================================================
+       BOLD
+    ================================================= */
+
+    safe =
+        safe.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
+
+
+    /* =================================================
+       INLINE CODE
+    ================================================= */
+
+    safe =
+        safe.replace(
+            /`([^`]+)`/g,
+            "<code>$1</code>"
+        );
+
+
+    /* =================================================
+       LINKS
+    ================================================= */
+
+    safe =
+        safe.replace(
+            /(https?:\/\/[^\s<]+)/g,
+            '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+        );
+
+
+    /* =================================================
+       NEW LINES
+    ================================================= */
+
+    safe =
+        safe.replace(
+            /\n/g,
+            "<br>"
+        );
+
+
+    return safe;
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+
+}
+
+
+/* =====================================================
+   ESCAPE ATTRIBUTE
+===================================================== */
+
+function escapeAttribute(text) {
+
+    return String(text)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        );
+
+}
+
+
+/* =====================================================
+   STRIP HTML
+===================================================== */
+
+function stripHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+
+    div.innerHTML =
+        text;
+
+
+    return (
+        div.textContent ||
+        div.innerText ||
+        ""
+    );
+
+}
+
+
+/* =====================================================
+   SCROLL
+===================================================== */
+
+function scrollChat() {
+
+    if (!chatArea) return;
+
+
+    requestAnimationFrame(
+        () => {
+
+            chatArea.scrollTo({
+
+                top:
+                    chatArea.scrollHeight,
+
+                behavior:
+                    "smooth"
+
+            });
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+function setLoading(state) {
+
+    sending =
+        state;
+
+
+    if (sendBtn) {
+
+        sendBtn.classList.toggle(
+            "loading",
+            state
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PLUS BUTTON
+===================================================== */
+
+if (
+    plusBtn &&
+    toolsPopup
+) {
+
+    plusBtn.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+
+            toolsPopup.classList.toggle(
+                "show"
+            );
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            if (
+                !toolsPopup.contains(
+                    event.target
+                ) &&
+                !plusBtn.contains(
+                    event.target
+                )
+            ) {
+
+                toolsPopup.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   WEB MODE
+===================================================== */
+
+if (webBtn) {
+
+    webBtn.addEventListener(
+        "click",
+        () => {
+
+            webMode =
+                !webMode;
+
+
+            webBtn.classList.toggle(
+                "active",
+                webMode
+            );
+
+
+            if (input) {
+
+                input.placeholder =
+                    webMode
+                        ? "Search the web with Mini AI..."
+                        : "Message Mini AI...";
+
+
+                input.focus();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FILE ATTACH
+===================================================== */
+
+if (
+    attachBtn &&
+    fileInput
+) {
+
+    attachBtn.addEventListener(
+        "click",
+        () => {
+
+            fileInput.click();
+
+        }
+    );
+
+
+    fileInput.addEventListener(
+        "change",
+        () => {
+
+            const files =
+                Array.from(
+                    fileInput.files || []
+                );
+
+
+            selectedFiles.push(
+                ...files
+            );
 
 
             renderAttachments();
 
         }
+    );
 
-    }
-
-
-    /* =====================================================
-       SHOW GENERATED IMAGE
-    ===================================================== */
-
-    async function showGeneratedImage(
-        imageUrl,
-        message
-    ) {
-
-        const wrapper =
-            document.createElement("div");
+}
 
 
-        wrapper.className =
-            "chat-message ai image-message";
+/* =====================================================
+   FILE PREVIEW
+===================================================== */
+
+function renderAttachments() {
+
+    if (!attachmentPreview)
+        return;
 
 
-        const bubble =
-            document.createElement("div");
+    attachmentPreview.innerHTML =
+        "";
 
 
-        bubble.className =
-            "chat-bubble ai-image-bubble";
+    selectedFiles.forEach(
+        (file, index) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
 
 
-        const text =
-            document.createElement("div");
+            item.className =
+                "attachment-item";
 
 
-        text.className =
-            "image-response-text";
+            item.innerHTML = `
+                <span>📎</span>
 
+                <span>
+                    ${escapeHTML(file.name)}
+                </span>
 
-        text.textContent =
-            message;
-
-
-        const loading =
-            document.createElement("div");
-
-
-        loading.className =
-            "image-loading";
-
-
-        loading.innerHTML = `
-            <div class="image-loader">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-
-            <small>Creating your image...</small>
-        `;
-
-
-        bubble.appendChild(text);
-
-        bubble.appendChild(loading);
-
-        wrapper.appendChild(bubble);
-
-        chatMessages.appendChild(wrapper);
-
-        scrollChat();
-
-
-        /* =================================================
-           PRELOAD IMAGE
-        ================================================= */
-
-        const image =
-            new Image();
-
-
-        image.src =
-            imageUrl;
-
-
-        image.onload = () => {
-
-            loading.remove();
-
-
-            const imageContainer =
-                document.createElement("div");
-
-
-            imageContainer.className =
-                "generated-image-container";
-
-
-            imageContainer.innerHTML = `
-                <img
-                    src="${escapeAttribute(imageUrl)}"
-                    alt="AI generated image"
-                    class="generated-ai-image"
-                />
-
-                <div class="image-actions">
-
-                    <button
-                        type="button"
-                        class="image-action-btn download-image"
-                    >
-                        ↓ Save Image
-                    </button>
-
-                    <button
-                        type="button"
-                        class="image-action-btn copy-image"
-                    >
-                        ⧉ Copy Image URL
-                    </button>
-
-                </div>
+                <button
+                    type="button"
+                    class="remove-file"
+                    data-index="${index}"
+                >
+                    ×
+                </button>
             `;
 
 
-            bubble.appendChild(
-                imageContainer
-            );
-
-
-            /* =================================================
-               DOWNLOAD IMAGE
-            ================================================= */
-
-            const downloadBtn =
-                imageContainer.querySelector(
-                    ".download-image"
-                );
-
-
-            if (downloadBtn) {
-
-                downloadBtn.addEventListener(
-                    "click",
-                    () => {
-
-                        const link =
-                            document.createElement("a");
-
-
-                        link.href =
-                            imageUrl;
-
-
-                        link.target =
-                            "_blank";
-
-
-                        link.download =
-                            "mani-ai-generated-image.png";
-
-
-                        document.body.appendChild(
-                            link
-                        );
-
-
-                        link.click();
-
-                        link.remove();
-
-                    }
-                );
-
-            }
-
-
-            /* =================================================
-               COPY IMAGE URL
-            ================================================= */
-
-            const copyBtn =
-                imageContainer.querySelector(
-                    ".copy-image"
-                );
-
-
-            if (copyBtn) {
-
-                copyBtn.addEventListener(
-                    "click",
-                    async () => {
-
-                        try {
-
-                            await navigator.clipboard.writeText(
-                                imageUrl
-                            );
-
-
-                            copyBtn.textContent =
-                                "✓ Copied";
-
-
-                            setTimeout(
-                                () => {
-
-                                    copyBtn.textContent =
-                                        "⧉ Copy Image URL";
-
-                                },
-                                1500
-                            );
-
-
-                        } catch (error) {
-
-                            console.error(
-                                "Copy error:",
-                                error
-                            );
-
-
-                            copyBtn.textContent =
-                                "⚠️ Copy failed";
-
-                        }
-
-                    }
-                );
-
-            }
-
-
-            scrollChat();
-
-        };
-
-
-        /* =================================================
-           IMAGE LOAD ERROR
-        ================================================= */
-
-        image.onerror = () => {
-
-            loading.innerHTML = `
-                <div class="image-error">
-                    ⚠️ Image could not be loaded.
-                </div>
-            `;
-
-
-            scrollChat();
-
-        };
-
-
-        /* =================================================
-           TIMEOUT SAFETY
-        ================================================= */
-
-        setTimeout(
-            () => {
-
-                if (!image.complete) {
-
-                    loading.innerHTML = `
-                        <div class="image-error">
-                            ⚠️ Image generation is taking too long.
-                        </div>
-                    `;
-
-                }
-
-            },
-            30000
-        );
-
-    }
-
-
-    /* =====================================================
-       API RESPONSE
-    ===================================================== */
-
-    function getReplyFromResponse(data) {
-
-        if (!data) {
-
-            return "I didn't receive a response.";
-
-        }
-
-
-        if (
-            typeof data === "string"
-        ) {
-
-            return data;
-
-        }
-
-
-        /* =================================================
-           ERROR RESPONSE
-        ================================================= */
-
-        if (
-            typeof data.error === "string"
-        ) {
-
-            return `⚠️ ${data.error}`;
-
-        }
-
-
-        /* =================================================
-           REPLY
-        ================================================= */
-
-        if (
-            typeof data.reply === "string"
-        ) {
-
-            return data.reply;
-
-        }
-
-
-        /* =================================================
-           MESSAGE
-        ================================================= */
-
-        if (
-            typeof data.message === "string"
-        ) {
-
-            return data.message;
-
-        }
-
-
-        /* =================================================
-           RESPONSE
-        ================================================= */
-
-        if (
-            typeof data.response === "string"
-        ) {
-
-            return data.response;
-
-        }
-
-
-        /* =================================================
-           CONTENT
-        ================================================= */
-
-        if (
-            typeof data.content === "string"
-        ) {
-
-            return data.content;
-
-        }
-
-
-        /* =================================================
-           OPENAI STYLE RESPONSE
-        ================================================= */
-
-        if (
-            data.choices &&
-            data.choices[0]
-        ) {
-
-            const choice =
-                data.choices[0];
-
-
-            if (
-                choice.message &&
-                typeof choice.message.content === "string"
-            ) {
-
-                return choice.message.content;
-
-            }
-
-
-            if (
-                typeof choice.text === "string"
-            ) {
-
-                return choice.text;
-
-            }
-
-        }
-
-
-        return "I couldn't generate a response.";
-
-    }
-
-
-    /* =====================================================
-       ADD MESSAGE
-    ===================================================== */
-
-    function addMessage(
-        type,
-        text
-    ) {
-
-        if (!chatMessages) return;
-
-
-        const wrapper =
-            document.createElement("div");
-
-
-        wrapper.className =
-            `chat-message ${type}`;
-
-
-        const bubble =
-            document.createElement("div");
-
-
-        bubble.className =
-            "chat-bubble";
-
-
-        bubble.innerHTML =
-            formatMessage(text);
-
-
-        wrapper.appendChild(
-            bubble
-        );
-
-
-        chatMessages.appendChild(
-            wrapper
-        );
-
-
-        scrollChat();
-
-
-        return bubble;
-
-    }
-
-
-    /* =====================================================
-       AI TYPEWRITER
-    ===================================================== */
-
-    async function typeAIMessage(
-        text
-    ) {
-
-        if (!chatMessages) return;
-
-
-        const wrapper =
-            document.createElement("div");
-
-
-        wrapper.className =
-            "chat-message ai";
-
-
-        const bubble =
-            document.createElement("div");
-
-
-        bubble.className =
-            "chat-bubble";
-
-
-        wrapper.appendChild(
-            bubble
-        );
-
-
-        chatMessages.appendChild(
-            wrapper
-        );
-
-
-        const plain =
-            stripHTML(text);
-
-
-        let current = "";
-
-
-        for (
-            let i = 0;
-            i < plain.length;
-            i++
-        ) {
-
-            current +=
-                plain[i];
-
-
-            bubble.textContent =
-                current;
-
-
-            scrollChat();
-
-
-            await sleep(
-                plain[i] === " "
-                    ? 5
-                    : 8
+            attachmentPreview.appendChild(
+                item
             );
 
         }
+    );
 
-
-        bubble.innerHTML =
-            formatMessage(text);
-
-
-        scrollChat();
-
-    }
-
-
-    /* =====================================================
-       FORMAT MESSAGE
-    ===================================================== */
-
-    function formatMessage(text) {
-
-        if (!text) return "";
-
-
-        let safe =
-            escapeHTML(
-                String(text)
-            );
-
-
-        /* =================================================
-           CODE BLOCK
-        ================================================= */
-
-        safe =
-            safe.replace(
-                /```([\s\S]*?)```/g,
-                "<pre><code>$1</code></pre>"
-            );
-
-
-        /* =================================================
-           BOLD
-        ================================================= */
-
-        safe =
-            safe.replace(
-                /\*\*(.*?)\*\*/g,
-                "<strong>$1</strong>"
-            );
-
-
-        /* =================================================
-           INLINE CODE
-        ================================================= */
-
-        safe =
-            safe.replace(
-                /`([^`]+)`/g,
-                "<code>$1</code>"
-            );
-
-
-        /* =================================================
-           LINKS
-        ================================================= */
-
-        safe =
-            safe.replace(
-                /(https?:\/\/[^\s<]+)/g,
-                '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-            );
-
-
-        /* =================================================
-           NEW LINES
-        ================================================= */
-
-        safe =
-            safe.replace(
-                /\n/g,
-                "<br>"
-            );
-
-
-        return safe;
-
-    }
-
-
-    /* =====================================================
-       ESCAPE HTML
-    ===================================================== */
-
-    function escapeHTML(text) {
-
-        const div =
-            document.createElement("div");
-
-
-        div.textContent =
-            text;
-
-
-        return div.innerHTML;
-
-    }
-
-
-    /* =====================================================
-       ESCAPE ATTRIBUTE
-    ===================================================== */
-
-    function escapeAttribute(text) {
-
-        return String(text)
-
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-
-            .replace(
-                /</g,
-                "&lt;"
-            )
-
-            .replace(
-                />/g,
-                "&gt;"
-            );
-
-    }
-
-
-    /* =====================================================
-       STRIP HTML
-    ===================================================== */
-
-    function stripHTML(text) {
-
-        const div =
-            document.createElement("div");
-
-
-        div.innerHTML =
-            text;
-
-
-        return (
-            div.textContent ||
-            div.innerText ||
-            ""
-        );
-
-    }
-
-
-    /* =====================================================
-       SCROLL
-    ===================================================== */
-
-    function scrollChat() {
-
-        if (!chatArea) return;
-
-
-        requestAnimationFrame(
-            () => {
-
-                chatArea.scrollTo({
-
-                    top:
-                        chatArea.scrollHeight,
-
-                    behavior:
-                        "smooth"
-
-                });
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       LOADING
-    ===================================================== */
-
-    function setLoading(state) {
-
-        sending =
-            state;
-
-
-        if (sendBtn) {
-
-            sendBtn.classList.toggle(
-                "loading",
-                state
-            );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       PLUS BUTTON
-    ===================================================== */
-
-    if (
-        plusBtn &&
-        toolsPopup
-    ) {
-
-        plusBtn.addEventListener(
-            "click",
-            event => {
-
-                event.stopPropagation();
-
-
-                toolsPopup.classList.toggle(
-                    "show"
-                );
-
-            }
-        );
-
-
-        document.addEventListener(
-            "click",
-            event => {
-
-                if (
-                    !toolsPopup.contains(
-                        event.target
-                    ) &&
-                    !plusBtn.contains(
-                        event.target
-                    )
-                ) {
-
-                    toolsPopup.classList.remove(
-                        "show"
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       WEB MODE
-    ===================================================== */
-
-    if (webBtn) {
-
-        webBtn.addEventListener(
-            "click",
-            () => {
-
-                webMode =
-                    !webMode;
-
-
-                webBtn.classList.toggle(
-                    "active",
-                    webMode
-                );
-
-
-                if (input) {
-
-                    input.placeholder =
-                        webMode
-                            ? "Search the web with Mini AI..."
-                            : "Message Mini AI...";
-
-
-                    input.focus();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       FILE ATTACH
-    ===================================================== */
-
-    if (
-        attachBtn &&
-        fileInput
-    ) {
-
-        attachBtn.addEventListener(
-            "click",
-            () => {
-
-                fileInput.click();
-
-            }
-        );
-
-
-        fileInput.addEventListener(
-            "change",
-            () => {
-
-                const files =
-                    Array.from(
-                        fileInput.files || []
-                    );
-
-
-                selectedFiles.push(
-                    ...files
-                );
-
-
-                renderAttachments();
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       FILE PREVIEW
-    ===================================================== */
-
-    function renderAttachments() {
-
-        if (!attachmentPreview)
-            return;
-
-
-        attachmentPreview.innerHTML =
-            "";
-
-
-        selectedFiles.forEach(
-            (file, index) => {
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                item.className =
-                    "attachment-item";
-
-
-                item.innerHTML = `
-                    <span>📎</span>
-
-                    <span>
-                        ${escapeHTML(file.name)}
-                    </span>
-
-                    <button
-                        type="button"
-                        class="remove-file"
-                        data-index="${index}"
-                    >
-                        ×
-                    </button>
-                `;
-
-
-                attachmentPreview.appendChild(
-                    item
-                );
-
-            }
-        );
-
-
-        document
-            .querySelectorAll(
-                ".remove-file"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            const index =
-                                Number(
-                                    button.dataset.index
-                                );
-
-
-                            selectedFiles.splice(
-                                index,
-                                1
-                            );
-
-
-                            renderAttachments();
-
-                        }
-                    );
-
-                }
-            );
-
-    }
-
-
-    /* =====================================================
-       MAGIC AI
-    ===================================================== */
-
-    if (magicBtn) {
-
-        magicBtn.addEventListener(
-            "click",
-            () => {
-
-                if (!input) return;
-
-
-                input.focus();
-
-
-                input.value =
-                    "Help me with ";
-
-
-                autoResize();
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       TOOL OPTIONS
-    ===================================================== */
 
     document
         .querySelectorAll(
-            ".tool-option"
+            ".remove-file"
         )
         .forEach(
-            option => {
+            button => {
 
-                option.addEventListener(
+                button.addEventListener(
                     "click",
                     () => {
 
-                        const action =
-                            option.dataset.action;
+                        const index =
+                            Number(
+                                button.dataset.index
+                            );
 
 
-                        if (!input) return;
-
-
-                        if (
-                            action === "image"
-                        ) {
-
-                            input.value =
-                                "Create an image of ";
-
-                        }
-
-
-                        if (
-                            action === "code"
-                        ) {
-
-                            input.value =
-                                "Write code for ";
-
-                        }
-
-
-                        if (
-                            action === "summarize"
-                        ) {
-
-                            input.value =
-                                "Summarize this: ";
-
-                        }
-
-
-                        autoResize();
-
-                        input.focus();
-
-
-                        toolsPopup?.classList.remove(
-                            "show"
+                        selectedFiles.splice(
+                            index,
+                            1
                         );
+
+
+                        renderAttachments();
 
                     }
                 );
@@ -1500,32 +1443,97 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         );
 
+}
 
-    /* =====================================================
-       QUICK CARDS
-    ===================================================== */
 
-    quickCards.forEach(
-        card => {
+/* =====================================================
+   MAGIC AI
+===================================================== */
 
-            card.addEventListener(
+if (magicBtn) {
+
+    magicBtn.addEventListener(
+        "click",
+        () => {
+
+            if (!input) return;
+
+
+            input.focus();
+
+
+            input.value =
+                "Help me with ";
+
+
+            autoResize();
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   TOOL OPTIONS
+===================================================== */
+
+document
+    .querySelectorAll(
+        ".tool-option"
+    )
+    .forEach(
+        option => {
+
+            option.addEventListener(
                 "click",
                 () => {
 
-                    const prompt =
-                        card.dataset.prompt;
+                    const action =
+                        option.dataset.action;
 
 
                     if (!input) return;
 
 
-                    input.value =
-                        prompt || "";
+                    if (
+                        action === "image"
+                    ) {
+
+                        input.value =
+                            "Create an image of ";
+
+                    }
+
+
+                    if (
+                        action === "code"
+                    ) {
+
+                        input.value =
+                            "Write code for ";
+
+                    }
+
+
+                    if (
+                        action === "summarize"
+                    ) {
+
+                        input.value =
+                            "Summarize this: ";
+
+                    }
 
 
                     autoResize();
 
                     input.focus();
+
+
+                    toolsPopup?.classList.remove(
+                        "show"
+                    );
 
                 }
             );
@@ -1534,722 +1542,898 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    /* =====================================================
-       NEW CHAT
-    ===================================================== */
+/* =====================================================
+   QUICK CARDS
+===================================================== */
 
-    if (newChatBtn) {
+quickCards.forEach(
+    card => {
 
-        newChatBtn.addEventListener(
+        card.addEventListener(
             "click",
-            newChat
+            () => {
+
+                const prompt =
+                    card.dataset.prompt;
+
+
+                if (!input) return;
+
+
+                input.value =
+                    prompt || "";
+
+
+                autoResize();
+
+                input.focus();
+
+            }
         );
+
+    }
+);
+
+
+/* =====================================================
+   NEW CHAT
+===================================================== */
+
+if (newChatBtn) {
+
+    newChatBtn.addEventListener(
+        "click",
+        newChat
+    );
+
+}
+
+
+function newChat() {
+
+    conversation = [];
+
+    selectedFiles = [];
+
+
+    if (chatMessages) {
+
+        chatMessages.innerHTML =
+            "";
 
     }
 
 
-    function newChat() {
+    if (welcomeScreen) {
 
-        conversation = [];
+        welcomeScreen.style.display =
+            "flex";
 
-        selectedFiles = [];
-
-
-        if (chatMessages) {
-
-            chatMessages.innerHTML =
-                "";
-
-        }
+    }
 
 
-        if (welcomeScreen) {
+    if (input) {
 
-            welcomeScreen.style.display =
-                "flex";
+        input.value =
+            "";
 
-        }
+        autoResize();
+
+        input.focus();
+
+    }
 
 
-        if (input) {
+    toolsPopup?.classList.remove(
+        "show"
+    );
+
+
+    renderAttachments();
+
+    closeMobileSidebar();
+
+}
+
+
+/* =====================================================
+   RECENT CHAT
+===================================================== */
+
+function saveRecentChat(
+    message
+) {
+
+    if (
+        !message ||
+        !recentChats
+    ) return;
+
+
+    const item =
+        document.createElement(
+            "button"
+        );
+
+
+    item.type =
+        "button";
+
+
+    item.className =
+        "conversation";
+
+
+    item.innerHTML = `
+        <span class="conversation-icon">
+            ◇
+        </span>
+
+        <span>
+            ${escapeHTML(
+                message.substring(
+                    0,
+                    24
+                )
+            )}
+        </span>
+    `;
+
+
+    item.addEventListener(
+        "click",
+        () => {
+
+            if (!input) return;
+
 
             input.value =
-                "";
+                message;
+
 
             autoResize();
 
             input.focus();
 
         }
+    );
 
 
-        toolsPopup?.classList.remove(
-            "show"
-        );
+    recentChats.prepend(
+        item
+    );
 
 
-        renderAttachments();
+    while (
+        recentChats.children.length >
+        5
+    ) {
 
-        closeMobileSidebar();
+        recentChats.lastElementChild.remove();
 
     }
 
 
-    /* =====================================================
-       RECENT CHAT
-    ===================================================== */
+    addCursorHoverEvents();
 
-    function saveRecentChat(
-        message
-    ) {
-
-        if (
-            !message ||
-            !recentChats
-        ) return;
+}
 
 
-        const item =
-            document.createElement(
-                "button"
+/* =====================================================
+   VOICE
+===================================================== */
+
+if (
+    "SpeechRecognition" in window ||
+    "webkitSpeechRecognition" in window
+) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    recognition =
+        new SpeechRecognition();
+
+
+    recognition.continuous =
+        false;
+
+
+    recognition.interimResults =
+        true;
+
+
+    recognition.lang =
+        "en-US";
+
+
+    recognition.onstart =
+        () => {
+
+            micBtn?.classList.add(
+                "active"
             );
 
 
-        item.type =
-            "button";
+            if (input) {
+
+                input.placeholder =
+                    "Listening...";
+
+            }
+
+        };
 
 
-        item.className =
-            "conversation";
+    recognition.onresult =
+        event => {
+
+            let transcript =
+                "";
 
 
-        item.innerHTML = `
-            <span class="conversation-icon">
-                ◇
-            </span>
+            for (
+                let i =
+                    event.resultIndex;
 
-            <span>
-                ${escapeHTML(
-                    message.substring(
-                        0,
-                        24
-                    )
-                )}
-            </span>
-        `;
+                i <
+                event.results.length;
+
+                i++
+            ) {
+
+                transcript +=
+                    event.results[i][0]
+                        .transcript;
+
+            }
 
 
-        item.addEventListener(
-            "click",
-            () => {
-
-                if (!input) return;
-
+            if (input) {
 
                 input.value =
-                    message;
+                    transcript;
 
 
                 autoResize();
 
-                input.focus();
+            }
+
+        };
+
+
+    recognition.onend =
+        () => {
+
+            micBtn?.classList.remove(
+                "active"
+            );
+
+
+            if (input) {
+
+                input.placeholder =
+                    webMode
+                        ? "Search the web with Mini AI..."
+                        : "Message Mini AI...";
 
             }
+
+        };
+
+
+    recognition.onerror =
+        error => {
+
+            console.error(
+                "Voice error:",
+                error
+            );
+
+
+            micBtn?.classList.remove(
+                "active"
+            );
+
+        };
+
+}
+
+
+if (micBtn) {
+
+    micBtn.addEventListener(
+        "click",
+        () => {
+
+            if (!recognition) {
+
+                alert(
+                    "Voice input is not supported in this browser."
+                );
+
+
+                return;
+
+            }
+
+
+            if (
+                micBtn.classList.contains(
+                    "active"
+                )
+            ) {
+
+                recognition.stop();
+
+            } else {
+
+                try {
+
+                    recognition.start();
+
+                } catch (error) {
+
+                    console.error(
+                        "Speech recognition start error:",
+                        error
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   EXPAND COMPOSER
+===================================================== */
+
+if (composerExpand) {
+
+    composerExpand.addEventListener(
+        "click",
+        () => {
+
+            input?.focus();
+
+
+            if (input) {
+
+                input.style.height =
+                    "180px";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   MOBILE SIDEBAR
+===================================================== */
+
+if (mobileMenuBtn) {
+
+    mobileMenuBtn.addEventListener(
+        "click",
+        openMobileSidebar
+    );
+
+}
+
+
+if (mobileOverlay) {
+
+    mobileOverlay.addEventListener(
+        "click",
+        closeMobileSidebar
+    );
+
+}
+
+
+function openMobileSidebar() {
+
+    sidebar?.classList.add(
+        "open"
+    );
+
+
+    mobileOverlay?.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeMobileSidebar() {
+
+    sidebar?.classList.remove(
+        "open"
+    );
+
+
+    mobileOverlay?.classList.remove(
+        "show"
+    );
+
+}
+
+
+/* =====================================================
+   CLEAR CHAT
+===================================================== */
+
+if (clearBtn) {
+
+    clearBtn.addEventListener(
+        "click",
+        () => {
+
+            if (
+                conversation.length === 0
+            ) return;
+
+
+            const confirmed =
+                confirm(
+                    "Clear this conversation?"
+                );
+
+
+            if (confirmed) {
+
+                newChat();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+if (searchBtn) {
+
+    searchBtn.addEventListener(
+        "click",
+        () => {
+
+            input?.focus();
+
+
+            if (input) {
+
+                input.placeholder =
+                    "Search your conversation...";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+settingsBtn?.addEventListener(
+    "click",
+    () => {
+
+        alert(
+            "Settings panel coming soon."
         );
 
+    }
+);
 
-        recentChats.prepend(
-            item
+
+topSettingsBtn?.addEventListener(
+    "click",
+    () => {
+
+        alert(
+            "Settings panel coming soon."
         );
 
+    }
+);
 
-        while (
-            recentChats.children.length >
-            5
+
+/* =====================================================
+   PRO
+===================================================== */
+
+proBtn?.addEventListener(
+    "click",
+    () => {
+
+        alert(
+            "Pro features coming soon."
+        );
+
+    }
+);
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.ctrlKey &&
+            event.key.toLowerCase() === "k"
         ) {
 
-            recentChats.lastElementChild.remove();
+            event.preventDefault();
+
+            input?.focus();
 
         }
 
 
-        addCursorHoverEvents();
-
-    }
-
-
-    /* =====================================================
-       VOICE
-    ===================================================== */
-
-    if (
-        "SpeechRecognition" in window ||
-        "webkitSpeechRecognition" in window
-    ) {
-
-        const SpeechRecognition =
-            window.SpeechRecognition ||
-            window.webkitSpeechRecognition;
-
-
-        recognition =
-            new SpeechRecognition();
-
-
-        recognition.continuous =
-            false;
-
-
-        recognition.interimResults =
-            true;
-
-
-        recognition.lang =
-            "en-US";
-
-
-        recognition.onstart =
-            () => {
-
-                micBtn?.classList.add(
-                    "active"
-                );
-
-
-                if (input) {
-
-                    input.placeholder =
-                        "Listening...";
-
-                }
-
-            };
-
-
-        recognition.onresult =
-            event => {
-
-                let transcript =
-                    "";
-
-
-                for (
-                    let i =
-                        event.resultIndex;
-
-                    i <
-                    event.results.length;
-
-                    i++
-                ) {
-
-                    transcript +=
-                        event.results[i][0]
-                            .transcript;
-
-                }
-
-
-                if (input) {
-
-                    input.value =
-                        transcript;
-
-
-                    autoResize();
-
-                }
-
-            };
-
-
-        recognition.onend =
-            () => {
-
-                micBtn?.classList.remove(
-                    "active"
-                );
-
-
-                if (input) {
-
-                    input.placeholder =
-                        webMode
-                            ? "Search the web with Mini AI..."
-                            : "Message Mini AI...";
-
-                }
-
-            };
-
-
-        recognition.onerror =
-            error => {
-
-                console.error(
-                    "Voice error:",
-                    error
-                );
-
-
-                micBtn?.classList.remove(
-                    "active"
-                );
-
-            };
-
-    }
-
-
-    if (micBtn) {
-
-        micBtn.addEventListener(
-            "click",
-            () => {
-
-                if (!recognition) {
-
-                    alert(
-                        "Voice input is not supported in this browser."
-                    );
-
-
-                    return;
-
-                }
-
-
-                if (
-                    micBtn.classList.contains(
-                        "active"
-                    )
-                ) {
-
-                    recognition.stop();
-
-                } else {
-
-                    try {
-
-                        recognition.start();
-
-                    } catch (error) {
-
-                        console.error(
-                            "Speech recognition start error:",
-                            error
-                        );
-
-                    }
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       EXPAND COMPOSER
-    ===================================================== */
-
-    if (composerExpand) {
-
-        composerExpand.addEventListener(
-            "click",
-            () => {
-
-                input?.focus();
-
-
-                if (input) {
-
-                    input.style.height =
-                        "180px";
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       MOBILE SIDEBAR
-    ===================================================== */
-
-    if (mobileMenuBtn) {
-
-        mobileMenuBtn.addEventListener(
-            "click",
-            openMobileSidebar
-        );
-
-    }
-
-
-    if (mobileOverlay) {
-
-        mobileOverlay.addEventListener(
-            "click",
-            closeMobileSidebar
-        );
-
-    }
-
-
-    function openMobileSidebar() {
-
-        sidebar?.classList.add(
-            "open"
-        );
-
-
-        mobileOverlay?.classList.add(
-            "show"
-        );
-
-    }
-
-
-    function closeMobileSidebar() {
-
-        sidebar?.classList.remove(
-            "open"
-        );
-
-
-        mobileOverlay?.classList.remove(
-            "show"
-        );
-
-    }
-
-
-    /* =====================================================
-       CLEAR CHAT
-    ===================================================== */
-
-    if (clearBtn) {
-
-        clearBtn.addEventListener(
-            "click",
-            () => {
-
-                if (
-                    conversation.length === 0
-                ) return;
-
-
-                const confirmed =
-                    confirm(
-                        "Clear this conversation?"
-                    );
-
-
-                if (confirmed) {
-
-                    newChat();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       SEARCH
-    ===================================================== */
-
-    if (searchBtn) {
-
-        searchBtn.addEventListener(
-            "click",
-            () => {
-
-                input?.focus();
-
-
-                if (input) {
-
-                    input.placeholder =
-                        "Search your conversation...";
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       SETTINGS
-    ===================================================== */
-
-    settingsBtn?.addEventListener(
-        "click",
-        () => {
-
-            alert(
-                "Settings panel coming soon."
+        if (
+            event.key === "Escape"
+        ) {
+
+            toolsPopup?.classList.remove(
+                "show"
             );
 
-        }
-    );
 
-
-    topSettingsBtn?.addEventListener(
-        "click",
-        () => {
-
-            alert(
-                "Settings panel coming soon."
-            );
+            closeMobileSidebar();
 
         }
-    );
-
-
-    /* =====================================================
-       PRO
-    ===================================================== */
-
-    proBtn?.addEventListener(
-        "click",
-        () => {
-
-            alert(
-                "Pro features coming soon."
-            );
-
-        }
-    );
-
-
-    /* =====================================================
-       KEYBOARD
-    ===================================================== */
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.ctrlKey &&
-                event.key.toLowerCase() === "k"
-            ) {
-
-                event.preventDefault();
-
-                input?.focus();
-
-            }
-
-
-            if (
-                event.key === "Escape"
-            ) {
-
-                toolsPopup?.classList.remove(
-                    "show"
-                );
-
-
-                closeMobileSidebar();
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       HELPER
-    ===================================================== */
-
-    function sleep(ms) {
-
-        return new Promise(
-            resolve =>
-                setTimeout(
-                    resolve,
-                    ms
-                )
-        );
 
     }
+);
 
 
- /* =========================================
+/* =====================================================
+   HELPER
+===================================================== */
+
+function sleep(ms) {
+
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
+
+}
+
+
+/* =====================================================
    PREMIUM AI CURSOR
-========================================= */
+===================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
+if (cursor) {
 
-    const cursor = document.querySelector(".ai-cursor");
 
-    if (!cursor) return;
+    let mouseX =
+        window.innerWidth / 2;
 
-    const core = cursor.querySelector(".cursor-core");
+    let mouseY =
+        window.innerHeight / 2;
 
-    const trails = document.querySelectorAll(".cursor-trail");
 
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
+    let cursorX =
+        mouseX;
 
-    let cursorX = mouseX;
-    let cursorY = mouseY;
+    let cursorY =
+        mouseY;
+
 
     const trailPositions = [];
 
-    trails.forEach(() => {
-        trailPositions.push({
-            x: mouseX,
-            y: mouseY
-        });
-    });
+
+    cursorTrails.forEach(
+        () => {
+
+            trailPositions.push({
+
+                x: mouseX,
+
+                y: mouseY
+
+            });
+
+        }
+    );
 
 
-    /* ================================
+    /* =================================================
        MOUSE POSITION
-    ================================= */
+    ================================================= */
 
-    document.addEventListener("mousemove", (e) => {
+    document.addEventListener(
+        "mousemove",
+        event => {
 
-        mouseX = e.clientX;
-        mouseY = e.clientY;
+            mouseX =
+                event.clientX;
 
-    });
+            mouseY =
+                event.clientY;
+
+        }
+    );
 
 
-    /* ================================
+    /* =================================================
        SMOOTH CURSOR
-    ================================= */
+    ================================================= */
 
     function animateCursor() {
 
-        cursorX += (mouseX - cursorX) * 0.18;
-        cursorY += (mouseY - cursorY) * 0.18;
-
-        cursor.style.left = cursorX + "px";
-        cursor.style.top = cursorY + "px";
+        cursorX +=
+            (mouseX - cursorX) *
+            0.18;
 
 
-        /* ================================
+        cursorY +=
+            (mouseY - cursorY) *
+            0.18;
+
+
+        cursor.style.left =
+            cursorX + "px";
+
+
+        cursor.style.top =
+            cursorY + "px";
+
+
+        /* =============================================
            TRAIL
-        ================================= */
+        ============================================= */
 
-        let previousX = cursorX;
-        let previousY = cursorY;
+        let previousX =
+            cursorX;
 
-        trails.forEach((trail, index) => {
-
-            const position = trailPositions[index];
-
-            position.x +=
-                (previousX - position.x) *
-                (0.22 - index * 0.02);
-
-            position.y +=
-                (previousY - position.y) *
-                (0.22 - index * 0.02);
-
-            trail.style.left = position.x + "px";
-            trail.style.top = position.y + "px";
-
-            const scale =
-                1 - (index * 0.12);
-
-            const opacity =
-                0.65 - (index * 0.09);
-
-            trail.style.transform =
-                `translate(-50%, -50%) scale(${scale})`;
-
-            trail.style.opacity = opacity;
-
-            previousX = position.x;
-            previousY = position.y;
-
-        });
+        let previousY =
+            cursorY;
 
 
-        requestAnimationFrame(animateCursor);
+        cursorTrails.forEach(
+            (trail, index) => {
+
+                const position =
+                    trailPositions[index];
+
+
+                if (!position) return;
+
+
+                const speed =
+                    Math.max(
+                        0.06,
+                        0.22 -
+                        index * 0.02
+                    );
+
+
+                position.x +=
+                    (previousX -
+                        position.x) *
+                    speed;
+
+
+                position.y +=
+                    (previousY -
+                        position.y) *
+                    speed;
+
+
+                trail.style.left =
+                    position.x + "px";
+
+
+                trail.style.top =
+                    position.y + "px";
+
+
+                const scale =
+                    Math.max(
+                        0.1,
+                        1 -
+                        index * 0.12
+                    );
+
+
+                const opacity =
+                    Math.max(
+                        0,
+                        0.65 -
+                        index * 0.09
+                    );
+
+
+                trail.style.transform =
+                    `translate(-50%, -50%) scale(${scale})`;
+
+
+                trail.style.opacity =
+                    opacity;
+
+
+                previousX =
+                    position.x;
+
+
+                previousY =
+                    position.y;
+
+            }
+        );
+
+
+        requestAnimationFrame(
+            animateCursor
+        );
+
     }
 
 
     animateCursor();
 
 
-    /* ================================
+    /* =================================================
        HOVER DETECTION
-    ================================= */
+    ================================================= */
 
-    const interactiveElements = document.querySelectorAll(
-        "a, button, input, textarea, select, .feature-card, .mani-ai-logo, .new-chat, [role='button']"
+    addCursorHoverEvents();
+
+
+    /* =================================================
+       CLICK ANIMATION
+    ================================================= */
+
+    document.addEventListener(
+        "mousedown",
+        () => {
+
+            document.body.classList.add(
+                "cursor-click"
+            );
+
+        }
     );
 
 
-    interactiveElements.forEach((element) => {
+    document.addEventListener(
+        "mouseup",
+        () => {
 
-        element.addEventListener("mouseenter", () => {
+            document.body.classList.remove(
+                "cursor-click"
+            );
 
-            document.body.classList.add("cursor-hover");
-
-        });
-
-
-        element.addEventListener("mouseleave", () => {
-
-            document.body.classList.remove("cursor-hover");
-
-        });
-
-    });
+        }
+    );
 
 
-    /* ================================
-       CLICK ANIMATION
-    ================================= */
-
-    document.addEventListener("mousedown", () => {
-
-        document.body.classList.add("cursor-click");
-
-    });
-
-
-    document.addEventListener("mouseup", () => {
-
-        document.body.classList.remove("cursor-click");
-
-    });
-
-
-    /* ================================
+    /* =================================================
        HIDE WHEN MOUSE LEAVES
-    ================================= */
+    ================================================= */
 
-    document.addEventListener("mouseleave", () => {
+    document.addEventListener(
+        "mouseleave",
+        () => {
 
-        cursor.style.opacity = "0";
-
-        trails.forEach((trail) => {
-            trail.style.opacity = "0";
-        });
-
-    });
+            cursor.style.opacity =
+                "0";
 
 
-    document.addEventListener("mouseenter", () => {
+            cursorTrails.forEach(
+                trail => {
 
-        cursor.style.opacity = "1";
+                    trail.style.opacity =
+                        "0";
 
-    });
+                }
+            );
+
+        }
+    );
+
+
+    /* =================================================
+       SHOW WHEN MOUSE ENTERS
+    ================================================= */
+
+    document.addEventListener(
+        "mouseenter",
+        () => {
+
+            cursor.style.opacity =
+                "1";
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CURSOR HOVER EVENTS
+===================================================== */
+
+function addCursorHoverEvents() {
+
+    const interactiveElements =
+        document.querySelectorAll(
+            "a, button, input, textarea, select, .feature-card, .quick-card, .mani-ai-logo, .new-chat, .conversation, [role='button']"
+        );
+
+
+    interactiveElements.forEach(
+        element => {
+
+            if (
+                element.dataset.cursorHoverBound ===
+                "true"
+            ) {
+
+                return;
+
+            }
+
+
+            element.dataset.cursorHoverBound =
+                "true";
+
+
+            element.addEventListener(
+                "mouseenter",
+                () => {
+
+                    document.body.classList.add(
+                        "cursor-hover"
+                    );
+
+                }
+            );
+
+
+            element.addEventListener(
+                "mouseleave",
+                () => {
+
+                    document.body.classList.remove(
+                        "cursor-hover"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
 
 });
