@@ -115,15 +115,22 @@ export default async function handler(req, res) {
                 /* =============================================
                    POLLINATIONS IMAGE URL
                 ============================================= */
-
                 const imageUrl =
-                    `https://gen.pollinations.ai/image/${encodeURIComponent(finalPrompt)}?model=flux&key=${encodeURIComponent(pollinationsKey)}`;
-
-
+                    `https://gen.pollinations.ai/image/${encodeURIComponent(finalPrompt)}?model=flux`;
+                
+                const imageResponse = await fetch(
+                    imageUrl,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer ${pollinationsKey}`,
+                            "Accept": "image/*"
+                        }
+                    }
+                );
                 console.log(
                     "Pollinations URL created."
                 );
-
 
                 /* =============================================
                    FETCH IMAGE
