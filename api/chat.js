@@ -1,836 +1,477 @@
-import { useState, useRef, useEffect } from "react";
+export default async function handler(req, res) {
+    /*
+    =====================================================
+    METHOD CHECK
+    =====================================================
+    */
 
-export default function Chat() {
-    const [messages, setMessages] = useState([
-        {
-            role: "assistant",
-            content:
-                "It's nice to meet you. Is there something I can help you with, or would you like to chat?",
-            type: "text",
-        },
-    ]);
-
-    const [input, setInput] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [webSearch, setWebSearch] = useState(false);
-
-    const messagesEndRef = useRef(null);
-
-    /* =====================================================
-       AUTO SCROLL
-    ===================================================== */
-
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({
-            behavior: "smooth",
+    if (req.method !== "POST") {
+        return res.status(405).json({
+            error: "Method not allowed"
         });
-    }, [messages, loading]);
+    }
 
+    try {
+        /*
+        =====================================================
+        REQUEST BODY
+        =====================================================
+        */
 
-    /* =====================================================
-       IMAGE REQUEST DETECTION
-    ===================================================== */
+        const body = req.body || {};
 
-    const isImageRequest = (text) => {
-        return /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of|create image|make picture|generate picture|show me an image|show image|generate photo|create photo|make photo|create a photo|generate img|create img|make img/i.test(
-            text
-        );
-    };
+        const messages = body.messages || [];
+        const webSearch = body.webSearch || false;
 
+        /*
+        =====================================================
+        VALIDATE MESSAGES
+        =====================================================
+        */
 
-    /* =====================================================
-       SEND MESSAGE
-    ===================================================== */
-
-    const sendMessage = async () => {
-        const text = input.trim();
-
-        if (!text || loading) {
-            return;
+        if (!Array.isArray(messages) || messages.length === 0) {
+            return res.status(400).json({
+                error: "Messages are missing."
+            });
         }
 
-        /* ================================================
-           ADD USER MESSAGE
-        ================================================ */
+        /*
+        =====================================================
+        LAST USER MESSAGE
+        =====================================================
+        */
 
-        const userMessage = {
-            role: "user",
-            content: text,
-            type: "text",
-        };
+        const lastMessage =
+            messages[messages.length - 1]?.content || "";
 
-        const updatedMessages = [
-            ...messages,
-            userMessage,
-        ];
+        /*
+        =====================================================
+        IMAGE REQUEST DETECTION
+        =====================================================
+        */
 
-        setMessages(updatedMessages);
-        setInput("");
-        setLoading(true);
+        const wantsImage =
+            /create\s+(an?\s+)?image|generate\s+(an?\s+)?image|make\s+(an?\s+)?image|generate\s+(an?\s+)?picture|create\s+(an?\s+)?picture|draw|image\s+of|create\s+image|make\s+picture|generate\s+picture|show\s+me\s+(an?\s+)?image|show\s+image|generate\s+photo|create\s+photo|make\s+photo/i.test(
+                lastMessage
+            );
 
+        /*
+        =====================================================
+        IMAGE GENERATION
+        =====================================================
+        */
+
+        if (wantsImage) {
+
+            const pollinationsKey =
+                process.env.POLLINATIONS_API_KEY;
+
+            /*
+            =================================================
+            CHECK POLLINATIONS KEY
+            =================================================
+            */
+
+            if (!pollinationsKey) {
+
+                console.error(
+                    "POLLINATIONS_API_KEY is missing."
+                );
+
+                return res.status(500).json({
+                    type: "error",
+                    error:
+                        "POLLINATIONS_API_KEY is not configured in Vercel."
+                });
+            }
+
+            try {
+
+                /*
+                =============================================
+                CLEAN IMAGE PROMPT
+                =============================================
+                */
+
+                let imagePrompt = lastMessage
+                    .replace(
+                        /^\s*(please\s*)?(create|generate|make|draw|show\s+me)\s+(an?\s+)?(image|picture|photo)\s*(of\s*)?/i,
+                        ""
+                    )
+                    .trim();
+
+                /*
+                =============================================
+                HANDLE "generate image of panda"
+                =============================================
+                */
+
+                imagePrompt = imagePrompt
+                    .replace(/^of\s+/i, "")
+                    .trim();
+
+                const finalPrompt =
+                    imagePrompt || lastMessage;
+
+                console.log(
+                    "Generating image:",
+                    finalPrompt
+                );
+
+                /*
+                =============================================
+                POLLINATIONS URL
+                =============================================
+                */
+
+                const imageUrl =
+                    `https://gen.pollinations.ai/image/${encodeURIComponent(
+                        finalPrompt
+                    )}?model=flux`;
+
+                console.log(
+                    "Pollinations request started"
+                );
+
+                /*
+                =============================================
+                FETCH IMAGE
+                =============================================
+                */
+
+                const imageResponse =
+                    await fetch(
+                        imageUrl,
+                        {
+                            method: "GET",
+
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${pollinationsKey}`,
+
+                                "Accept":
+                                    "image/*"
+                            }
+                        }
+                    );
+
+                /*
+                =============================================
+                IMAGE API ERROR
+                =============================================
+                */
+
+                if (!imageResponse.ok) {
+
+                    const errorText =
+                        await imageResponse.text();
+
+                    console.error(
+                        "Pollinations ERROR:",
+                        imageResponse.status,
+                        errorText
+                    );
+
+                    return res.status(
+                        imageResponse.status
+                    ).json({
+
+                        type: "error",
+
+                        error:
+                            `Pollinations error ${imageResponse.status}: ${errorText || "Image generation failed."}`
+                    });
+                }
+
+                /*
+                =============================================
+                GET IMAGE BUFFER
+                =============================================
+                */
+
+                const imageBuffer =
+                    await imageResponse.arrayBuffer();
+
+                /*
+                =============================================
+                CONVERT TO BASE64
+                =============================================
+                */
+
+                const base64Image =
+                    Buffer
+                        .from(imageBuffer)
+                        .toString("base64");
+
+                /*
+                =============================================
+                CONTENT TYPE
+                =============================================
+                */
+
+                const contentType =
+                    imageResponse.headers.get(
+                        "content-type"
+                    ) || "image/jpeg";
+
+                /*
+                =============================================
+                FINAL IMAGE DATA
+                =============================================
+                */
+
+                const imageData =
+                    `data:${contentType};base64,${base64Image}`;
+
+                /*
+                =============================================
+                RETURN IMAGE
+                =============================================
+                */
+
+                return res.status(200).json({
+
+                    type: "image",
+
+                    reply:
+                        "✨ Here is the image I created for you:",
+
+                    image:
+                        imageData
+
+                });
+
+            } catch (imageError) {
+
+                console.error(
+                    "IMAGE GENERATION ERROR:",
+                    imageError
+                );
+
+                return res.status(500).json({
+
+                    type: "error",
+
+                    error:
+                        imageError?.message ||
+                        "Image generation failed."
+
+                });
+            }
+        }
+
+        /*
+        =====================================================
+        GROQ API KEY
+        =====================================================
+        */
+
+        const groqApiKey =
+            process.env.GROQ_API_KEY;
+
+        if (!groqApiKey) {
+
+            console.error(
+                "GROQ_API_KEY is missing."
+            );
+
+            return res.status(500).json({
+
+                type: "error",
+
+                error:
+                    "GROQ_API_KEY is not configured in Vercel."
+
+            });
+        }
+
+        /*
+        =====================================================
+        GROQ API
+        =====================================================
+        */
+
+        console.log(
+            "Sending request to Groq..."
+        );
+
+        const groqResponse =
+            await fetch(
+                "https://api.groq.com/openai/v1/chat/completions",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${groqApiKey}`
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            model:
+                                "llama-3.3-70b-versatile",
+
+                            messages:
+                                messages,
+
+                            temperature:
+                                0.7,
+
+                            max_tokens:
+                                1500
+
+                        })
+
+                }
+            );
+
+        /*
+        =====================================================
+        READ GROQ RESPONSE
+        =====================================================
+        */
+
+        const responseText =
+            await groqResponse.text();
+
+        console.log(
+            "Groq status:",
+            groqResponse.status
+        );
+
+        let groqData = null;
 
         try {
 
-            /* ============================================
-               CALL API
-            ============================================ */
+            groqData =
+                JSON.parse(responseText);
 
-            const response = await fetch("/api/chats", {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                },
-
-                body: JSON.stringify({
-                    messages: updatedMessages.map((message) => ({
-                        role: message.role,
-                        content: message.content,
-                    })),
-
-                    webSearch: webSearch,
-                }),
-            });
-
-
-            /* ============================================
-               READ RESPONSE
-            ============================================ */
-
-            const responseText = await response.text();
-
-            let data;
-
-            try {
-                data = JSON.parse(responseText);
-            } catch (parseError) {
-
-                console.error(
-                    "Invalid JSON from server:",
-                    responseText
-                );
-
-                throw new Error(
-                    `Server returned invalid response (${response.status}).`
-                );
-            }
-
-
-            /* ============================================
-               API ERROR
-            ============================================ */
-
-            if (!response.ok) {
-
-                console.error(
-                    "API Error:",
-                    data
-                );
-
-                throw new Error(
-                    data?.error ||
-                    `Server returned an invalid response (${response.status}).`
-                );
-            }
-
-
-            /* ============================================
-               IMAGE RESPONSE
-            ============================================ */
-
-            if (
-                data?.type === "image" &&
-                data?.image
-            ) {
-
-                setMessages((prev) => [
-                    ...prev,
-
-                    {
-                        role: "assistant",
-                        content:
-                            data.reply ||
-                            "✨ Here is the image I created for you:",
-
-                        type: "image",
-
-                        image:
-                            data.image,
-                    },
-                ]);
-
-                return;
-            }
-
-
-            /* ============================================
-               TEXT RESPONSE
-            ============================================ */
-
-            if (data?.type === "text") {
-
-                setMessages((prev) => [
-                    ...prev,
-
-                    {
-                        role: "assistant",
-
-                        content:
-                            data.reply ||
-                            "Sorry, I couldn't generate a response.",
-
-                        type: "text",
-                    },
-                ]);
-
-                return;
-            }
-
-
-            /* ============================================
-               UNKNOWN RESPONSE
-            ============================================ */
-
-            setMessages((prev) => [
-                ...prev,
-
-                {
-                    role: "assistant",
-
-                    content:
-                        "⚠️ Unexpected response from server.",
-
-                    type: "text",
-                },
-            ]);
-
-        } catch (error) {
+        } catch (parseError) {
 
             console.error(
-                "CHAT ERROR:",
-                error
+                "Groq returned non-JSON:",
+                responseText
             );
 
+            return res.status(500).json({
 
-            /* ============================================
-               ERROR MESSAGE
-            ============================================ */
+                type: "error",
 
-            setMessages((prev) => [
-                ...prev,
+                error:
+                    "Groq returned an invalid response.",
 
-                {
-                    role: "assistant",
+                details:
+                    responseText
 
-                    content:
-                        `⚠️ ${error.message || "Something went wrong."}`,
-
-                    type: "error",
-                },
-            ]);
-
-        } finally {
-
-            setLoading(false);
-
+            });
         }
-    };
 
+        /*
+        =====================================================
+        GROQ API ERROR
+        =====================================================
+        */
 
-    /* =====================================================
-       ENTER KEY
-    ===================================================== */
+        if (!groqResponse.ok) {
 
-    const handleKeyDown = (event) => {
+            console.error(
+                "Groq API ERROR:",
+                groqData
+            );
 
-        if (
-            event.key === "Enter" &&
-            !event.shiftKey
-        ) {
+            return res.status(
+                groqResponse.status
+            ).json({
 
-            event.preventDefault();
+                type: "error",
 
-            sendMessage();
+                error:
+                    groqData?.error?.message ||
+                    "Groq API error."
+
+            });
         }
-    };
 
+        /*
+        =====================================================
+        GET GROQ REPLY
+        =====================================================
+        */
 
-    /* =====================================================
-       NEW CHAT
-    ===================================================== */
+        const reply =
+            groqData
+                ?.choices?.[0]
+                ?.message?.content;
 
-    const newChat = () => {
+        /*
+        =====================================================
+        NO REPLY
+        =====================================================
+        */
 
-        setMessages([
-            {
-                role: "assistant",
+        if (!reply) {
 
-                content:
-                    "It's nice to meet you. Is there something I can help you with, or would you like to chat?",
+            console.error(
+                "Groq response has no reply:",
+                groqData
+            );
 
-                type: "text",
-            },
-        ]);
+            return res.status(500).json({
 
-        setInput("");
-    };
+                type: "error",
 
+                error:
+                    "No reply received from Groq."
 
-    /* =====================================================
-       RENDER
-    ===================================================== */
+            });
+        }
 
-    return (
-        <div className="chat-page">
+        /*
+        =====================================================
+        NORMAL CHAT RESPONSE
+        =====================================================
+        */
 
-            <div className="chat-container">
+        return res.status(200).json({
 
-                {/* =========================================
-                    CHAT MESSAGES
-                ========================================= */}
+            type: "text",
 
-                <div className="messages-container">
+            reply:
+                reply,
 
-                    {messages.map(
-                        (message, index) => (
+            webSearch:
+                webSearch
 
-                            <div
-                                key={index}
-                                className={
-                                    message.role === "user"
-                                        ? "message-row user-row"
-                                        : "message-row assistant-row"
-                                }
-                            >
+        });
 
-                                <div
-                                    className={
-                                        message.role === "user"
-                                            ? "message user-message"
-                                            : "message assistant-message"
-                                    }
-                                >
+    } catch (error) {
 
-                                    {/* =========================
-                                        IMAGE
-                                    ========================= */}
+        /*
+        =====================================================
+        GENERAL SERVER ERROR
+        =====================================================
+        */
 
-                                    {message.type === "image" &&
-                                        message.image && (
-                                            <div className="image-response">
+        console.error(
+            "API ERROR:",
+            error
+        );
 
-                                                {message.content && (
-                                                    <p className="image-text">
-                                                        {message.content}
-                                                    </p>
-                                                )}
+        return res.status(500).json({
 
-                                                <img
-                                                    src={message.image}
-                                                    alt="AI generated"
-                                                    className="generated-image"
-                                                />
+            type: "error",
 
-                                            </div>
-                                        )}
+            error:
+                error?.message ||
+                "Server error."
 
-
-                                    {/* =========================
-                                        TEXT
-                                    ========================= */}
-
-                                    {message.type !== "image" && (
-                                        <div className="message-text">
-                                            {message.content}
-                                        </div>
-                                    )}
-
-                                </div>
-
-                            </div>
-
-                        )
-                    )}
-
-
-                    {/* =========================================
-                        LOADING
-                    ========================================= */}
-
-                    {loading && (
-                        <div className="message-row assistant-row">
-
-                            <div className="message assistant-message loading-message">
-
-                                <span className="loading-dot"></span>
-                                <span className="loading-dot"></span>
-                                <span className="loading-dot"></span>
-
-                            </div>
-
-                        </div>
-                    )}
-
-                    <div ref={messagesEndRef}></div>
-
-                </div>
-
-
-                {/* =========================================
-                    INPUT AREA
-                ========================================= */}
-
-                <div className="input-wrapper">
-
-                    <textarea
-                        value={input}
-                        onChange={(event) =>
-                            setInput(event.target.value)
-                        }
-                        onKeyDown={handleKeyDown}
-                        placeholder="Message Mini AI..."
-                        rows={1}
-                        disabled={loading}
-                    />
-
-
-                    {/* =====================================
-                        BOTTOM OPTIONS
-                    ===================================== */}
-
-                    <div className="input-bottom">
-
-                        <div className="input-tools">
-
-                            <button
-                                type="button"
-                                title="Add"
-                                onClick={() => {}}
-                            >
-                                +
-                            </button>
-
-
-                            <button
-                                type="button"
-                                title="Web Search"
-                                className={
-                                    webSearch
-                                        ? "tool-active"
-                                        : ""
-                                }
-                                onClick={() =>
-                                    setWebSearch(
-                                        !webSearch
-                                    )
-                                }
-                            >
-                                ◉
-                            </button>
-
-
-                            <button
-                                type="button"
-                                title="Search"
-                                onClick={() => {}}
-                            >
-                                ⌕
-                            </button>
-
-
-                            <button
-                                type="button"
-                                title="AI"
-                                onClick={() => {}}
-                            >
-                                ✦
-                            </button>
-
-                        </div>
-
-
-                        <div className="input-actions">
-
-                            <button
-                                type="button"
-                                className="music-button"
-                                title="Music"
-                                onClick={() => {}}
-                            >
-                                ♫
-                            </button>
-
-
-                            <button
-                                type="button"
-                                className="send-button"
-                                onClick={sendMessage}
-                                disabled={
-                                    loading ||
-                                    !input.trim()
-                                }
-                            >
-                                ↑
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {/* =========================================
-                    NEW CHAT
-                ========================================= */}
-
-                <button
-                    type="button"
-                    onClick={newChat}
-                    className="new-chat-hidden"
-                >
-                    New Chat
-                </button>
-
-            </div>
-
-
-            {/* =============================================
-                INLINE STYLES
-            ============================================= */}
-
-            <style jsx>{`
-
-                .chat-page {
-                    width: 100%;
-                    height: 100vh;
-                    background: #030616;
-                    color: #ffffff;
-                    overflow: hidden;
-                }
-
-
-                .chat-container {
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                }
-
-
-                .messages-container {
-                    flex: 1;
-                    width: 100%;
-                    max-width: 1100px;
-                    margin: 0 auto;
-                    padding: 50px 30px 180px;
-                    overflow-y: auto;
-                    box-sizing: border-box;
-                }
-
-
-                .message-row {
-                    width: 100%;
-                    display: flex;
-                    margin-bottom: 28px;
-                }
-
-
-                .user-row {
-                    justify-content: flex-end;
-                }
-
-
-                .assistant-row {
-                    justify-content: flex-start;
-                }
-
-
-                .message {
-                    max-width: 75%;
-                    padding: 15px 18px;
-                    border-radius: 14px;
-                    font-size: 14px;
-                    line-height: 1.7;
-                    box-sizing: border-box;
-                }
-
-
-                .user-message {
-                    background: linear-gradient(
-                        135deg,
-                        #743cff,
-                        #5542ff
-                    );
-
-                    border-radius: 15px 15px 5px 15px;
-                }
-
-
-                .assistant-message {
-                    background: #11182e;
-                    border: 1px solid rgba(
-                        255,
-                        255,
-                        255,
-                        0.06
-                    );
-
-                    border-radius: 7px 15px 15px 15px;
-                }
-
-
-                .error {
-                    color: #ffffff;
-                    background: #11182e;
-                    border: 1px solid rgba(
-                        255,
-                        100,
-                        100,
-                        0.2
-                    );
-                }
-
-
-                .message-text {
-                    white-space: pre-wrap;
-                    word-break: break-word;
-                }
-
-
-                .image-response {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 14px;
-                }
-
-
-                .image-text {
-                    margin: 0;
-                }
-
-
-                .generated-image {
-                    display: block;
-                    width: 100%;
-                    max-width: 700px;
-                    height: auto;
-                    border-radius: 12px;
-                    border: 1px solid rgba(
-                        255,
-                        255,
-                        255,
-                        0.1
-                    );
-                }
-
-
-                .input-wrapper {
-                    position: fixed;
-                    left: 50%;
-                    bottom: 25px;
-                    transform: translateX(-50%);
-
-                    width: min(
-                        775px,
-                        calc(100% - 40px)
-                    );
-
-                    min-height: 105px;
-
-                    background: rgba(
-                        22,
-                        20,
-                        55,
-                        0.95
-                    );
-
-                    border: 1px solid #7542ff;
-                    border-radius: 16px;
-
-                    box-shadow:
-                        0 0 35px rgba(
-                            111,
-                            61,
-                            255,
-                            0.12
-                        );
-
-                    z-index: 50;
-                }
-
-
-                .input-wrapper textarea {
-                    width: 100%;
-                    height: 65px;
-                    resize: none;
-                    border: 0;
-                    outline: none;
-
-                    background: transparent;
-                    color: #ffffff;
-
-                    padding: 18px 55px 5px 16px;
-
-                    box-sizing: border-box;
-
-                    font-size: 14px;
-                    font-family: inherit;
-                }
-
-
-                .input-wrapper textarea::placeholder {
-                    color: #73758b;
-                }
-
-
-                .input-bottom {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-
-                    padding: 4px 12px 10px;
-                }
-
-
-                .input-tools,
-                .input-actions {
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                }
-
-
-                .input-tools button,
-                .music-button {
-                    width: 25px;
-                    height: 25px;
-
-                    border: 0;
-                    background: transparent;
-                    color: #8b8da5;
-
-                    cursor: pointer;
-                    font-size: 16px;
-
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-
-                .input-tools button:hover,
-                .music-button:hover {
-                    color: #ffffff;
-                }
-
-
-                .tool-active {
-                    color: #9c6cff !important;
-                }
-
-
-                .send-button {
-                    width: 38px;
-                    height: 38px;
-
-                    border: 0;
-                    border-radius: 50%;
-
-                    background: linear-gradient(
-                        135deg,
-                        #7542ff,
-                        #6254ff
-                    );
-
-                    color: #ffffff;
-
-                    font-size: 22px;
-                    cursor: pointer;
-
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-
-                .send-button:disabled {
-                    opacity: 0.45;
-                    cursor: not-allowed;
-                }
-
-
-                .loading-message {
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                    padding: 14px 18px;
-                }
-
-
-                .loading-dot {
-                    width: 6px;
-                    height: 6px;
-                    border-radius: 50%;
-                    background: #8d6cff;
-
-                    animation: loading 1.2s infinite;
-                }
-
-
-                .loading-dot:nth-child(2) {
-                    animation-delay: 0.15s;
-                }
-
-
-                .loading-dot:nth-child(3) {
-                    animation-delay: 0.3s;
-                }
-
-
-                @keyframes loading {
-
-                    0%,
-                    80%,
-                    100% {
-                        opacity: 0.3;
-                        transform: translateY(0);
-                    }
-
-                    40% {
-                        opacity: 1;
-                        transform: translateY(-4px);
-                    }
-                }
-
-
-                .new-chat-hidden {
-                    display: none;
-                }
-
-
-                @media (max-width: 768px) {
-
-                    .messages-container {
-                        padding-left: 15px;
-                        padding-right: 15px;
-                    }
-
-
-                    .message {
-                        max-width: 90%;
-                    }
-
-
-                    .input-wrapper {
-                        width: calc(100% - 20px);
-                        bottom: 10px;
-                    }
-
-                }
-
-            `}</style>
-
-        </div>
-    );
+        });
+    }
 }
