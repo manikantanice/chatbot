@@ -335,32 +335,22 @@ button {
 .sidebar-bottom {
     position: relative;
     z-index: 2;
-
     padding: 12px;
 }
 
 .sidebar-bottom-btn {
     width: 100%;
-
     display: flex;
     align-items: center;
-
     gap: 9px;
-
     padding: 10px;
-
+   font-size: 17px;
     border: 0;
-
     border-radius: 9px;
-
     background: transparent;
-
     color: #818ba4;
-
     text-align: left;
-
     cursor: pointer;
-
     transition: .2s ease;
 }
 
