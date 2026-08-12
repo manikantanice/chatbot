@@ -2273,72 +2273,274 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
     }
-
-
     handleCursorDevice();
-
-
     window.addEventListener(
         "resize",
         handleCursorDevice
     );
 
 });
-const sparkleContainer =
-    document.querySelector(".sparkle-container");
+/* =========================================
+   PREMIUM CURSOR + 4 BUTTERFLIES
+========================================= */
 
-let lastSparkleTime = 0;
+const butterflyCount = 4;
+
+const butterflies = [];
+
+let mouseX = window.innerWidth / 2;
+let mouseY = window.innerHeight / 2;
+
+
+/* =========================================
+   MOUSE POSITION
+========================================= */
 
 document.addEventListener("mousemove", (e) => {
 
-    const now = Date.now();
+    mouseX = e.clientX;
+    mouseY = e.clientY;
 
-    // Don't create too many sparkles
-    if (now - lastSparkleTime < 100) {
-        return;
-    }
-
-    lastSparkleTime = now;
-
-    // Create 1 small sparkle
-    const sparkle = document.createElement("span");
-
-    sparkle.className = "sparkle";
-
-    sparkle.style.left =
-        (e.clientX + (Math.random() * 30 - 15)) + "px";
-
-    sparkle.style.top =
-        (e.clientY + (Math.random() * 30 - 15)) + "px";
-
-    sparkleContainer.appendChild(sparkle);
-
-    setTimeout(() => {
-        sparkle.remove();
-    }, 900);
 });
 
 
-const butterflies = document.querySelectorAll(".butterfly");
+/* =========================================
+   CREATE 4 BUTTERFLIES
+========================================= */
 
-document.addEventListener("mousemove", (e) => {
+for (let i = 0; i < butterflyCount; i++) {
 
-    const positions = [
-        { x: 12, y: -8 },
-        { x: -14, y: -12 },
-        { x: 15, y: 10 },
-        { x: -12, y: 14 }
-    ];
+    const butterfly =
+        document.createElement("div");
 
-    butterflies.forEach((butterfly, index) => {
+    butterfly.className =
+        "cursor-butterfly";
 
-        butterfly.style.left =
-            (e.clientX + positions[index].x) + "px";
+    document.body.appendChild(
+        butterfly
+    );
 
-        butterfly.style.top =
-            (e.clientY + positions[index].y) + "px";
 
-        butterfly.style.opacity = "1";
+    butterflies.push({
+
+        element: butterfly,
+
+        x: mouseX,
+
+        y: mouseY,
+
+        angle:
+            (Math.PI * 2 / butterflyCount) * i,
+
+        distance:
+            25 + (i * 8),
+
+        speed:
+            0.025 + (i * 0.004),
+
+        phase:
+            Math.random() * Math.PI * 2
+
     });
+}
 
-});
+
+/* =========================================
+   BUTTERFLY ANIMATION
+========================================= */
+
+function animateButterflies() {
+
+    butterflies.forEach(
+        (butterfly, index) => {
+
+            butterfly.phase +=
+                butterfly.speed;
+
+
+            /*
+             * Each butterfly gets
+             * slightly different movement
+             */
+
+            const waveX =
+                Math.sin(
+                    butterfly.phase * 1.7 +
+                    index
+                ) * 18;
+
+
+            const waveY =
+                Math.cos(
+                    butterfly.phase * 2.1 +
+                    index
+                ) * 14;
+
+
+            /*
+             * Circular formation
+             */
+
+            const targetX =
+                mouseX +
+                Math.cos(
+                    butterfly.angle +
+                    butterfly.phase * .35
+                ) *
+                butterfly.distance +
+                waveX;
+
+
+            const targetY =
+                mouseY +
+                Math.sin(
+                    butterfly.angle +
+                    butterfly.phase * .35
+                ) *
+                butterfly.distance +
+                waveY;
+
+
+            /*
+             * Smooth following
+             */
+
+            butterfly.x +=
+                (targetX - butterfly.x) *
+                0.08;
+
+
+            butterfly.y +=
+                (targetY - butterfly.y) *
+                0.08;
+
+
+            butterfly.element.style.left =
+                butterfly.x + "px";
+
+
+            butterfly.element.style.top =
+                butterfly.y + "px";
+
+
+            /*
+             * Butterfly rotation
+             */
+
+            const rotation =
+                Math.sin(
+                    butterfly.phase * 2
+                ) * 18;
+
+
+            butterfly.element.style.transform =
+                `translate(-50%, -50%)
+                 rotate(${rotation}deg)
+                 scale(${0.75 + index * 0.05})`;
+        }
+    );
+
+
+    requestAnimationFrame(
+        animateButterflies
+    );
+}
+
+
+animateButterflies();
+
+
+/* =========================================
+   SPARKLES
+========================================= */
+
+let lastSparkle =
+    0;
+
+
+document.addEventListener(
+    "mousemove",
+    (e) => {
+
+        const now =
+            Date.now();
+
+
+        /*
+         * Limit sparkles
+         */
+
+        if (
+            now - lastSparkle <
+            90
+        ) {
+            return;
+        }
+
+
+        lastSparkle =
+            now;
+
+
+        const sparkle =
+            document.createElement(
+                "span"
+            );
+
+
+        sparkle.className =
+            "cursor-sparkle";
+
+
+        /*
+         * Small random offset
+         */
+
+        sparkle.style.left =
+            (
+                e.clientX +
+                (Math.random() * 35 - 17)
+            ) + "px";
+
+
+        sparkle.style.top =
+            (
+                e.clientY +
+                (Math.random() * 35 - 17)
+            ) + "px";
+
+
+        /*
+         * Random size
+         */
+
+        const size =
+            2 +
+            Math.random() * 4;
+
+
+        sparkle.style.width =
+            size + "px";
+
+
+        sparkle.style.height =
+            size + "px";
+
+
+        document.body.appendChild(
+            sparkle
+        );
+
+
+        setTimeout(
+            () => {
+
+                sparkle.remove();
+
+            },
+            900
+        );
+
+    }
+);
+
