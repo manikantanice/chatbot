@@ -1,1113 +1,868 @@
-/* =========================================================
-   MINI AI
-   FRONTEND FUNCTIONALITY
-========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* =========================================
+       ELEMENTS
+    ========================================= */
+
+    const input = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const chatMessages = document.getElementById("chatMessages");
+
+    const plusBtn = document.getElementById("plusBtn");
+    const toolsPopup = document.getElementById("toolsPopup");
+
+    const webBtn = document.getElementById("webBtn");
+
+    const attachBtn = document.getElementById("attachBtn");
+    const fileInput = document.getElementById("fileInput");
+
+    const attachmentPreview =
+        document.getElementById("attachmentPreview");
+
+    const magicBtn = document.getElementById("magicBtn");
+
+    const micBtn = document.getElementById("micBtn");
+
+    const composerExpand =
+        document.getElementById("composerExpand");
 
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+    /* =========================================
+       STATE
+    ========================================= */
 
-const input =
-    document.getElementById("userInput");
+    let selectedFiles = [];
 
-const sendButton =
-    document.getElementById("sendButton");
+    let webMode = false;
 
-const messagesBox =
-    document.getElementById("chatMessages");
+    let isSending = false;
 
-const welcomeScreen =
-    document.getElementById("welcomeScreen");
-
-const newChatButton =
-    document.getElementById("newChat");
-
-const menuButton =
-    document.getElementById("menuBtn");
-
-const sidebar =
-    document.getElementById("sidebar");
-
-const recentList =
-    document.getElementById("recentList");
-
-const themeButton =
-    document.getElementById("themeButton");
-
-const githubButton =
-    document.getElementById("githubButton");
-
-const micButton =
-    document.getElementById("micButton");
+    let conversation = [];
 
 
-/* =========================================================
-   STATE
-========================================================= */
+    /* =========================================
+       AUTO RESIZE TEXTAREA
+    ========================================= */
 
-const SYSTEM_MESSAGE = {
+    function autoResize() {
 
-    role: "system",
+        input.style.height = "auto";
 
-    content:
-        `You are Mini AI, a highly capable, helpful,
-friendly and intelligent AI assistant.
-
-Give accurate, clear and useful answers.
-
-When the user asks coding questions,
-provide working code with explanations.
-
-When appropriate, use headings,
-bullet points and examples.
-
-Do not unnecessarily repeat the user's question.`
-};
-
-
-let messages = [
-    SYSTEM_MESSAGE
-];
-
-
-let isSending = false;
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        input.focus();
-
-        loadTheme();
-
-        createWelcomeParticles();
-
-    }
-);
-
-
-/* =========================================================
-   SEND MESSAGE
-========================================================= */
-
-async function sendMessage() {
-
-
-    if (isSending) {
-
-        return;
-
+        input.style.height =
+            Math.min(input.scrollHeight, 180) + "px";
     }
 
+    input.addEventListener("input", autoResize);
 
-    const text =
-        input.value.trim();
 
+    /* =========================================
+       ENTER TO SEND
+    ========================================= */
 
-    if (!text) {
-
-        return;
-
-    }
-
-
-    isSending = true;
-
-
-    sendButton.disabled = true;
-
-    sendButton.classList.add("sending");
-
-
-    /* Hide welcome */
-
-    welcomeScreen.classList.add("hidden");
-
-
-    /* User message */
-
-    addMessage(
-        text,
-        "user"
-    );
-
-
-    /* Store message */
-
-    messages.push({
-
-        role: "user",
-
-        content: text
-
-    });
-
-
-    /* Add recent chat */
-
-    addRecentChat(text);
-
-
-    /* Clear input */
-
-    input.value = "";
-
-    resetTextarea();
-
-
-    /* Loading */
-
-    const loading =
-        addTypingMessage();
-
-
-    try {
-
-
-        const response =
-            await fetch(
-                "/api/chat",
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            messages:
-                                messages
-
-                        })
-
-                }
-            );
-
-
-        let data;
-
-
-        try {
-
-            data =
-                await response.json();
-
-        } catch {
-
-            throw new Error(
-                "Server returned an invalid response."
-            );
-
-        }
-
-
-        /* Remove loading */
-
-        loading.remove();
-
-
-        /* API error */
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                `Request failed (${response.status})`
-            );
-
-        }
-
-
-        if (!data.reply) {
-
-            throw new Error(
-                "AI did not return a response."
-            );
-
-        }
-
-
-        /* AI response */
-
-        await addBotMessage(
-            data.reply
-        );
-
-
-        /* Save conversation */
-
-        messages.push({
-
-            role: "assistant",
-
-            content: data.reply
-
-        });
-
-
-    } catch (error) {
-
-
-        console.error(
-            "Mini AI Error:",
-            error
-        );
-
-
-        if (loading) {
-
-            loading.remove();
-
-        }
-
-
-        addMessage(
-
-            "⚠️ " +
-            getFriendlyError(
-                error
-            ),
-
-            "error"
-
-        );
-
-    }
-
-
-    isSending = false;
-
-    sendButton.disabled = false;
-
-    sendButton.classList.remove(
-        "sending"
-    );
-
-    input.focus();
-
-}
-
-
-/* =========================================================
-   ERROR MESSAGE
-========================================================= */
-
-function getFriendlyError(error) {
-
-    const message =
-        error?.message ||
-        "Something went wrong.";
-
-
-    if (
-        message.includes(
-            "Failed to fetch"
-        )
-    ) {
-
-        return (
-            "Unable to connect to Mini AI. " +
-            "Please check your internet connection " +
-            "or Vercel API configuration."
-        );
-
-    }
-
-
-    return message;
-
-}
-
-
-/* =========================================================
-   ADD MESSAGE
-========================================================= */
-
-function addMessage(
-    text,
-    type
-) {
-
-
-    const message =
-        document.createElement(
-            "div"
-        );
-
-
-    message.className =
-        "message " + type;
-
-
-    const bubble =
-        document.createElement(
-            "div"
-        );
-
-
-    bubble.className =
-        "message-bubble";
-
-
-    bubble.textContent =
-        text;
-
-
-    message.appendChild(
-        bubble
-    );
-
-
-    messagesBox.appendChild(
-        message
-    );
-
-
-    scrollMessages();
-
-
-    return message;
-
-}
-
-
-/* =========================================================
-   AI MESSAGE
-   TYPING EFFECT
-========================================================= */
-
-async function addBotMessage(
-    text
-) {
-
-
-    const message =
-        document.createElement(
-            "div"
-        );
-
-
-    message.className =
-        "message bot";
-
-
-    const bubble =
-        document.createElement(
-            "div"
-        );
-
-
-    bubble.className =
-        "message-bubble";
-
-
-    message.appendChild(
-        bubble
-    );
-
-
-    messagesBox.appendChild(
-        message
-    );
-
-
-    scrollMessages();
-
-
-    /* Typing effect */
-
-    for (
-        let i = 0;
-        i < text.length;
-        i++
-    ) {
-
-
-        bubble.textContent +=
-            text[i];
-
-
-        /* Speed */
-
-        let speed = 10;
-
-
-        if (
-            text[i] === "." ||
-            text[i] === "," ||
-            text[i] === "!"
-        ) {
-
-            speed = 35;
-
-        }
-
-
-        await sleep(
-            speed
-        );
-
-
-        scrollMessages();
-
-    }
-
-
-    return message;
-
-}
-
-
-/* =========================================================
-   TYPING INDICATOR
-========================================================= */
-
-function addTypingMessage() {
-
-
-    const message =
-        document.createElement(
-            "div"
-        );
-
-
-    message.className =
-        "message bot";
-
-
-    const bubble =
-        document.createElement(
-            "div"
-        );
-
-
-    bubble.className =
-        "message-bubble typing-bubble";
-
-
-    bubble.innerHTML = `
-
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-        <span class="typing-dot"></span>
-
-    `;
-
-
-    message.appendChild(
-        bubble
-    );
-
-
-    messagesBox.appendChild(
-        message
-    );
-
-
-    scrollMessages();
-
-
-    return message;
-
-}
-
-
-/* =========================================================
-   SCROLL
-========================================================= */
-
-function scrollMessages() {
-
-
-    messagesBox.scrollTo({
-
-        top:
-            messagesBox.scrollHeight,
-
-        behavior:
-            "smooth"
-
-    });
-
-}
-
-
-/* =========================================================
-   ENTER TO SEND
-========================================================= */
-
-input.addEventListener(
-    "keydown",
-    function(event) {
-
+    input.addEventListener("keydown", (event) => {
 
         if (
             event.key === "Enter" &&
             !event.shiftKey
         ) {
 
-
             event.preventDefault();
 
-
             sendMessage();
+        }
+
+    });
+
+
+    /* =========================================
+       SEND BUTTON
+    ========================================= */
+
+    sendBtn.addEventListener("click", sendMessage);
+
+
+    /* =========================================
+       SEND MESSAGE
+    ========================================= */
+
+    async function sendMessage() {
+
+        if (isSending) return;
+
+        const message =
+            input.value.trim();
+
+        if (!message) return;
+
+
+        /* USER MESSAGE */
+
+        addMessage(
+            "user",
+            message
+        );
+
+
+        conversation.push({
+            role: "user",
+            content: message
+        });
+
+
+        /* CLEAR INPUT */
+
+        input.value = "";
+
+        autoResize();
+
+
+        /* CLOSE TOOLS */
+
+        toolsPopup.classList.remove("show");
+
+
+        /* LOADING */
+
+        setLoading(true);
+
+
+        try {
+
+            const response =
+                await fetch("/api/chat", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        message: message,
+
+                        messages:
+                            conversation,
+
+                        webSearch:
+                            webMode,
+
+                        files:
+                            selectedFiles.map(file => ({
+                                name: file.name,
+                                type: file.type,
+                                size: file.size
+                            }))
+
+                    })
+
+                });
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `Server error: ${response.status}`
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /*
+             * Support different API response formats
+             */
+
+            const reply =
+                data.reply ||
+                data.message ||
+                data.response ||
+                data.content ||
+                "I couldn't generate a response.";
+
+
+            /* AI MESSAGE */
+
+            await typeMessage(
+                "ai",
+                reply
+            );
+
+
+            conversation.push({
+                role: "assistant",
+                content: reply
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            addMessage(
+                "ai",
+                "⚠️ Something went wrong. Please try again."
+            );
+
+        } finally {
+
+            setLoading(false);
 
         }
 
     }
-);
 
 
-/* =========================================================
-   SEND BUTTON
-========================================================= */
+    /* =========================================
+       ADD MESSAGE
+    ========================================= */
 
-sendButton.addEventListener(
-    "click",
-    sendMessage
-);
+    function addMessage(type, text) {
 
+        const wrapper =
+            document.createElement("div");
 
-/* =========================================================
-   TEXTAREA AUTO HEIGHT
-========================================================= */
-
-input.addEventListener(
-    "input",
-    autoResize
-);
+        wrapper.className =
+            `message ${type}`;
 
 
-function autoResize() {
+        const bubble =
+            document.createElement("div");
+
+        bubble.className =
+            "message-bubble";
 
 
-    input.style.height =
-        "auto";
+        bubble.innerHTML =
+            formatMessage(text);
 
 
-    input.style.height =
-        Math.min(
-            input.scrollHeight,
-            140
-        ) + "px";
+        wrapper.appendChild(bubble);
 
-}
+        chatMessages.appendChild(wrapper);
 
 
-function resetTextarea() {
+        scrollToBottom();
 
-    input.style.height =
-        "auto";
-
-}
+        return bubble;
+    }
 
 
-/* =========================================================
-   QUICK ACTIONS
-========================================================= */
+    /* =========================================
+       TYPEWRITER AI MESSAGE
+    ========================================= */
 
-document
-    .querySelectorAll(
-        ".action-card"
-    )
-    .forEach(
-        card => {
+    async function typeMessage(type, text) {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            `message ${type}`;
 
 
-            card.addEventListener(
+        const bubble =
+            document.createElement("div");
+
+        bubble.className =
+            "message-bubble";
+
+
+        wrapper.appendChild(bubble);
+
+        chatMessages.appendChild(wrapper);
+
+
+        const formatted =
+            formatMessage(text);
+
+
+        /*
+         * Simple typewriter effect
+         */
+
+        let index = 0;
+
+        const temp =
+            document.createElement("div");
+
+        temp.innerHTML = formatted;
+
+        const plainText =
+            temp.textContent ||
+            temp.innerText ||
+            text;
+
+
+        while (index < plainText.length) {
+
+            bubble.textContent =
+                plainText.substring(
+                    0,
+                    index + 1
+                );
+
+            index++;
+
+            scrollToBottom();
+
+            await sleep(8);
+        }
+
+
+        /*
+         * Restore formatted HTML
+         */
+
+        bubble.innerHTML =
+            formatted;
+
+        scrollToBottom();
+
+    }
+
+
+    /* =========================================
+       MESSAGE FORMATTER
+    ========================================= */
+
+    function formatMessage(text) {
+
+        if (!text) return "";
+
+        let safe =
+            escapeHTML(text);
+
+
+        /*
+         * Code blocks
+         */
+
+        safe =
+            safe.replace(
+                /```([\s\S]*?)```/g,
+                "<pre><code>$1</code></pre>"
+            );
+
+
+        /*
+         * Bold
+         */
+
+        safe =
+            safe.replace(
+                /\*\*(.*?)\*\*/g,
+                "<strong>$1</strong>"
+            );
+
+
+        /*
+         * New lines
+         */
+
+        safe =
+            safe.replace(
+                /\n/g,
+                "<br>"
+            );
+
+
+        return safe;
+    }
+
+
+    /* =========================================
+       HTML ESCAPE
+    ========================================= */
+
+    function escapeHTML(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+    }
+
+
+    /* =========================================
+       SCROLL
+    ========================================= */
+
+    function scrollToBottom() {
+
+        requestAnimationFrame(() => {
+
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth"
+            });
+
+        });
+
+    }
+
+
+    /* =========================================
+       LOADING
+    ========================================= */
+
+    function setLoading(state) {
+
+        isSending = state;
+
+        sendBtn.classList.toggle(
+            "loading",
+            state
+        );
+
+        sendBtn.disabled = state;
+
+    }
+
+
+    /* =========================================
+       PLUS TOOLS
+    ========================================= */
+
+    plusBtn.addEventListener("click", (event) => {
+
+        event.stopPropagation();
+
+        toolsPopup.classList.toggle("show");
+
+    });
+
+
+    /* =========================================
+       CLOSE POPUP
+    ========================================= */
+
+    document.addEventListener("click", (event) => {
+
+        if (
+            !toolsPopup.contains(event.target) &&
+            !plusBtn.contains(event.target)
+        ) {
+
+            toolsPopup.classList.remove(
+                "show"
+            );
+
+        }
+
+    });
+
+
+    /* =========================================
+       WEB SEARCH
+    ========================================= */
+
+    webBtn.addEventListener("click", () => {
+
+        webMode = !webMode;
+
+        webBtn.classList.toggle(
+            "active",
+            webMode
+        );
+
+
+        if (webMode) {
+
+            input.placeholder =
+                "Search the web with Mini AI...";
+
+        } else {
+
+            input.placeholder =
+                "Message Mini AI...";
+
+        }
+
+    });
+
+
+    /* =========================================
+       FILE UPLOAD
+    ========================================= */
+
+    attachBtn.addEventListener(
+        "click",
+        () => {
+
+            fileInput.click();
+
+        }
+    );
+
+
+    fileInput.addEventListener(
+        "change",
+        () => {
+
+            const files =
+                Array.from(
+                    fileInput.files
+                );
+
+            selectedFiles.push(
+                ...files
+            );
+
+            renderAttachments();
+
+        }
+    );
+
+
+    /* =========================================
+       RENDER ATTACHMENTS
+    ========================================= */
+
+    function renderAttachments() {
+
+        attachmentPreview.innerHTML = "";
+
+        selectedFiles.forEach(
+            (file, index) => {
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "attachment-item";
+
+
+                item.innerHTML = `
+
+                    <span>📎</span>
+
+                    <span>
+                        ${escapeHTML(file.name)}
+                    </span>
+
+                    <button
+                        class="remove-file"
+                        data-index="${index}"
+                        type="button"
+                    >
+                        ×
+                    </button>
+
+                `;
+
+
+                attachmentPreview.appendChild(
+                    item
+                );
+
+            }
+        );
+
+
+        document
+            .querySelectorAll(".remove-file")
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            Number(
+                                button.dataset.index
+                            );
+
+                        selectedFiles.splice(
+                            index,
+                            1
+                        );
+
+                        renderAttachments();
+
+                    }
+                );
+
+            });
+
+    }
+
+
+    /* =========================================
+       MAGIC AI BUTTON
+    ========================================= */
+
+    magicBtn.addEventListener(
+        "click",
+        () => {
+
+            input.focus();
+
+            input.value =
+                "Help me with ";
+
+            autoResize();
+
+        }
+    );
+
+
+    /* =========================================
+       TOOL OPTIONS
+    ========================================= */
+
+    document
+        .querySelectorAll(".tool-option")
+        .forEach(option => {
+
+            option.addEventListener(
                 "click",
                 () => {
 
-
-                    const prompt =
-                        card.dataset.prompt ||
-                        "";
+                    const action =
+                        option.dataset.action;
 
 
-                    input.value =
-                        prompt;
+                    if (action === "image") {
+
+                        input.value =
+                            "Create an image of ";
+
+                    }
+
+
+                    if (action === "code") {
+
+                        input.value =
+                            "Write code for ";
+
+                    }
+
+
+                    if (action === "summarize") {
+
+                        input.value =
+                            "Summarize this: ";
+
+                    }
 
 
                     autoResize();
 
-
                     input.focus();
+
+                    toolsPopup.classList.remove(
+                        "show"
+                    );
 
                 }
             );
 
-        }
-    );
+        });
 
 
-/* =========================================================
-   NEW CHAT
-========================================================= */
+    /* =========================================
+       VOICE INPUT
+    ========================================= */
 
-newChatButton.addEventListener(
-    "click",
-    newChat
-);
-
-
-function newChat() {
-
-
-    if (isSending) {
-
-        return;
-
-    }
-
-
-    /* Reset messages */
-
-    messages = [
-        SYSTEM_MESSAGE
-    ];
-
-
-    /* Clear UI */
-
-    messagesBox.innerHTML =
-        "";
-
-
-    /* Show welcome */
-
-    welcomeScreen.classList.remove(
-        "hidden"
-    );
-
-
-    /* Clear input */
-
-    input.value = "";
-
-    resetTextarea();
-
-
-    /* Clear active recent */
-
-    document
-        .querySelectorAll(
-            ".recent-chat"
-        )
-        .forEach(
-            item =>
-                item.classList.remove(
-                    "active"
-                )
-        );
-
-
-    input.focus();
-
-}
-
-
-/* =========================================================
-   RECENT CHAT
-========================================================= */
-
-function addRecentChat(
-    text
-) {
-
-
-    const existing =
-        document.querySelector(
-            ".recent-chat"
-        );
-
-
-    const item =
-        document.createElement(
-            "div"
-        );
-
-
-    item.className =
-        "recent-chat";
-
-
-    item.innerHTML = `
-
-        <i class="fa-regular fa-message"></i>
-
-        <span></span>
-
-    `;
-
-
-    item.querySelector(
-        "span"
-    ).textContent =
-        text;
-
-
-    recentList.prepend(
-        item
-    );
-
-
-    /* Keep only 5 */
-
-    while (
-        recentList.children.length > 5
-    ) {
-
-        recentList.lastElementChild.remove();
-
-    }
-
-}
-
-
-/* =========================================================
-   MOBILE MENU
-========================================================= */
-
-menuButton.addEventListener(
-    "click",
-    () => {
-
-        sidebar.classList.toggle(
-            "open"
-        );
-
-    }
-);
-
-
-/* Close sidebar when clicking chat */
-
-document
-    .getElementById(
-        "currentChat"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            sidebar.classList.remove(
-                "open"
-            );
-
-        }
-    );
-
-
-/* =========================================================
-   THEME
-========================================================= */
-
-themeButton.addEventListener(
-    "click",
-    toggleTheme
-);
-
-
-function toggleTheme() {
-
-
-    document.body.classList.toggle(
-        "light"
-    );
-
-
-    const isLight =
-        document.body.classList.contains(
-            "light"
-        );
-
-
-    localStorage.setItem(
-        "miniAITheme",
-        isLight
-            ? "light"
-            : "dark"
-    );
-
-
-    updateThemeIcon();
-
-}
-
-
-function loadTheme() {
-
-
-    const saved =
-        localStorage.getItem(
-            "miniAITheme"
-        );
-
+    let recognition = null;
 
     if (
-        saved === "light"
+        "SpeechRecognition" in window ||
+        "webkitSpeechRecognition" in window
     ) {
 
-        document.body.classList.add(
-            "light"
-        );
-
-    }
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
 
 
-    updateThemeIcon();
-
-}
-
-
-function updateThemeIcon() {
+        recognition =
+            new SpeechRecognition();
 
 
-    const icon =
-        themeButton.querySelector(
-            "i"
-        );
+        recognition.continuous = false;
+
+        recognition.interimResults = true;
+
+        recognition.lang = "en-US";
 
 
-    const light =
-        document.body.classList.contains(
-            "light"
-        );
+        recognition.onstart = () => {
 
-
-    icon.className =
-        light
-            ? "fa-solid fa-moon"
-            : "fa-regular fa-sun";
-
-}
-
-
-/* =========================================================
-   GITHUB BUTTON
-========================================================= */
-
-githubButton.addEventListener(
-    "click",
-    () => {
-
-        window.open(
-            "https://github.com/manikantanice/chatbot",
-            "_blank"
-        );
-
-    }
-);
-
-
-/* =========================================================
-   MICROPHONE
-========================================================= */
-
-micButton.addEventListener(
-    "click",
-    startVoiceInput
-);
-
-
-function startVoiceInput() {
-
-
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
-
-
-    if (!SpeechRecognition) {
-
-        alert(
-            "Voice input is not supported in this browser."
-        );
-
-        return;
-
-    }
-
-
-    const recognition =
-        new SpeechRecognition();
-
-
-    recognition.lang =
-        "en-IN";
-
-
-    recognition.interimResults =
-        false;
-
-
-    recognition.maxAlternatives =
-        1;
-
-
-    micButton.classList.add(
-        "recording"
-    );
-
-
-    recognition.start();
-
-
-    recognition.onresult =
-        event => {
-
-
-            const transcript =
-                event.results[0][0]
-                    .transcript;
-
-
-            input.value =
-                transcript;
-
-
-            autoResize();
-
-            input.focus();
-
-        };
-
-
-    recognition.onerror =
-        error => {
-
-            console.error(
-                "Voice error:",
-                error
-            );
-
-        };
-
-
-    recognition.onend =
-        () => {
-
-            micButton.classList.remove(
+            micBtn.classList.add(
                 "recording"
             );
 
+            input.placeholder =
+                "Listening...";
+
         };
 
-}
+
+        recognition.onresult =
+            (event) => {
+
+                let transcript = "";
+
+                for (
+                    let i = event.resultIndex;
+                    i < event.results.length;
+                    i++
+                ) {
+
+                    transcript +=
+                        event.results[i][0]
+                            .transcript;
+
+                }
+
+                input.value =
+                    transcript;
+
+                autoResize();
+
+            };
 
 
-/* =========================================================
-   WEB BUTTON
-========================================================= */
+        recognition.onend = () => {
 
-document
-    .getElementById(
-        "webButton"
-    )
-    .addEventListener(
+            micBtn.classList.remove(
+                "recording"
+            );
+
+            input.placeholder =
+                "Message Mini AI...";
+
+        };
+
+
+        recognition.onerror =
+            (error) => {
+
+                console.error(
+                    "Speech recognition:",
+                    error
+                );
+
+                micBtn.classList.remove(
+                    "recording"
+                );
+
+            };
+
+    }
+
+
+    micBtn.addEventListener(
         "click",
         () => {
 
+            if (!recognition) {
 
-            input.value =
-                "Search the web for ";
+                alert(
+                    "Voice input is not supported in this browser."
+                );
+
+                return;
+            }
 
 
-            autoResize();
+            if (
+                micBtn.classList.contains(
+                    "recording"
+                )
+            ) {
+
+                recognition.stop();
+
+            } else {
+
+                recognition.start();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================
+       COMPOSER EXPAND
+    ========================================= */
+
+    composerExpand.addEventListener(
+        "click",
+        () => {
 
             input.focus();
 
-        }
-    );
+            input.style.maxHeight =
+                "300px";
 
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-document
-    .getElementById(
-        "settingsButton"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-
-            alert(
-                "Mini AI Settings\n\n" +
-                "Theme, voice and chat controls are available."
-            );
+            input.style.height =
+                "200px";
 
         }
     );
 
 
-/* =========================================================
-   HELPERS
-========================================================= */
+    /* =========================================
+       KEYBOARD SHORTCUT
+    ========================================= */
 
-function sleep(
-    milliseconds
-) {
+    document.addEventListener(
+        "keydown",
+        (event) => {
 
-    return new Promise(
-        resolve =>
-            setTimeout(
-                resolve,
-                milliseconds
-            )
+            /*
+             * Ctrl + K
+             * Focus composer
+             */
+
+            if (
+                event.ctrlKey &&
+                event.key.toLowerCase() === "k"
+            ) {
+
+                event.preventDefault();
+
+                input.focus();
+
+            }
+
+
+            /*
+             * Escape
+             */
+
+            if (event.key === "Escape") {
+
+                toolsPopup.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }
     );
 
-}
 
+    /* =========================================
+       HELPER
+    ========================================= */
 
-/* =========================================================
-   BACKGROUND PARTICLE RANDOMIZATION
-========================================================= */
+    function sleep(ms) {
 
-function createWelcomeParticles() {
-
-
-    const particles =
-        document.querySelectorAll(
-            ".floating-particles span"
+        return new Promise(
+            resolve =>
+                setTimeout(resolve, ms)
         );
 
+    }
 
-    particles.forEach(
-        particle => {
-
-
-            const duration =
-                4 +
-                Math.random() * 5;
-
-
-            const delay =
-                Math.random() * -5;
-
-
-            particle.style.animationDuration =
-                duration + "s";
-
-
-            particle.style.animationDelay =
-                delay + "s";
-
-        }
-    );
-
-}
+});
