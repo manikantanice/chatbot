@@ -1,5 +1,9 @@
 export default async function handler(req, res) {
 
+    // =====================================================
+    // METHOD CHECK
+    // =====================================================
+
     if (req.method !== "POST") {
 
         return res.status(405).json({
@@ -10,6 +14,10 @@ export default async function handler(req, res) {
 
 
     try {
+
+        // =====================================================
+        // API KEY
+        // =====================================================
 
         const apiKey =
             process.env.GROQ_API_KEY;
@@ -24,6 +32,10 @@ export default async function handler(req, res) {
 
         }
 
+
+        // =====================================================
+        // REQUEST BODY
+        // =====================================================
 
         const body =
             req.body || {};
@@ -45,6 +57,52 @@ export default async function handler(req, res) {
 
         }
 
+
+        // =====================================================
+        // LAST USER MESSAGE
+        // =====================================================
+
+        const lastMessage =
+            messages[messages.length - 1]?.content || "";
+
+
+        // =====================================================
+        // IMAGE REQUEST DETECTION
+        // =====================================================
+
+        const wantsImage =
+            /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of|create an animated image|make an animated image/i
+                .test(lastMessage);
+
+
+        // =====================================================
+        // IMAGE GENERATION
+        // =====================================================
+
+        if (wantsImage) {
+
+            const imageUrl =
+                `https://gen.pollinations.ai/image/${encodeURIComponent(lastMessage)}?model=flux`;
+
+
+            return res.status(200).json({
+
+                type: "image",
+
+                reply:
+                    "✨ Here is the image I created for you:",
+
+                image:
+                    imageUrl
+
+            });
+
+        }
+
+
+        // =====================================================
+        // GROQ CHAT
+        // =====================================================
 
         const groqResponse =
             await fetch(
@@ -85,6 +143,10 @@ export default async function handler(req, res) {
             );
 
 
+        // =====================================================
+        // READ RESPONSE
+        // =====================================================
+
         const text =
             await groqResponse.text();
 
@@ -99,6 +161,11 @@ export default async function handler(req, res) {
 
         } catch {
 
+            console.error(
+                "Invalid Groq response:",
+                text
+            );
+
             return res.status(500).json({
 
                 error:
@@ -109,7 +176,16 @@ export default async function handler(req, res) {
         }
 
 
+        // =====================================================
+        // GROQ ERROR
+        // =====================================================
+
         if (!groqResponse.ok) {
+
+            console.error(
+                "Groq API Error:",
+                data
+            );
 
             return res.status(
                 groqResponse.status
@@ -123,6 +199,10 @@ export default async function handler(req, res) {
 
         }
 
+
+        // =====================================================
+        // GET AI REPLY
+        // =====================================================
 
         const reply =
             data
@@ -143,15 +223,27 @@ export default async function handler(req, res) {
         }
 
 
+        // =====================================================
+        // SUCCESS
+        // =====================================================
+
         return res.status(200).json({
 
-            reply: reply
+            type:
+                "text",
+
+            reply:
+                reply
 
         });
 
 
     } catch (error) {
 
+
+        // =====================================================
+        // SERVER ERROR
+        // =====================================================
 
         console.error(
             "API ERROR:",
@@ -169,23 +261,4 @@ export default async function handler(req, res) {
 
     }
 
-}
-const lastMessage =
-    messages[messages.length - 1]?.content || "";
-
-const wantsImage =
-    /create an image|generate an image|make an image|generate a picture|create a picture|draw|image of/i.test(
-        lastMessage
-    );
-
-if (wantsImage) {
-
-    const imageUrl =
-        `https://gen.pollinations.ai/image/${encodeURIComponent(lastMessage)}?model=flux`;
-
-    return res.status(200).json({
-        type: "image",
-        reply: "✨ Here is the image I created for you:",
-        image: imageUrl
-    });
 }
