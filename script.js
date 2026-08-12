@@ -205,13 +205,18 @@ document.addEventListener("DOMContentLoaded", () => {
         /* Clear input */
 
         if (input) {
+
             input.value = "";
+
             autoResize();
         }
 
 
         if (toolsPopup) {
-            toolsPopup.classList.remove("show");
+
+            toolsPopup.classList.remove(
+                "show"
+            );
         }
 
 
@@ -246,6 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             files:
                                 selectedFiles.map(
                                     file => ({
+
                                         name:
                                             file.name,
 
@@ -478,29 +484,32 @@ document.addEventListener("DOMContentLoaded", () => {
                     ".download-image"
                 );
 
-            downloadBtn.addEventListener(
-                "click",
-                () => {
+            if (downloadBtn) {
 
-                    const link =
-                        document.createElement("a");
+                downloadBtn.addEventListener(
+                    "click",
+                    () => {
 
-                    link.href =
-                        imageUrl;
+                        const link =
+                            document.createElement("a");
 
-                    link.target =
-                        "_blank";
+                        link.href =
+                            imageUrl;
 
-                    link.download =
-                        "mani-ai-generated-image.png";
+                        link.target =
+                            "_blank";
 
-                    document.body.appendChild(link);
+                        link.download =
+                            "mani-ai-generated-image.png";
 
-                    link.click();
+                        document.body.appendChild(link);
 
-                    link.remove();
-                }
-            );
+                        link.click();
+
+                        link.remove();
+                    }
+                );
+            }
 
 
             /* Copy */
@@ -510,33 +519,38 @@ document.addEventListener("DOMContentLoaded", () => {
                     ".copy-image"
                 );
 
-            copyBtn.addEventListener(
-                "click",
-                async () => {
+            if (copyBtn) {
 
-                    try {
+                copyBtn.addEventListener(
+                    "click",
+                    async () => {
 
-                        await navigator.clipboard.writeText(
-                            imageUrl
-                        );
+                        try {
 
-                        copyBtn.textContent =
-                            "✓ Copied";
+                            await navigator.clipboard.writeText(
+                                imageUrl
+                            );
 
-                        setTimeout(
-                            () => {
-                                copyBtn.textContent =
-                                    "⧉ Copy Image URL";
-                            },
-                            1500
-                        );
+                            copyBtn.textContent =
+                                "✓ Copied";
 
-                    } catch (error) {
+                            setTimeout(
+                                () => {
 
-                        console.error(error);
+                                    copyBtn.textContent =
+                                        "⧉ Copy Image URL";
+
+                                },
+                                1500
+                            );
+
+                        } catch (error) {
+
+                            console.error(error);
+                        }
                     }
-                }
-            );
+                );
+            }
 
 
             scrollChat();
@@ -559,9 +573,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         setTimeout(() => {
 
-            if (
-                !image.complete
-            ) {
+            if (!image.complete) {
 
                 loading.innerHTML = `
                     <div class="image-error">
@@ -1713,5 +1725,309 @@ document.addEventListener("DOMContentLoaded", () => {
                 )
         );
     }
+
+
+    /* =====================================================
+       PREMIUM AI CUSTOM CURSOR
+    ===================================================== */
+
+    let aiCursor =
+        document.querySelector(".ai-cursor");
+
+
+    /*
+       If cursor HTML is not already present,
+       create it automatically.
+    */
+
+    if (!aiCursor) {
+
+        aiCursor =
+            document.createElement("div");
+
+        aiCursor.className =
+            "ai-cursor";
+
+        aiCursor.innerHTML = `
+            <div class="cursor-glow"></div>
+            <div class="cursor-ring"></div>
+            <div class="cursor-core"></div>
+        `;
+
+        document.body.appendChild(
+            aiCursor
+        );
+    }
+
+
+    /* =====================================================
+       CURSOR POSITION
+    ===================================================== */
+
+    let cursorMouseX =
+        window.innerWidth / 2;
+
+    let cursorMouseY =
+        window.innerHeight / 2;
+
+    let cursorX =
+        cursorMouseX;
+
+    let cursorY =
+        cursorMouseY;
+
+
+    document.addEventListener(
+        "mousemove",
+        event => {
+
+            cursorMouseX =
+                event.clientX;
+
+            cursorMouseY =
+                event.clientY;
+        }
+    );
+
+
+    /* =====================================================
+       SMOOTH CURSOR
+    ===================================================== */
+
+    function animateAICursor() {
+
+        cursorX +=
+            (cursorMouseX - cursorX) *
+            0.18;
+
+        cursorY +=
+            (cursorMouseY - cursorY) *
+            0.18;
+
+
+        if (aiCursor) {
+
+            aiCursor.style.left =
+                cursorX + "px";
+
+            aiCursor.style.top =
+                cursorY + "px";
+        }
+
+
+        requestAnimationFrame(
+            animateAICursor
+        );
+    }
+
+
+    animateAICursor();
+
+
+    /* =====================================================
+       CURSOR HOVER
+    ===================================================== */
+
+    function addCursorHoverEvents() {
+
+        const hoverElements =
+            document.querySelectorAll(
+                "a, button, input, textarea, select, .quick-card, .tool-option, .conversation"
+            );
+
+
+        hoverElements.forEach(
+            element => {
+
+                element.addEventListener(
+                    "mouseenter",
+                    () => {
+
+                        document.body.classList.add(
+                            "cursor-hover"
+                        );
+                    }
+                );
+
+
+                element.addEventListener(
+                    "mouseleave",
+                    () => {
+
+                        document.body.classList.remove(
+                            "cursor-hover"
+                        );
+                    }
+                );
+
+            }
+        );
+    }
+
+
+    addCursorHoverEvents();
+
+
+    /* =====================================================
+       CURSOR CLICK
+    ===================================================== */
+
+    document.addEventListener(
+        "mousedown",
+        () => {
+
+            document.body.classList.add(
+                "cursor-click"
+            );
+        }
+    );
+
+
+    document.addEventListener(
+        "mouseup",
+        () => {
+
+            document.body.classList.remove(
+                "cursor-click"
+            );
+        }
+    );
+
+
+    /* =====================================================
+       CURSOR TRAIL
+    ===================================================== */
+
+    const trailCount = 6;
+
+    const cursorTrails = [];
+
+    for (
+        let i = 0;
+        i < trailCount;
+        i++
+    ) {
+
+        const trail =
+            document.createElement("div");
+
+        trail.className =
+            "cursor-trail";
+
+        trail.style.opacity =
+            String(
+                0.35 -
+                i * 0.04
+            );
+
+        document.body.appendChild(
+            trail
+        );
+
+        cursorTrails.push({
+            element: trail,
+            x: cursorX,
+            y: cursorY
+        });
+    }
+
+
+    function animateCursorTrail() {
+
+        let previousX =
+            cursorX;
+
+        let previousY =
+            cursorY;
+
+
+        cursorTrails.forEach(
+            (trail, index) => {
+
+                trail.x +=
+                    (previousX - trail.x) *
+                    (0.25 - index * 0.02);
+
+                trail.y +=
+                    (previousY - trail.y) *
+                    (0.25 - index * 0.02);
+
+
+                trail.element.style.left =
+                    trail.x + "px";
+
+                trail.element.style.top =
+                    trail.y + "px";
+
+
+                previousX =
+                    trail.x;
+
+                previousY =
+                    trail.y;
+            }
+        );
+
+
+        requestAnimationFrame(
+            animateCursorTrail
+        );
+    }
+
+
+    animateCursorTrail();
+
+
+    /* =====================================================
+       MOBILE CURSOR DISABLE
+    ===================================================== */
+
+    function handleCursorDevice() {
+
+        const isMobile =
+            window.innerWidth <= 768;
+
+        if (isMobile) {
+
+            if (aiCursor) {
+
+                aiCursor.style.display =
+                    "none";
+            }
+
+            cursorTrails.forEach(
+                trail => {
+
+                    trail.element.style.display =
+                        "none";
+                }
+            );
+
+        } else {
+
+            if (aiCursor) {
+
+                aiCursor.style.display =
+                    "block";
+            }
+
+            cursorTrails.forEach(
+                trail => {
+
+                    trail.element.style.display =
+                        "block";
+                }
+            );
+        }
+    }
+
+
+    handleCursorDevice();
+
+
+    window.addEventListener(
+        "resize",
+        handleCursorDevice
+    );
 
 });
