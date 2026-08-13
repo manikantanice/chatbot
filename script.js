@@ -87,11 +87,18 @@ document.addEventListener("DOMContentLoaded", () => {
        STATE
     ================================================= */
 
-    let conversation = [];
+let conversation = [];
 
-    let selectedFiles = [];
+let selectedFiles = [];
 
-    let webMode = false;
+let webMode = false;
+
+
+/* =========================================
+   CHAT HISTORY
+========================================= */
+
+let currentChatId = null;
 
     let sending = false;
 
