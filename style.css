@@ -2406,52 +2406,13 @@ button {
 }
 
 
-/* =========================================
-   AI SHINE EFFECT
-========================================= */
-
-.mani-ai::after {
-    content: "";
-
-    position: absolute;
-
-    top: -10px;
-    left: -30px;
-
-    width: 20px;
-    height: 90px;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.9),
-        transparent
-    );
-
-    transform: skewX(-20deg);
-
-    filter: blur(3px);
-
-    opacity: 0;
-
-    animation: maniShine 3.5s ease-in-out infinite;
-}
-
-
-/* =========================================
-   GLOW RINGS
-========================================= */
 
 .mani-ai-ring {
     position: absolute;
-
     left: 50%;
     top: 50%;
-
     border-radius: 50%;
-
     pointer-events: none;
-
     transform-style: preserve-3d;
 }
 
