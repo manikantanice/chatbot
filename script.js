@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const sendBtn =
         document.getElementById("sendBtn");
-
+    
     const chatArea =
         document.querySelector(".chat-area");
 
