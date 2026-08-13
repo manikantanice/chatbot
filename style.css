@@ -961,25 +961,196 @@ button {
 }
 
 
-.quick-cards { position: relative; z-index: 5; width: min(980px, 100%); display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 5px; } 
-.quick-card { min-height: 102px; padding: 15px; border: 1px solid rgba(98, 113, 164, .17); border-radius: 13px; background:rgba(12, 20, 42, .72); color: #fff; text-align: left; cursor: pointer; transition: transform .3s ease, border-color .3s ease, background .3s ease, box-shadow .3s ease; }
-.quick-card:hover { transform: translateY(-7px); border-color: rgba(126, 82, 255, .55); background: rgba(23, 26, 57, .9); box-shadow: 0 15px 35px rgba(0,0,0,.25), 0 0 25px rgba(91, 48, 255, .08); }
-.card-icon { margin-bottom: 11px; font-size: 16px; }
-.card-icon.idea { color: #bb72ff; }
-.card-icon.write { color: #62a5ff; }
-.card-icon.code { color: #40e2f2; }
-.card-icon.data { color: #ff9c3d; }
-.card-icon.design { color: #ff6db0; }
-.quick-card strong { display: block; font-size: 15px; margin-bottom: 6px; }
-.quick-card span { display: block; color: #6f7995; font-size: 15px; }
-.chat-messages { width: min(900px, calc(100% - 40px)); margin: 0 auto; padding: 40px 0 230px; }
-.chat-message { display: flex; margin-bottom: 22px; animation: messageIn .35s ease both; }
-.chat-message.user { justify-content: flex-end; }
-.chat-bubble { max-width: 75%; padding: 14px 17px; border-radius: 17px; font-size: 14px; line-height: 1.65; }
-.chat-message.user .chat-bubble { color: #fff; background: linear-gradient( 135deg, #7140e8, #526cff ); border-bottom-right-radius: 5px; box-shadow: 0 8px 25px rgba(86, 58, 220, .2); }
-.chat-message.ai .chat-bubble { color: #dce2f7; background: rgba(14, 22, 45, .92); border: 1px solid rgba(110, 125, 180, .16); border-bottom-left-radius: 5px; }
-.chat-bubble pre { overflow-x: auto; margin-top: 12px; padding: 13px; border-radius: 10px; background: #060a17; border: 1px solid rgba(255,255,255,.06); }
-.chat-bubble code { font-family: Consolas, monospace; font-size: 12px; }
+/* =====================================================
+   QUICK CARDS
+===================================================== */
+
+.quick-cards {
+    position: relative;
+    z-index: 5;
+
+    width: min(900px, 100%);
+
+    display: grid;
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 12px;
+
+    margin-top: 5px;
+}
+
+.quick-card {
+    min-height: 102px;
+
+    padding: 15px;
+
+    border: 1px solid rgba(98, 113, 164, .17);
+
+    border-radius: 13px;
+
+    background:
+        rgba(12, 20, 42, .72);
+
+    color: #fff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        background .3s ease,
+        box-shadow .3s ease;
+}
+
+.quick-card:hover {
+    transform:
+        translateY(-7px);
+
+    border-color:
+        rgba(126, 82, 255, .55);
+
+    background:
+        rgba(23, 26, 57, .9);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.25),
+        0 0 25px rgba(91, 48, 255, .08);
+}
+
+.card-icon {
+    margin-bottom: 11px;
+
+    font-size: 16px;
+}
+
+.card-icon.idea {
+    color: #bb72ff;
+}
+
+.card-icon.write {
+    color: #62a5ff;
+}
+
+.card-icon.code {
+    color: #40e2f2;
+}
+
+.card-icon.data {
+    color: #ff9c3d;
+}
+
+.card-icon.design {
+    color: #ff6db0;
+}
+
+.quick-card strong {
+    display: block;
+
+    font-size: 13px;
+
+    margin-bottom: 6px;
+}
+
+.quick-card span {
+    display: block;
+
+    color: #6f7995;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   CHAT MESSAGES
+===================================================== */
+
+.chat-messages {
+    width: min(900px, calc(100% - 40px));
+
+    margin: 0 auto;
+
+    padding:
+        40px
+        0
+        230px;
+}
+
+.chat-message {
+    display: flex;
+
+    margin-bottom: 22px;
+
+    animation:
+        messageIn .35s ease both;
+}
+
+.chat-message.user {
+    justify-content: flex-end;
+}
+
+.chat-bubble {
+    max-width: 75%;
+
+    padding: 14px 17px;
+
+    border-radius: 17px;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+}
+
+.chat-message.user .chat-bubble {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7140e8,
+            #526cff
+        );
+
+    border-bottom-right-radius: 5px;
+
+    box-shadow:
+        0 8px 25px rgba(86, 58, 220, .2);
+}
+
+.chat-message.ai .chat-bubble {
+    color: #dce2f7;
+
+    background:
+        rgba(14, 22, 45, .92);
+
+    border:
+        1px solid rgba(110, 125, 180, .16);
+
+    border-bottom-left-radius: 5px;
+}
+
+.chat-bubble pre {
+    overflow-x: auto;
+
+    margin-top: 12px;
+    padding: 13px;
+
+    border-radius: 10px;
+
+    background: #060a17;
+
+    border: 1px solid rgba(255,255,255,.06);
+}
+
+.chat-bubble code {
+    font-family:
+        Consolas,
+        monospace;
+
+    font-size: 12px;
+}
 
 @keyframes messageIn {
 
