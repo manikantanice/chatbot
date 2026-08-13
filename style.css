@@ -423,6 +423,9 @@ button {
 
     backdrop-filter: blur(18px);
 }
+.topbar-actions {
+    display: none;
+}
 
 .topbar-left,
 .topbar-actions {
