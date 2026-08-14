@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Mini AI</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
+
+<body>
+
+<!-- =========================================
+     PREMIUM CURSOR
+========================================= -->
+
 <div class="ai-cursor">
     <div class="cursor-core"></div>
     <div class="cursor-ring"></div>
@@ -20,13 +32,14 @@
 <div class="cursor-trail"></div>
 <div class="cursor-trail"></div>
 <div class="cursor-trail"></div>
-<body>
+
 
 <!-- =========================================
      APP
 ========================================= -->
 
 <div class="app">
+
 
     <!-- =====================================
          SIDEBAR
@@ -37,6 +50,7 @@
         <div class="sidebar-top">
 
             <!-- LOGO -->
+
             <div class="brand">
 
                 <div class="brand-logo">
@@ -51,17 +65,24 @@
 
 
             <!-- NEW CHAT -->
+
             <button
                 class="new-chat-btn"
                 id="newChatBtn"
                 type="button"
             >
+
                 <span class="plus-icon">+</span>
-                <span>New Chat</span>
+
+                <span>
+                    New Chat
+                </span>
+
             </button>
 
 
             <!-- TODAY -->
+
             <div class="sidebar-section">
 
                 <div class="section-title">
@@ -88,6 +109,7 @@
 
 
             <!-- RECENT -->
+
             <div class="sidebar-section recent-section">
 
                 <div class="section-title">
@@ -102,6 +124,7 @@
 
 
         <!-- SIDEBAR BOTTOM -->
+
         <div class="sidebar-bottom">
 
             <button
@@ -109,9 +132,17 @@
                 id="settingsBtn"
                 type="button"
             >
+
                 <span>⚙</span>
-                <span>Settings</span>
-                <span class="arrow">›</span>
+
+                <span>
+                    Settings
+                </span>
+
+                <span class="arrow">
+                    ›
+                </span>
+
             </button>
 
         </div>
@@ -125,6 +156,7 @@
 
     <main class="main">
 
+
         <!-- =================================
              TOP BAR
         ================================== -->
@@ -133,7 +165,6 @@
 
             <div class="topbar-left">
 
-                <!-- MOBILE MENU -->
                 <button
                     class="mobile-menu-btn"
                     id="mobileMenuBtn"
@@ -142,17 +173,21 @@
                     ☰
                 </button>
 
-
             </div>
 
 
             <div class="topbar-actions">
+
                 <!-- AI LOGO -->
+
                 <div class="ai-orb-small">
 
                     <div class="ai-logo">
+
                         <div class="ai-orbit orbit-1"></div>
+
                         <div class="ai-orbit orbit-2"></div>
+
                         <div class="ai-orbit orbit-3"></div>
 
                         <div class="ai-glow"></div>
@@ -165,10 +200,12 @@
                         <div class="ai-particle p2"></div>
                         <div class="ai-particle p3"></div>
                         <div class="ai-particle p4"></div>
-                    </div>
+
                     </div>
 
                 </div>
+
+            </div>
 
         </header>
 
@@ -179,37 +216,49 @@
 
         <section class="chat-area">
 
+
             <!-- WELCOME -->
+
             <div
                 class="welcome-screen"
                 id="welcomeScreen"
             >
 
 
+                <!-- MANI AI LOGO -->
 
-<!-- MANI AI Animated Logo -->
-<div class="mani-ai-logo">
+                <div class="mani-ai-logo">
 
-    <div class="mani-ai-ring ring-one"></div>
-    <div class="mani-ai-ring ring-two"></div>
+                    <div class="mani-ai-ring ring-one"></div>
 
-    <div class="mani-ai-text">
-        <span class="mani-main">MANI</span>
-        <span class="mani-ai">AI</span>
-    </div>
+                    <div class="mani-ai-ring ring-two"></div>
 
-    <div class="mani-ai-line"></div>
+                    <div class="mani-ai-text">
 
-    <div class="mani-particle particle-one"></div>
-    <div class="mani-particle particle-two"></div>
-    <div class="mani-particle particle-three"></div>
-    <div class="mani-particle particle-four"></div>
+                        <span class="mani-main">
+                            MANI
+                        </span>
 
-</div>
+                        <span class="mani-ai">
+                            AI
+                        </span>
+
+                    </div>
+
+                    <div class="mani-ai-line"></div>
+
+                    <div class="mani-particle particle-one"></div>
+                    <div class="mani-particle particle-two"></div>
+                    <div class="mani-particle particle-three"></div>
+                    <div class="mani-particle particle-four"></div>
+
+                </div>
 
 
                 <!-- QUICK CARDS -->
+
                 <div class="quick-cards">
+
 
                     <button
                         class="quick-card"
@@ -321,6 +370,7 @@
 
 
             <!-- MESSAGES -->
+
             <div
                 class="chat-messages"
                 id="chatMessages"
@@ -335,7 +385,9 @@
 
         <div class="composer-area">
 
-            <!-- FILE PREVIEW -->
+
+            <!-- IMAGE PREVIEW -->
+
             <div
                 class="attachment-preview"
                 id="attachmentPreview"
@@ -347,7 +399,9 @@
                 id="composer"
             >
 
+
                 <!-- INPUT -->
+
                 <textarea
                     id="messageInput"
                     class="message-input"
@@ -358,6 +412,7 @@
 
 
                 <!-- EXPAND -->
+
                 <button
                     type="button"
                     class="composer-expand"
@@ -369,11 +424,15 @@
 
 
                 <!-- TOOLBAR -->
+
                 <div class="composer-toolbar">
+
 
                     <div class="composer-left">
 
+
                         <!-- PLUS -->
+
                         <button
                             type="button"
                             class="tool-btn"
@@ -385,35 +444,48 @@
 
 
                         <!-- WEB -->
+
                         <button
                             type="button"
                             class="tool-btn"
                             id="webBtn"
                             title="Web search"
                         >
+
                             <span class="globe"></span>
+
                         </button>
 
 
-                        <!-- ATTACH -->
+                        <!-- IMAGE ATTACH -->
+
                         <button
                             type="button"
                             class="tool-btn"
                             id="attachBtn"
-                            title="Attach files"
+                            title="Attach images"
                         >
-                            <span class="paperclip">⌕</span>
+
+                            <span class="paperclip">
+                                ⌕
+                            </span>
+
                         </button>
+
+
+                        <!-- IMAGE FILE INPUT -->
 
                         <input
                             type="file"
                             id="fileInput"
                             hidden
                             multiple
+                            accept="image/*"
                         >
 
 
                         <!-- MAGIC -->
+
                         <button
                             type="button"
                             class="tool-btn magic-btn"
@@ -428,7 +500,9 @@
 
                     <div class="composer-right">
 
+
                         <!-- MIC -->
+
                         <button
                             type="button"
                             class="tool-btn mic-btn"
@@ -440,6 +514,7 @@
 
 
                         <!-- SEND -->
+
                         <button
                             type="button"
                             class="send-btn"
@@ -455,10 +530,12 @@
 
 
                 <!-- TOOLS MENU -->
+
                 <div
                     class="tools-popup"
                     id="toolsPopup"
                 >
+
 
                     <button
                         type="button"
@@ -469,6 +546,7 @@
                         <span>✦</span>
 
                         <div>
+
                             <strong>
                                 Generate Image
                             </strong>
@@ -476,6 +554,7 @@
                             <small>
                                 Create an image with AI
                             </small>
+
                         </div>
 
                     </button>
@@ -487,9 +566,12 @@
                         data-action="code"
                     >
 
-                        <span>&lt;/&gt;</span>
+                        <span>
+                            &lt;/&gt;
+                        </span>
 
                         <div>
+
                             <strong>
                                 Code
                             </strong>
@@ -497,6 +579,7 @@
                             <small>
                                 Write or debug code
                             </small>
+
                         </div>
 
                     </button>
@@ -508,9 +591,12 @@
                         data-action="summarize"
                     >
 
-                        <span>≡</span>
+                        <span>
+                            ≡
+                        </span>
 
                         <div>
+
                             <strong>
                                 Summarize
                             </strong>
@@ -518,6 +604,7 @@
                             <small>
                                 Summarize text
                             </small>
+
                         </div>
 
                     </button>
@@ -526,6 +613,8 @@
 
             </div>
 
+
+            <!-- DISCLAIMER -->
 
             <div class="composer-disclaimer">
                 Mini AI can make mistakes. Check important information.
@@ -536,6 +625,10 @@
     </main>
 
 </div>
+
+
+<!-- MOBILE OVERLAY -->
+
 <div
     class="mobile-overlay"
     id="mobileOverlay"
