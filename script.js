@@ -4,48 +4,68 @@ document.addEventListener("DOMContentLoaded", () => {
        ELEMENTS
     ================================================= */
 
-    const input = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const chatArea = document.querySelector(".chat-area");
-    const chatMessages = document.getElementById("chatMessages");
-    const welcomeScreen = document.getElementById("welcomeScreen");
+    const input =
+        document.getElementById("messageInput");
 
-    const newChatBtn = document.getElementById("newChatBtn");
+    const sendBtn =
+        document.getElementById("sendBtn");
+
+    const chatArea =
+        document.querySelector(".chat-area");
+
+    const chatMessages =
+        document.getElementById("chatMessages");
+
+    const welcomeScreen =
+        document.getElementById("welcomeScreen");
+
+    const newChatBtn =
+        document.getElementById("newChatBtn");
+
     const currentConversation =
         document.getElementById("currentConversation");
 
     const recentChats =
         document.getElementById("recentChats");
 
-    const plusBtn = document.getElementById("plusBtn");
-    const toolsPopup = document.getElementById("toolsPopup");
+    const plusBtn =
+        document.getElementById("plusBtn");
 
-    const webBtn = document.getElementById("webBtn");
+    const toolsPopup =
+        document.getElementById("toolsPopup");
 
-    const attachBtn = document.getElementById("attachBtn");
-    const fileInput = document.getElementById("fileInput");
+    const webBtn =
+        document.getElementById("webBtn");
+
+    const attachBtn =
+        document.getElementById("attachBtn");
+
+    const fileInput =
+        document.getElementById("fileInput");
+
     const attachmentPreview =
         document.getElementById("attachmentPreview");
 
-    const magicBtn = document.getElementById("magicBtn");
-    const micBtn = document.getElementById("micBtn");
+    const magicBtn =
+        document.getElementById("magicBtn");
+
+    const micBtn =
+        document.getElementById("micBtn");
+
     const composerExpand =
         document.getElementById("composerExpand");
 
     const mobileMenuBtn =
         document.getElementById("mobileMenuBtn");
 
-    const sidebar = document.getElementById("sidebar");
+    const sidebar =
+        document.getElementById("sidebar");
+
     const mobileOverlay =
         document.getElementById("mobileOverlay");
 
-    /* Optional elements */
-    const clearBtn = document.getElementById("clearBtn");
-    const searchBtn = document.getElementById("searchBtn");
-    const settingsBtn = document.getElementById("settingsBtn");
-    const topSettingsBtn =
-        document.getElementById("topSettingsBtn");
-    const proBtn = document.getElementById("proBtn");
+    const settingsBtn =
+        document.getElementById("settingsBtn");
 
     const quickCards =
         document.querySelectorAll(".quick-card");
@@ -57,22 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let conversation = [];
 
-    /*
-     * Images selected by user.
-     *
-     * Each item:
-     * {
-     *   file,
-     *   name,
-     *   type,
-     *   size,
-     *   dataUrl
-     * }
-     */
     let selectedFiles = [];
 
     let webMode = false;
+
     let sending = false;
+
     let recognition = null;
 
 
@@ -81,8 +91,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ================================================= */
 
     if (input) {
+
         input.focus();
+
         autoResize();
+
     }
 
 
@@ -97,13 +110,20 @@ document.addEventListener("DOMContentLoaded", () => {
         input.style.height = "auto";
 
         input.style.height =
-            Math.min(input.scrollHeight, 200) + "px";
+            Math.min(
+                input.scrollHeight,
+                200
+            ) + "px";
+
     }
 
 
     if (input) {
 
-        input.addEventListener("input", autoResize);
+        input.addEventListener(
+            "input",
+            autoResize
+        );
 
     }
 
@@ -114,25 +134,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (input) {
 
-        input.addEventListener("keydown", event => {
+        input.addEventListener(
+            "keydown",
+            event => {
 
-            if (
-                event.key === "Enter" &&
-                !event.shiftKey
-            ) {
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
 
-                event.preventDefault();
+                    event.preventDefault();
 
-                sendMessage();
+                    sendMessage();
+
+                }
+
             }
-
-        });
+        );
 
     }
 
 
     /* =================================================
-       SEND BUTTON
+       SEND
     ================================================= */
 
     if (sendBtn) {
@@ -145,24 +169,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =================================================
-       SEND MESSAGE
-    ================================================= */
-
     async function sendMessage() {
 
         if (sending) return;
 
-        if (!input) return;
+        const message =
+            input.value.trim();
 
-
-        const message = input.value.trim();
-
-
-        /*
-         * Do not send empty message
-         * unless image is selected.
-         */
 
         if (
             !message &&
@@ -172,61 +185,63 @@ document.addEventListener("DOMContentLoaded", () => {
             input.focus();
 
             return;
+
         }
 
 
-        /* ---------------------------------------------
-           Hide welcome screen
-        --------------------------------------------- */
+        /* Hide welcome */
 
         if (welcomeScreen) {
 
-            welcomeScreen.style.display = "none";
+            welcomeScreen.style.display =
+                "none";
 
         }
 
 
-        /* ---------------------------------------------
-           Add user message
-        --------------------------------------------- */
+        /*
+         * Save images before clearing.
+         */
 
-        const displayMessage =
-            message ||
-            "Please analyze the attached image.";
+        const imagesToSend =
+            selectedFiles.map(
+                image => ({
 
+                    name:
+                        image.name,
+
+                    type:
+                        image.type,
+
+                    data:
+                        image.dataUrl
+
+                })
+            );
+
+
+        /* Show user message */
 
         addMessage(
             "user",
-            displayMessage,
+            message ||
+            "Please analyze this image.",
             selectedFiles
         );
 
 
-        /* ---------------------------------------------
-           Conversation
-        --------------------------------------------- */
+        /* Conversation */
 
         conversation.push({
+
             role: "user",
+
             content: message
+
         });
 
 
-        /* ---------------------------------------------
-           Save images before clearing
-        --------------------------------------------- */
-
-        const imagesToSend =
-            selectedFiles.map(image => ({
-                name: image.name,
-                type: image.type,
-                data: image.dataUrl
-            }));
-
-
-        /* ---------------------------------------------
-           Clear input
-        --------------------------------------------- */
+        /* Clear input */
 
         input.value = "";
 
@@ -235,59 +250,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (toolsPopup) {
 
-            toolsPopup.classList.remove("show");
+            toolsPopup.classList.remove(
+                "show"
+            );
 
         }
 
 
-        /* ---------------------------------------------
-           Loading
-        --------------------------------------------- */
+        /* Loading */
 
         setLoading(true);
 
 
         try {
 
-            /*
-             * Send actual image data.
-             *
-             * Backend /api/chat must read:
-             *
-             * body.images
-             *
-             * Each image contains:
-             * name
-             * type
-             * data
-             */
+            const response =
+                await fetch(
+                    "/api/chat",
+                    {
 
-            const response = await fetch(
-                "/api/chat",
-                {
-                    method: "POST",
+                        method: "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                        headers: {
 
-                    body: JSON.stringify({
+                            "Content-Type":
+                                "application/json"
 
-                        message: message,
+                        },
 
-                        messages:
-                            conversation,
+                        body: JSON.stringify({
 
-                        webSearch:
-                            webMode,
+                            message:
+                                message,
 
-                        images:
-                            imagesToSend
+                            messages:
+                                conversation,
 
-                    })
-                }
-            );
+                            webSearch:
+                                webMode,
+
+                            /*
+                             * IMPORTANT
+                             *
+                             * Actual images.
+                             */
+
+                            images:
+                                imagesToSend
+
+                        })
+
+                    }
+                );
 
 
             if (!response.ok) {
@@ -303,36 +317,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 await response.json();
 
 
-            /* -----------------------------------------
-               Get response
-            ----------------------------------------- */
-
             const reply =
-                getReplyFromResponse(data);
+                getReplyFromResponse(
+                    data
+                );
 
 
-            /* -----------------------------------------
-               AI response
-            ----------------------------------------- */
+            await typeAIMessage(
+                reply
+            );
 
-            await typeAIMessage(reply);
-
-
-            /* -----------------------------------------
-               Save conversation
-            ----------------------------------------- */
 
             conversation.push({
-                role: "assistant",
-                content: reply
+
+                role:
+                    "assistant",
+
+                content:
+                    reply
+
             });
 
 
-            /* -----------------------------------------
-               Recent chat
-            ----------------------------------------- */
-
-            saveRecentChat(message);
+            saveRecentChat(
+                message
+            );
 
 
         } catch (error) {
@@ -354,18 +363,15 @@ document.addEventListener("DOMContentLoaded", () => {
             setLoading(false);
 
 
-            /*
-             * Clear selected images
-             * after sending.
-             */
-
             selectedFiles = [];
+
 
             if (fileInput) {
 
                 fileInput.value = "";
 
             }
+
 
             renderAttachments();
 
@@ -375,7 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       GET API RESPONSE
+       API RESPONSE
     ================================================= */
 
     function getReplyFromResponse(data) {
@@ -387,44 +393,50 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        if (typeof data === "string") {
+        if (
+            typeof data === "string"
+        ) {
 
             return data;
 
         }
 
 
-        if (typeof data.reply === "string") {
+        if (
+            typeof data.reply === "string"
+        ) {
 
             return data.reply;
 
         }
 
 
-        if (typeof data.message === "string") {
+        if (
+            typeof data.message === "string"
+        ) {
 
             return data.message;
 
         }
 
 
-        if (typeof data.response === "string") {
+        if (
+            typeof data.response === "string"
+        ) {
 
             return data.response;
 
         }
 
 
-        if (typeof data.content === "string") {
+        if (
+            typeof data.content === "string"
+        ) {
 
             return data.content;
 
         }
 
-
-        /*
-         * OpenAI-style response
-         */
 
         if (
             data.choices &&
@@ -437,7 +449,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 choice.message &&
-                typeof choice.message.content === "string"
+                typeof choice.message.content ===
+                "string"
             ) {
 
                 return choice.message.content;
@@ -446,7 +459,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (
-                typeof choice.text === "string"
+                typeof choice.text ===
+                "string"
             ) {
 
                 return choice.text;
@@ -475,7 +489,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const wrapper =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         wrapper.className =
@@ -483,7 +499,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const bubble =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         bubble.className =
@@ -491,45 +509,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /*
-         * Show image thumbnails
-         * inside user message.
+         * Show images inside
+         * user message.
          */
 
         if (
             type === "user" &&
-            images &&
             images.length
         ) {
 
             const imageContainer =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             imageContainer.className =
                 "message-images";
 
 
-            images.forEach(image => {
+            images.forEach(
+                image => {
 
-                const img =
-                    document.createElement("img");
-
-
-                img.src =
-                    image.dataUrl;
-
-
-                img.alt =
-                    image.name;
+                    const img =
+                        document.createElement(
+                            "img"
+                        );
 
 
-                img.className =
-                    "message-image";
+                    img.src =
+                        image.dataUrl;
 
 
-                imageContainer.appendChild(img);
+                    img.alt =
+                        image.name;
 
-            });
+
+                    img.className =
+                        "message-image";
+
+
+                    imageContainer.appendChild(
+                        img
+                    );
+
+                }
+            );
 
 
             bubble.appendChild(
@@ -541,16 +566,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (text) {
 
-            const textDiv =
-                document.createElement("div");
+            const textElement =
+                document.createElement(
+                    "div"
+                );
 
 
-            textDiv.innerHTML =
-                formatMessage(text);
+            textElement.innerHTML =
+                formatMessage(
+                    text
+                );
 
 
             bubble.appendChild(
-                textDiv
+                textElement
             );
 
         }
@@ -568,9 +597,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         scrollChat();
 
-
-        return bubble;
-
     }
 
 
@@ -580,11 +606,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function typeAIMessage(text) {
 
-        if (!chatMessages) return;
-
-
         const wrapper =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         wrapper.className =
@@ -592,7 +617,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const bubble =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         bubble.className =
@@ -622,7 +649,8 @@ document.addEventListener("DOMContentLoaded", () => {
             i++
         ) {
 
-            current += plain[i];
+            current +=
+                plain[i];
 
 
             bubble.textContent =
@@ -642,7 +670,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         bubble.innerHTML =
-            formatMessage(text);
+            formatMessage(
+                text
+            );
 
 
         scrollChat();
@@ -665,20 +695,12 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /*
-         * Code blocks
-         */
-
         safe =
             safe.replace(
                 /```([\s\S]*?)```/g,
                 "<pre><code>$1</code></pre>"
             );
 
-
-        /*
-         * Bold
-         */
 
         safe =
             safe.replace(
@@ -687,20 +709,12 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /*
-         * Inline code
-         */
-
         safe =
             safe.replace(
                 /`([^`]+)`/g,
                 "<code>$1</code>"
             );
 
-
-        /*
-         * New lines
-         */
 
         safe =
             safe.replace(
@@ -715,13 +729,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       ESCAPE HTML
+       ESCAPE
     ================================================= */
 
     function escapeHTML(text) {
 
         const div =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         div.textContent =
@@ -736,7 +752,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function stripHTML(text) {
 
         const div =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         div.innerHTML =
@@ -761,17 +779,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!chatArea) return;
 
 
-        requestAnimationFrame(() => {
+        requestAnimationFrame(
+            () => {
 
-            chatArea.scrollTo({
-                top:
-                    chatArea.scrollHeight,
+                chatArea.scrollTo({
 
-                behavior:
-                    "smooth"
-            });
+                    top:
+                        chatArea.scrollHeight,
 
-        });
+                    behavior:
+                        "smooth"
+
+                });
+
+            }
+        );
 
     }
 
@@ -782,7 +804,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setLoading(state) {
 
-        sending = state;
+        sending =
+            state;
 
 
         if (sendBtn) {
@@ -798,7 +821,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       PLUS BUTTON
+       PLUS
     ================================================= */
 
     if (
@@ -865,16 +888,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                if (input) {
+                input.placeholder =
+                    webMode
+                        ? "Search the web with Mini AI..."
+                        : "Message Mini AI...";
 
-                    input.placeholder =
-                        webMode
-                            ? "Search the web with Mini AI..."
-                            : "Message Mini AI...";
 
-                    input.focus();
-
-                }
+                input.focus();
 
             }
         );
@@ -883,10 +903,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       IMAGE ATTACH
+       IMAGE UPLOAD
     ================================================= */
 
-    if (attachBtn && fileInput) {
+    if (
+        attachBtn &&
+        fileInput
+    ) {
 
         attachBtn.addEventListener(
             "click",
@@ -908,7 +931,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     );
 
 
-                if (!files.length) return;
+                if (!files.length) {
+                    return;
+                }
 
 
                 for (
@@ -940,7 +965,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         selectedFiles.push({
 
-                            file: file,
+                            file:
+                                file,
 
                             name:
                                 file.name,
@@ -959,7 +985,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     } catch (error) {
 
                         console.error(
-                            "Image processing error:",
+                            "Image error:",
                             error
                         );
 
@@ -972,7 +998,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 /*
-                 * Allows selecting same image again.
+                 * Reset input so
+                 * same image can
+                 * be selected again.
                  */
 
                 fileInput.value = "";
@@ -984,7 +1012,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       PREPARE / COMPRESS IMAGE
+       IMAGE PREPARE
     ================================================= */
 
     function prepareImage(file) {
@@ -996,123 +1024,121 @@ document.addEventListener("DOMContentLoaded", () => {
                     new FileReader();
 
 
-                reader.onload = () => {
+                reader.onload =
+                    () => {
 
-                    const img =
-                        new Image();
-
-
-                    img.onload = () => {
-
-                        const maxSize =
-                            1600;
+                        const img =
+                            new Image();
 
 
-                        let width =
-                            img.width;
+                        img.onload =
+                            () => {
 
-                        let height =
-                            img.height;
+                                const maxSize =
+                                    1600;
 
 
-                        /*
-                         * Resize large images
-                         */
+                                let width =
+                                    img.width;
 
-                        if (
-                            width > maxSize ||
-                            height > maxSize
-                        ) {
+                                let height =
+                                    img.height;
 
-                            if (
-                                width > height
-                            ) {
 
-                                height =
-                                    Math.round(
-                                        height *
-                                        (
-                                            maxSize /
-                                            width
-                                        )
+                                /*
+                                 * Resize large image
+                                 */
+
+                                if (
+                                    width > maxSize ||
+                                    height > maxSize
+                                ) {
+
+                                    if (
+                                        width > height
+                                    ) {
+
+                                        height =
+                                            Math.round(
+                                                height *
+                                                maxSize /
+                                                width
+                                            );
+
+                                        width =
+                                            maxSize;
+
+                                    } else {
+
+                                        width =
+                                            Math.round(
+                                                width *
+                                                maxSize /
+                                                height
+                                            );
+
+                                        height =
+                                            maxSize;
+
+                                    }
+
+                                }
+
+
+                                const canvas =
+                                    document.createElement(
+                                        "canvas"
                                     );
 
-                                width =
-                                    maxSize;
 
-                            } else {
+                                canvas.width =
+                                    width;
 
-                                width =
-                                    Math.round(
-                                        width *
-                                        (
-                                            maxSize /
-                                            height
-                                        )
+                                canvas.height =
+                                    height;
+
+
+                                const ctx =
+                                    canvas.getContext(
+                                        "2d"
                                     );
 
-                                height =
-                                    maxSize;
 
-                            }
-
-                        }
-
-
-                        const canvas =
-                            document.createElement(
-                                "canvas"
-                            );
+                                ctx.drawImage(
+                                    img,
+                                    0,
+                                    0,
+                                    width,
+                                    height
+                                );
 
 
-                        canvas.width =
-                            width;
+                                /*
+                                 * Compress image
+                                 */
 
-                        canvas.height =
-                            height;
-
-
-                        const ctx =
-                            canvas.getContext(
-                                "2d"
-                            );
+                                const compressed =
+                                    canvas.toDataURL(
+                                        "image/jpeg",
+                                        0.82
+                                    );
 
 
-                        ctx.drawImage(
-                            img,
-                            0,
-                            0,
-                            width,
-                            height
-                        );
+                                resolve(
+                                    compressed
+                                );
+
+                            };
 
 
-                        /*
-                         * Compress JPEG
-                         */
-
-                        const compressed =
-                            canvas.toDataURL(
-                                "image/jpeg",
-                                0.82
-                            );
+                        img.onerror =
+                            reject;
 
 
-                        resolve(
-                            compressed
-                        );
+                        img.src =
+                            reader.result;
 
                     };
-
-
-                    img.onerror =
-                        reject;
-
-
-                    img.src =
-                        reader.result;
-
-                };
 
 
                 reader.onerror =
@@ -1135,7 +1161,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderAttachments() {
 
-        if (!attachmentPreview) return;
+        if (!attachmentPreview) {
+            return;
+        }
 
 
         attachmentPreview.innerHTML =
@@ -1143,25 +1171,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         selectedFiles.forEach(
-            (item, index) => {
+            (image, index) => {
 
-                const wrapper =
+                const item =
                     document.createElement(
                         "div"
                     );
 
 
-                wrapper.className =
+                item.className =
                     "image-attachment";
 
 
-                wrapper.innerHTML = `
+                item.innerHTML = `
 
                     <div class="image-preview-box">
 
                         <img
-                            src="${item.dataUrl}"
-                            alt="${escapeHTML(item.name)}"
+                            src="${image.dataUrl}"
+                            alt="${escapeHTML(image.name)}"
                         >
 
                         <button
@@ -1176,14 +1204,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
 
                     <div class="image-file-name">
-                        ${escapeHTML(item.name)}
+                        ${escapeHTML(image.name)}
                     </div>
 
                 `;
 
 
                 attachmentPreview.appendChild(
-                    wrapper
+                    item
                 );
 
             }
@@ -1225,7 +1253,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       MAGIC AI
+       MAGIC
     ================================================= */
 
     if (magicBtn) {
@@ -1234,15 +1262,10 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                if (!input) return;
-
-
                 input.focus();
-
 
                 input.value =
                     "Help me with ";
-
 
                 autoResize();
 
@@ -1269,9 +1292,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         const action =
                             option.dataset.action;
-
-
-                        if (!input) return;
 
 
                         if (
@@ -1309,13 +1329,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         input.focus();
 
 
-                        if (toolsPopup) {
-
-                            toolsPopup.classList.remove(
-                                "show"
-                            );
-
-                        }
+                        toolsPopup.classList.remove(
+                            "show"
+                        );
 
                     }
                 );
@@ -1334,9 +1350,6 @@ document.addEventListener("DOMContentLoaded", () => {
             card.addEventListener(
                 "click",
                 () => {
-
-                    if (!input) return;
-
 
                     const prompt =
                         card.dataset.prompt;
@@ -1377,9 +1390,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                if (input) {
-                    input.focus();
-                }
+                input.focus();
 
             }
         );
@@ -1394,49 +1405,30 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedFiles = [];
 
 
-        if (chatMessages) {
-
-            chatMessages.innerHTML =
-                "";
-
-        }
+        chatMessages.innerHTML =
+            "";
 
 
-        if (welcomeScreen) {
-
-            welcomeScreen.style.display =
-                "flex";
-
-        }
+        welcomeScreen.style.display =
+            "flex";
 
 
-        if (input) {
+        input.value =
+            "";
 
-            input.value =
-                "";
 
-            autoResize();
-
-        }
+        autoResize();
 
 
         renderAttachments();
 
 
-        if (toolsPopup) {
-
-            toolsPopup.classList.remove(
-                "show"
-            );
-
-        }
+        toolsPopup.classList.remove(
+            "show"
+        );
 
 
-        if (input) {
-
-            input.focus();
-
-        }
+        input.focus();
 
 
         closeMobileSidebar();
@@ -1496,9 +1488,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                if (!input) return;
-
-
                 input.value =
                     message;
 
@@ -1515,10 +1504,6 @@ document.addEventListener("DOMContentLoaded", () => {
             item
         );
 
-
-        /*
-         * Keep only 5 chats.
-         */
 
         while (
             recentChats.children.length > 5
@@ -1564,21 +1549,13 @@ document.addEventListener("DOMContentLoaded", () => {
         recognition.onstart =
             () => {
 
-                if (micBtn) {
-
-                    micBtn.classList.add(
-                        "active"
-                    );
-
-                }
+                micBtn.classList.add(
+                    "active"
+                );
 
 
-                if (input) {
-
-                    input.placeholder =
-                        "Listening...";
-
-                }
+                input.placeholder =
+                    "Listening...";
 
             };
 
@@ -1607,14 +1584,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                if (input) {
+                input.value =
+                    transcript;
 
-                    input.value =
-                        transcript;
 
-                    autoResize();
-
-                }
+                autoResize();
 
             };
 
@@ -1622,23 +1596,15 @@ document.addEventListener("DOMContentLoaded", () => {
         recognition.onend =
             () => {
 
-                if (micBtn) {
-
-                    micBtn.classList.remove(
-                        "active"
-                    );
-
-                }
+                micBtn.classList.remove(
+                    "active"
+                );
 
 
-                if (input) {
-
-                    input.placeholder =
-                        webMode
-                            ? "Search the web with Mini AI..."
-                            : "Message Mini AI...";
-
-                }
+                input.placeholder =
+                    webMode
+                        ? "Search the web with Mini AI..."
+                        : "Message Mini AI...";
 
             };
 
@@ -1652,13 +1618,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                if (micBtn) {
-
-                    micBtn.classList.remove(
-                        "active"
-                    );
-
-                }
+                micBtn.classList.remove(
+                    "active"
+                );
 
             };
 
@@ -1703,7 +1665,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       EXPAND COMPOSER
+       EXPAND
     ================================================= */
 
     if (composerExpand) {
@@ -1711,9 +1673,6 @@ document.addEventListener("DOMContentLoaded", () => {
         composerExpand.addEventListener(
             "click",
             () => {
-
-                if (!input) return;
-
 
                 input.focus();
 
@@ -1752,105 +1711,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function openMobileSidebar() {
 
-        if (sidebar) {
-
-            sidebar.classList.add(
-                "open"
-            );
-
-        }
+        sidebar.classList.add(
+            "open"
+        );
 
 
-        if (mobileOverlay) {
-
-            mobileOverlay.classList.add(
-                "show"
-            );
-
-        }
+        mobileOverlay.classList.add(
+            "show"
+        );
 
     }
 
 
     function closeMobileSidebar() {
 
-        if (sidebar) {
-
-            sidebar.classList.remove(
-                "open"
-            );
-
-        }
-
-
-        if (mobileOverlay) {
-
-            mobileOverlay.classList.remove(
-                "show"
-            );
-
-        }
-
-    }
-
-
-    /* =================================================
-       CLEAR CHAT
-    ================================================= */
-
-    if (clearBtn) {
-
-        clearBtn.addEventListener(
-            "click",
-            () => {
-
-                if (
-                    conversation.length === 0
-                ) {
-
-                    return;
-
-                }
-
-
-                const confirmed =
-                    confirm(
-                        "Clear this conversation?"
-                    );
-
-
-                if (confirmed) {
-
-                    newChat();
-
-                }
-
-            }
+        sidebar.classList.remove(
+            "open"
         );
 
-    }
 
-
-    /* =================================================
-       SEARCH
-    ================================================= */
-
-    if (searchBtn) {
-
-        searchBtn.addEventListener(
-            "click",
-            () => {
-
-                if (!input) return;
-
-
-                input.focus();
-
-
-                input.placeholder =
-                    "Search your conversation...";
-
-            }
+        mobileOverlay.classList.remove(
+            "show"
         );
 
     }
@@ -1876,53 +1757,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    if (topSettingsBtn) {
-
-        topSettingsBtn.addEventListener(
-            "click",
-            () => {
-
-                alert(
-                    "Settings panel coming soon."
-                );
-
-            }
-        );
-
-    }
-
-
     /* =================================================
-       PRO
-    ================================================= */
-
-    if (proBtn) {
-
-        proBtn.addEventListener(
-            "click",
-            () => {
-
-                alert(
-                    "Pro features coming soon."
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =================================================
-       KEYBOARD SHORTCUTS
+       KEYBOARD
     ================================================= */
 
     document.addEventListener(
         "keydown",
         event => {
-
-            /*
-             * Ctrl + K
-             */
 
             if (
                 event.ctrlKey &&
@@ -1931,32 +1772,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-
-                if (input) {
-
-                    input.focus();
-
-                }
+                input.focus();
 
             }
 
-
-            /*
-             * Escape
-             */
 
             if (
                 event.key === "Escape"
             ) {
 
-                if (toolsPopup) {
-
-                    toolsPopup.classList.remove(
-                        "show"
-                    );
-
-                }
-
+                toolsPopup.classList.remove(
+                    "show"
+                );
 
                 closeMobileSidebar();
 
@@ -2002,12 +1829,6 @@ document.addEventListener(
         if (!cursor) return;
 
 
-        const core =
-            cursor.querySelector(
-                ".cursor-core"
-            );
-
-
         const trails =
             document.querySelectorAll(
                 ".cursor-trail"
@@ -2037,16 +1858,15 @@ document.addEventListener(
         trails.forEach(() => {
 
             trailPositions.push({
+
                 x: mouseX,
+
                 y: mouseY
+
             });
 
         });
 
-
-        /* ================================
-           MOUSE POSITION
-        ================================= */
 
         document.addEventListener(
             "mousemove",
@@ -2061,10 +1881,6 @@ document.addEventListener(
             }
         );
 
-
-        /* ================================
-           SMOOTH CURSOR
-        ================================= */
 
         function animateCursor() {
 
@@ -2085,10 +1901,6 @@ document.addEventListener(
             cursor.style.top =
                 cursorY + "px";
 
-
-            /* ================================
-               TRAIL
-            ================================= */
 
             let previousX =
                 cursorX;
@@ -2174,10 +1986,6 @@ document.addEventListener(
         animateCursor();
 
 
-        /* ================================
-           HOVER DETECTION
-        ================================= */
-
         const interactiveElements =
             document.querySelectorAll(
                 "a, button, input, textarea, select, .feature-card, .mani-ai-logo, .new-chat, [role='button']"
@@ -2214,10 +2022,6 @@ document.addEventListener(
         );
 
 
-        /* ================================
-           CLICK ANIMATION
-        ================================= */
-
         document.addEventListener(
             "mousedown",
             () => {
@@ -2241,10 +2045,6 @@ document.addEventListener(
             }
         );
 
-
-        /* ================================
-           HIDE WHEN MOUSE LEAVES
-        ================================= */
 
         document.addEventListener(
             "mouseleave",
