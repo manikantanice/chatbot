@@ -6,9 +6,11 @@ export default async function handler(req, res) {
 
     if (req.method !== "POST") {
         return res.status(405).json({
+            type: "error",
             error: "Method not allowed"
         });
     }
+
 
     try {
 
@@ -18,63 +20,45 @@ export default async function handler(req, res) {
 
         const body = req.body || {};
 
-        const messages = body.messages || [];
+        const message =
+            typeof body.message === "string"
+                ? body.message.trim()
+                : "";
 
-        const webSearch = body.webSearch || false;
+        const messages =
+            Array.isArray(body.messages)
+                ? body.messages
+                : [];
 
-        /*
-         * Images can come from the frontend as:
-         *
-         * images: [
-         *   {
-         *      name: "...",
-         *      type: "image/jpeg",
-         *      data: "data:image/jpeg;base64,..."
-         *   }
-         * ]
-         *
-         * We also accept `files` for compatibility.
-         */
+        const webSearch =
+            Boolean(body.webSearch);
 
-        const images = Array.isArray(body.images)
-            ? body.images
-            : [];
-
-        const files = Array.isArray(body.files)
-            ? body.files
-            : [];
+        const images =
+            Array.isArray(body.images)
+                ? body.images
+                : [];
 
 
         /* =====================================================
-           VALIDATE MESSAGES
+           API KEY
         ===================================================== */
 
-        if (!Array.isArray(messages) || messages.length === 0) {
+        const groqApiKey =
+            process.env.GROQ_API_KEY;
 
-            return res.status(400).json({
+
+        if (!groqApiKey) {
+
+            return res.status(500).json({
+
                 type: "error",
-                error: "Messages are missing."
+
+                error:
+                    "GROQ_API_KEY is not configured in Vercel."
+
             });
 
         }
-
-
-        /* =====================================================
-           LAST USER MESSAGE
-        ===================================================== */
-
-        const lastMessage =
-            messages[messages.length - 1]?.content || "";
-
-
-        /*
-         * Make sure the message is always a string.
-         */
-
-        const userText =
-            typeof lastMessage === "string"
-                ? lastMessage.trim()
-                : "";
 
 
         /* =====================================================
@@ -82,25 +66,36 @@ export default async function handler(req, res) {
         ===================================================== */
 
         const wantsImage =
-            /create\s+(an?\s+)?image|generate\s+(an?\s+)?image|make\s+(an?\s+)?image|generate\s+(an?\s+)?picture|create\s+(an?\s+)?picture|draw|image\s+of|create\s+image|make\s+picture|generate\s+picture|show\s+me\s+(an?\s+)?image|show\s+image|generate\s+photo|create\s+photo|make\s+photo/i
-                .test(userText);
+            /create\s+(an?\s+)?image|
+             generate\s+(an?\s+)?image|
+             make\s+(an?\s+)?image|
+             generate\s+(an?\s+)?picture|
+             create\s+(an?\s+)?picture|
+             draw\s+|
+             image\s+of|
+             create\s+image|
+             make\s+picture|
+             generate\s+picture|
+             generate\s+photo|
+             create\s+photo|
+             make\s+photo/i
+                .test(message);
 
 
         /* =====================================================
            IMAGE GENERATION
         ===================================================== */
 
-        if (wantsImage && images.length === 0) {
+        if (
+            wantsImage &&
+            images.length === 0
+        ) {
 
             const pollinationsKey =
                 process.env.POLLINATIONS_API_KEY;
 
 
             if (!pollinationsKey) {
-
-                console.error(
-                    "POLLINATIONS_API_KEY is missing."
-                );
 
                 return res.status(500).json({
 
@@ -116,12 +111,8 @@ export default async function handler(req, res) {
 
             try {
 
-                /* =============================================
-                   CLEAN IMAGE PROMPT
-                ============================================= */
-
                 let imagePrompt =
-                    userText
+                    message
                         .replace(
                             /^\s*(please\s*)?(create|generate|make|draw|show\s+me)\s+(an?\s+)?(image|picture|photo)\s*(of\s*)?/i,
                             ""
@@ -139,7 +130,7 @@ export default async function handler(req, res) {
 
 
                 const finalPrompt =
-                    imagePrompt || userText;
+                    imagePrompt || message;
 
 
                 console.log(
@@ -148,24 +139,17 @@ export default async function handler(req, res) {
                 );
 
 
-                /* =============================================
-                   POLLINATIONS IMAGE URL
-                ============================================= */
-
                 const imageUrl =
                     `https://gen.pollinations.ai/image/${encodeURIComponent(
                         finalPrompt
                     )}?model=flux`;
 
 
-                /* =============================================
-                   FETCH IMAGE
-                ============================================= */
-
                 const imageResponse =
                     await fetch(
                         imageUrl,
                         {
+
                             method: "GET",
 
                             headers: {
@@ -187,11 +171,6 @@ export default async function handler(req, res) {
                     const errorText =
                         await imageResponse.text();
 
-                    console.error(
-                        "Pollinations ERROR:",
-                        imageResponse.status,
-                        errorText
-                    );
 
                     return res.status(
                         imageResponse.status
@@ -200,24 +179,16 @@ export default async function handler(req, res) {
                         type: "error",
 
                         error:
-                            `Pollinations error ${imageResponse.status}: ${errorText || "Image generation failed."}`
+                            `Image generation failed: ${errorText || imageResponse.statusText}`
 
                     });
 
                 }
 
 
-                /* =============================================
-                   GET IMAGE BUFFER
-                ============================================= */
-
                 const imageBuffer =
                     await imageResponse.arrayBuffer();
 
-
-                /* =============================================
-                   BASE64
-                ============================================= */
 
                 const base64Image =
                     Buffer
@@ -225,27 +196,15 @@ export default async function handler(req, res) {
                         .toString("base64");
 
 
-                /* =============================================
-                   CONTENT TYPE
-                ============================================= */
-
                 const contentType =
                     imageResponse.headers.get(
                         "content-type"
                     ) || "image/jpeg";
 
 
-                /* =============================================
-                   FINAL IMAGE DATA
-                ============================================= */
-
                 const imageData =
                     `data:${contentType};base64,${base64Image}`;
 
-
-                /* =============================================
-                   RETURN GENERATED IMAGE
-                ============================================= */
 
                 return res.status(200).json({
 
@@ -260,19 +219,20 @@ export default async function handler(req, res) {
                 });
 
 
-            } catch (imageError) {
+            } catch (error) {
 
                 console.error(
                     "IMAGE GENERATION ERROR:",
-                    imageError
+                    error
                 );
+
 
                 return res.status(500).json({
 
                     type: "error",
 
                     error:
-                        imageError?.message ||
+                        error?.message ||
                         "Image generation failed."
 
                 });
@@ -289,72 +249,60 @@ export default async function handler(req, res) {
         if (images.length > 0) {
 
             console.log(
-                `Analyzing ${images.length} uploaded image(s)...`
+                `Received ${images.length} image(s).`
             );
 
 
-            const groqApiKey =
-                process.env.GROQ_API_KEY;
-
-
-            if (!groqApiKey) {
-
-                return res.status(500).json({
-
-                    type: "error",
-
-                    error:
-                        "GROQ_API_KEY is not configured in Vercel."
-
-                });
-
-            }
-
-
             /*
-             * Maximum 5 images.
+             * Groq supports up to 5 images
+             * in a vision request.
              */
 
             const selectedImages =
                 images.slice(0, 5);
 
 
-            /*
-             * Convert uploaded images into
-             * Groq vision message format.
-             */
-
             const imageContents = [];
 
 
-            for (const image of selectedImages) {
+            for (
+                const image
+                of selectedImages
+            ) {
 
                 if (!image) {
                     continue;
                 }
 
 
-                /*
-                 * Frontend should send:
-                 *
-                 * data:image/jpeg;base64,...
-                 */
-
                 let imageData =
                     image.data ||
-                    image.url ||
                     image.base64 ||
+                    image.url ||
                     "";
 
 
-                if (!imageData) {
+                if (
+                    typeof imageData !==
+                    "string"
+                ) {
+
                     continue;
+
                 }
 
 
                 /*
-                 * If frontend sends only raw base64,
-                 * create the data URL.
+                 * Remove accidental spaces/newlines.
+                 */
+
+                imageData =
+                    imageData.trim();
+
+
+                /*
+                 * Convert raw base64
+                 * into a data URL.
                  */
 
                 if (
@@ -375,7 +323,7 @@ export default async function handler(req, res) {
 
 
                 /*
-                 * Basic image validation.
+                 * Validate image data.
                  */
 
                 if (
@@ -384,17 +332,78 @@ export default async function handler(req, res) {
                     )
                 ) {
 
+                    console.warn(
+                        "Invalid image skipped:",
+                        image.name
+                    );
+
                     continue;
+
+                }
+
+
+                /*
+                 * Check approximate Base64 size.
+                 *
+                 * Groq has a 4MB limit for
+                 * base64 encoded image requests.
+                 */
+
+                const commaIndex =
+                    imageData.indexOf(",");
+
+
+                if (
+                    commaIndex === -1
+                ) {
+
+                    continue;
+
+                }
+
+
+                const base64Part =
+                    imageData.substring(
+                        commaIndex + 1
+                    );
+
+
+                const estimatedBytes =
+                    Math.floor(
+                        base64Part.length *
+                        0.75
+                    );
+
+
+                /*
+                 * 3.5MB safety limit.
+                 */
+
+                if (
+                    estimatedBytes >
+                    3.5 * 1024 * 1024
+                ) {
+
+                    console.warn(
+                        "Image too large:",
+                        image.name
+                    );
+
+
+                    continue;
+
                 }
 
 
                 imageContents.push({
 
-                    type: "image_url",
+                    type:
+                        "image_url",
 
                     image_url: {
 
-                        url: imageData
+                        url:
+                            imageData
 
                     }
 
@@ -403,36 +412,38 @@ export default async function handler(req, res) {
             }
 
 
-            /*
-             * No valid images.
-             */
+            /* =================================================
+               NO VALID IMAGE
+            ================================================= */
 
-            if (imageContents.length === 0) {
+            if (
+                imageContents.length === 0
+            ) {
 
                 return res.status(400).json({
 
                     type: "error",
 
                     error:
-                        "No valid image data was received."
+                        "The image is too large or invalid. Please upload a JPG/PNG image under about 3.5 MB."
 
                 });
 
             }
 
 
-            /*
-             * User's question.
-             */
+            /* =================================================
+               IMAGE QUESTION
+            ================================================= */
 
             const analysisPrompt =
-                userText ||
-                "Please analyze this image and describe what you see. Include important details, objects, text, colors, and anything useful.";
+                message ||
+                "Analyze this image carefully. Describe what you can see, including objects, people, colors, visible text, layout, and important details. Do not invent information that is not visible.";
 
 
-            /*
-             * Text + images in one user message.
-             */
+            /* =================================================
+               VISION MESSAGE
+            ================================================= */
 
             const visionMessage = {
 
@@ -441,9 +452,12 @@ export default async function handler(req, res) {
                 content: [
 
                     {
-                        type: "text",
 
-                        text: analysisPrompt
+                        type:
+                            "text",
+
+                        text:
+                            analysisPrompt
 
                     },
 
@@ -455,7 +469,7 @@ export default async function handler(req, res) {
 
 
             console.log(
-                "Sending image to Groq vision model..."
+                "Sending image to Groq vision..."
             );
 
 
@@ -468,7 +482,8 @@ export default async function handler(req, res) {
                     "https://api.groq.com/openai/v1/chat/completions",
                     {
 
-                        method: "POST",
+                        method:
+                            "POST",
 
                         headers: {
 
@@ -484,7 +499,7 @@ export default async function handler(req, res) {
                             JSON.stringify({
 
                                 /*
-                                 * Vision-capable Groq model.
+                                 * Vision model
                                  */
 
                                 model:
@@ -495,10 +510,11 @@ export default async function handler(req, res) {
 
                                     {
 
-                                        role: "system",
+                                        role:
+                                            "system",
 
                                         content:
-                                            "You are Mini AI, a helpful multimodal AI assistant. Carefully analyze uploaded images and answer the user's question. If text appears in the image, read it accurately. Do not invent details that are not visible."
+                                            "You are Mini AI, a helpful multimodal AI assistant. You can understand images. Carefully inspect uploaded images and answer the user's question. Read visible text when possible. Never claim that you cannot see images. Do not invent details that are not visible."
 
                                     },
 
@@ -521,7 +537,7 @@ export default async function handler(req, res) {
 
 
             /* =================================================
-               READ GROQ RESPONSE
+               READ RESPONSE
             ================================================= */
 
             const responseText =
@@ -529,12 +545,12 @@ export default async function handler(req, res) {
 
 
             console.log(
-                "Groq vision status:",
+                "Groq Vision Status:",
                 groqResponse.status
             );
 
 
-            let groqData = null;
+            let groqData;
 
 
             try {
@@ -544,12 +560,13 @@ export default async function handler(req, res) {
                         responseText
                     );
 
-            } catch (parseError) {
+            } catch {
 
                 console.error(
-                    "Groq returned non-JSON:",
+                    "Invalid Groq response:",
                     responseText
                 );
+
 
                 return res.status(500).json({
 
@@ -567,22 +584,26 @@ export default async function handler(req, res) {
                GROQ ERROR
             ================================================= */
 
-            if (!groqResponse.ok) {
+            if (
+                !groqResponse.ok
+            ) {
 
                 console.error(
-                    "Groq Vision API ERROR:",
+                    "Groq Vision Error:",
                     groqData
                 );
+
 
                 return res.status(
                     groqResponse.status
                 ).json({
 
-                    type: "error",
+                    type:
+                        "error",
 
                     error:
                         groqData?.error?.message ||
-                        "Groq vision API error."
+                        "Groq vision request failed."
 
                 });
 
@@ -590,7 +611,7 @@ export default async function handler(req, res) {
 
 
             /* =================================================
-               GET VISION REPLY
+               GET VISION RESPONSE
             ================================================= */
 
             const reply =
@@ -603,16 +624,18 @@ export default async function handler(req, res) {
             if (!reply) {
 
                 console.error(
-                    "Groq vision response has no reply:",
+                    "No vision reply:",
                     groqData
                 );
 
+
                 return res.status(500).json({
 
-                    type: "error",
+                    type:
+                        "error",
 
                     error:
-                        "No image analysis response received from Groq."
+                        "No image analysis response received."
 
                 });
 
@@ -625,12 +648,17 @@ export default async function handler(req, res) {
 
             return res.status(200).json({
 
-                type: "text",
+                type:
+                    "text",
 
-                reply: reply,
+                reply:
+                    reply,
 
                 imageAnalysis:
-                    true
+                    true,
+
+                webSearch:
+                    webSearch
 
             });
 
@@ -641,22 +669,18 @@ export default async function handler(req, res) {
            NORMAL TEXT CHAT
         ===================================================== */
 
-        const groqApiKey =
-            process.env.GROQ_API_KEY;
+        if (
+            !Array.isArray(messages) ||
+            messages.length === 0
+        ) {
 
+            return res.status(400).json({
 
-        if (!groqApiKey) {
-
-            console.error(
-                "GROQ_API_KEY is missing."
-            );
-
-            return res.status(500).json({
-
-                type: "error",
+                type:
+                    "error",
 
                 error:
-                    "GROQ_API_KEY is not configured in Vercel."
+                    "Message is missing."
 
             });
 
@@ -668,16 +692,17 @@ export default async function handler(req, res) {
         );
 
 
-        /* =====================================================
-           NORMAL GROQ REQUEST
-        ===================================================== */
+        /* =================================================
+           NORMAL CHAT REQUEST
+        ================================================= */
 
         const groqResponse =
             await fetch(
                 "https://api.groq.com/openai/v1/chat/completions",
                 {
 
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
 
@@ -710,21 +735,15 @@ export default async function handler(req, res) {
             );
 
 
-        /* =====================================================
-           READ GROQ RESPONSE
-        ===================================================== */
+        /* =================================================
+           READ RESPONSE
+        ================================================= */
 
         const responseText =
             await groqResponse.text();
 
 
-        console.log(
-            "Groq status:",
-            groqResponse.status
-        );
-
-
-        let groqData = null;
+        let groqData;
 
 
         try {
@@ -734,16 +753,18 @@ export default async function handler(req, res) {
                     responseText
                 );
 
-        } catch (parseError) {
+        } catch {
 
             console.error(
-                "Groq returned non-JSON:",
+                "Invalid Groq response:",
                 responseText
             );
 
+
             return res.status(500).json({
 
-                type: "error",
+                type:
+                    "error",
 
                 error:
                     "Groq returned an invalid response."
@@ -753,22 +774,26 @@ export default async function handler(req, res) {
         }
 
 
-        /* =====================================================
-           GROQ API ERROR
-        ===================================================== */
+        /* =================================================
+           API ERROR
+        ================================================= */
 
-        if (!groqResponse.ok) {
+        if (
+            !groqResponse.ok
+        ) {
 
             console.error(
-                "Groq API ERROR:",
+                "Groq API Error:",
                 groqData
             );
+
 
             return res.status(
                 groqResponse.status
             ).json({
 
-                type: "error",
+                type:
+                    "error",
 
                 error:
                     groqData?.error?.message ||
@@ -779,9 +804,9 @@ export default async function handler(req, res) {
         }
 
 
-        /* =====================================================
-           GET REPLY
-        ===================================================== */
+        /* =================================================
+           GET TEXT RESPONSE
+        ================================================= */
 
         const reply =
             groqData
@@ -792,14 +817,10 @@ export default async function handler(req, res) {
 
         if (!reply) {
 
-            console.error(
-                "Groq response has no reply:",
-                groqData
-            );
-
             return res.status(500).json({
 
-                type: "error",
+                type:
+                    "error",
 
                 error:
                     "No reply received from Groq."
@@ -809,15 +830,17 @@ export default async function handler(req, res) {
         }
 
 
-        /* =====================================================
-           NORMAL CHAT RESPONSE
-        ===================================================== */
+        /* =================================================
+           RETURN NORMAL RESPONSE
+        ================================================= */
 
         return res.status(200).json({
 
-            type: "text",
+            type:
+                "text",
 
-            reply: reply,
+            reply:
+                reply,
 
             webSearch:
                 webSearch
@@ -827,23 +850,20 @@ export default async function handler(req, res) {
 
     } catch (error) {
 
-        /* =====================================================
-           GENERAL SERVER ERROR
-        ===================================================== */
-
         console.error(
-            "API ERROR:",
+            "SERVER ERROR:",
             error
         );
 
 
         return res.status(500).json({
 
-            type: "error",
+            type:
+                "error",
 
             error:
                 error?.message ||
-                "Server error."
+                "Internal server error."
 
         });
 
