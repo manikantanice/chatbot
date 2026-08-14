@@ -3177,3 +3177,86 @@ body.cursor-click .cursor-core {
         display: none;
     }
 }
+/* =========================================
+   IMAGE ATTACHMENT PREVIEW
+========================================= */
+
+.attachment-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.image-attachment {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.attachment-image-preview {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+}
+
+.attachment-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.remove-file {
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================
+   IMAGES INSIDE CHAT
+========================================= */
+
+.message-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.message-image {
+    width: min(280px, 100%);
+    max-height: 280px;
+    object-fit: cover;
+    border-radius: 14px;
+    display: block;
+}
+
+
+/* =========================================
+   AI GENERATED IMAGE
+========================================= */
+
+.ai-generated-image {
+    display: block;
+    width: min(600px, 100%);
+    max-height: 600px;
+    object-fit: contain;
+    margin-top: 12px;
+    border-radius: 16px;
+}
