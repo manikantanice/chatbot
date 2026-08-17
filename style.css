@@ -1,553 +1,3146 @@
 /* =========================================================
-   MANI AI — FINAL FIXES
-   Add this block at the VERY END of style.css
-========================================================= */
+   MINI AI — FINAL FIXED STYLE.CSS
+   ========================================================= */
 
-
-/* =========================================================
-   1. GLOBAL SAFETY
-========================================================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
+    width: 100%;
+    height: 100%;
+    background: #030617;
 }
 
 body {
-    min-width: 0;
+    width: 100%;
+    min-width: 320px;
+    height: 100%;
+    min-height: 100vh;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: #030617;
+    color: #eef1ff;
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
 
 button,
 input,
-textarea {
-    -webkit-appearance: none;
-    appearance: none;
+textarea,
+select {
+    font: inherit;
 }
 
 button {
-    user-select: none;
+    border: 0;
+    outline: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #765cff;
+    outline-offset: 2px;
 }
 
 img {
     max-width: 100%;
 }
 
-::selection {
-    background: rgba(124, 92, 255, .28);
-    color: #fff;
+a {
+    color: inherit;
+    text-decoration: none;
 }
 
 
 /* =========================================================
-   2. APP / MAIN LAYOUT FIX
-========================================================= */
+   APP
+   ========================================================= */
 
 .app {
     position: relative;
-    isolation: isolate;
-    min-width: 0;
+
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+
+    display: flex;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 65% 35%,
+            rgba(91, 49, 210, 0.10),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 20% 80%,
+            rgba(48, 75, 180, 0.05),
+            transparent 30%
+        ),
+        #030617;
 }
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.sidebar {
+    position: relative;
+
+    width: 245px;
+    height: calc(100vh - 24px);
+
+    margin: 12px;
+
+    flex: 0 0 245px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(119, 88, 220, 0.27);
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            160deg,
+            rgba(20, 27, 57, 0.96),
+            rgba(7, 14, 32, 0.98)
+        );
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+    isolation: isolate;
+}
+
+.sidebar::before {
+    content: "";
+
+    position: absolute;
+
+    width: 220px;
+    height: 220px;
+
+    left: -100px;
+    top: -100px;
+
+    border-radius: 50%;
+
+    background: rgba(105, 55, 255, 0.12);
+
+    filter: blur(60px);
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+.sidebar-top {
+    position: relative;
+    z-index: 2;
+
+    padding: 20px 16px;
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.brand {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 3px 4px 24px;
+}
+
+.brand-logo {
+    position: relative;
+
+    width: 39px;
+    height: 39px;
+
+    flex: 0 0 39px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7945ff,
+            #596cff
+        );
+
+    color: #fff;
+
+    font-size: 22px;
+
+    box-shadow:
+        0 8px 25px rgba(100, 60, 255, 0.3);
+
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+.brand-logo::after {
+    content: "";
+
+    position: absolute;
+
+    inset: -3px;
+
+    border-radius: inherit;
+
+    border: 1px solid rgba(134, 90, 255, 0.45);
+
+    animation: logoRing 2.5s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes logoRing {
+    0%,
+    100% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.08);
+    }
+}
+
+.brand-name {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+}
+
+.brand-name span {
+    color: #7d6cff;
+}
+
+
+/* =========================================================
+   NEW CHAT
+   ========================================================= */
+
+.new-chat-btn {
+    width: 100%;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7437ef,
+            #6848f8
+        );
+
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(105, 50, 255, 0.22);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.new-chat-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 30px rgba(105, 50, 255, 0.38);
+}
+
+.plus-icon {
+    font-size: 19px;
+    font-weight: 300;
+}
+
+
+/* =========================================================
+   SIDEBAR SECTIONS
+   ========================================================= */
+
+.sidebar-section {
+    margin-top: 26px;
+}
+
+.section-title {
+    margin: 0 7px 10px;
+
+    color: #626d89;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.conversation {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px 11px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #b8c0d7;
+
+    text-align: left;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.conversation:hover {
+    background: rgba(116, 69, 255, 0.08);
+    color: #fff;
+}
+
+.conversation.active {
+    border-color: rgba(126, 76, 255, 0.65);
+
+    background:
+        rgba(93, 50, 180, 0.11);
+
+    color: #f4f1ff;
+}
+
+.conversation-icon {
+    color: #a77cff;
+    font-size: 16px;
+}
+
+.recent-section {
+    opacity: 0.75;
+}
+
+
+/* =========================================================
+   SIDEBAR BOTTOM
+   ========================================================= */
+
+.sidebar-bottom {
+    position: relative;
+    z-index: 2;
+
+    padding: 12px;
+}
+
+.sidebar-bottom-btn {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #818ba4;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.sidebar-bottom-btn:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+}
+
+.sidebar-bottom-btn .arrow {
+    margin-left: auto;
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
 
 .main {
     position: relative;
+
+    flex: 1 1 auto;
+
     min-width: 0;
+    min-height: 0;
+
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
     overflow: hidden;
 }
 
 
 /* =========================================================
-   3. SIDEBAR FIX
-========================================================= */
+   TOPBAR
+   ========================================================= */
 
-.sidebar {
-    min-width: 0;
+.topbar {
+    position: relative;
+    z-index: 50;
+
+    width: 100%;
+    height: 76px;
+
+    flex: 0 0 76px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 22px;
+
+    border-bottom: 1px solid rgba(105, 118, 170, 0.08);
+
+    background:
+        rgba(3, 6, 23, 0.72);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
 }
 
-.sidebar-top {
+.topbar-left,
+.topbar-actions {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-actions {
+    gap: 8px;
+}
+
+
+/* =========================================================
+   MODEL SELECTOR
+   ========================================================= */
+
+.model-selector {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 10px 14px;
+
+    border: 1px solid rgba(111, 126, 180, 0.18);
+    border-radius: 11px;
+
+    background: rgba(15, 21, 44, 0.65);
+
+    color: #dfe3f4;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.25s ease,
+        background 0.25s ease;
+}
+
+.model-selector:hover {
+    border-color: rgba(125, 80, 255, 0.45);
+    background: rgba(28, 27, 59, 0.75);
+}
+
+.model-spark {
+    color: #a16cff;
+}
+
+.chevron {
+    color: #727c97;
+}
+
+
+/* =========================================================
+   PRO BUTTON
+   ========================================================= */
+
+.pro-btn {
+    padding: 9px 15px;
+
+    border: 1px solid rgba(126, 65, 255, 0.45);
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(103, 42, 200, 0.3),
+            rgba(54, 44, 130, 0.2)
+        );
+
+    color: #d7bfff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+.pro-btn:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 0 22px rgba(120, 60, 255, 0.2);
+}
+
+
+/* =========================================================
+   TOP ICONS
+   ========================================================= */
+
+.top-icon {
+    width: 34px;
+    height: 34px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #77819a;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+.top-icon:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+
+/* =========================================================
+   SMALL AI ORB
+   ========================================================= */
+
+.ai-orb-small {
+    position: relative;
+
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    margin-left: 5px;
+}
+
+.orb-core {
+    position: relative;
+    z-index: 3;
+
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #6b58ff,
+            #41b9ff
+        );
+
+    color: #fff;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    animation: smallOrbPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes smallOrbPulse {
+    0%,
+    100% {
+        box-shadow:
+            0 0 20px rgba(92, 93, 255, 0.5);
+    }
+
+    50% {
+        box-shadow:
+            0 0 38px rgba(92, 93, 255, 0.85);
+    }
+}
+
+.orb-ring {
+    position: absolute;
+
+    border: 1px solid rgba(106, 96, 255, 0.45);
+    border-radius: 50%;
+
+    animation:
+        smallOrbRotate 6s linear infinite;
+}
+
+.ai-orb-small .ring-one {
+    width: 48px;
+    height: 30px;
+}
+
+.ai-orb-small .ring-two {
+    width: 32px;
+    height: 48px;
+
+    animation-direction: reverse;
+}
+
+@keyframes smallOrbRotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+
+.mobile-menu-btn {
+    display: none;
+
+    width: 38px;
+    height: 38px;
+
+    margin-right: 8px;
+
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.05);
+
+    color: #fff;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   CHAT AREA
+   ========================================================= */
+
+.chat-area {
+    position: relative;
+
+    flex: 1 1 auto;
+
     min-height: 0;
-    overflow-y: auto;
+
     overflow-x: hidden;
+    overflow-y: auto;
+
     scrollbar-width: thin;
     scrollbar-color: #292451 transparent;
 }
 
-.sidebar-top::-webkit-scrollbar {
-    width: 4px;
+.chat-area::-webkit-scrollbar {
+    width: 6px;
 }
 
-.sidebar-top::-webkit-scrollbar-thumb {
-    background: #292451;
+.chat-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-area::-webkit-scrollbar-thumb {
+    background: #252044;
     border-radius: 20px;
 }
 
 
 /* =========================================================
-   4. TOPBAR FIX
-========================================================= */
-
-.topbar {
-    flex-shrink: 0;
-    min-width: 0;
-}
-
-.topbar-left {
-    min-width: 0;
-}
-
-.topbar-actions {
-    flex-shrink: 0;
-}
-
-.model-selector {
-    white-space: nowrap;
-}
-
-.model-selector span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-/* =========================================================
-   5. CHAT AREA FIX
-========================================================= */
-
-.chat-area {
-    position: relative;
-    z-index: 1;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-}
-
-
-/* =========================================================
-   6. WELCOME SCREEN FIX
-========================================================= */
+   WELCOME SCREEN
+   ========================================================= */
 
 .welcome-screen {
+    position: relative;
+
     width: 100%;
-    overflow-x: hidden;
+    min-height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding:
+        70px
+        25px
+        240px;
+
+    overflow: hidden;
 }
 
-.welcome-title,
-.welcome-subtitle,
-.hero-orb,
-.quick-cards {
-    max-width: 100%;
+.welcome-screen::before {
+    content: "";
+
+    position: absolute;
+
+    width: 700px;
+    height: 450px;
+
+    top: 80px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(83, 44, 255, 0.08),
+            transparent 65%
+        );
+
+    pointer-events: none;
+}
+
+.welcome-title {
+    position: relative;
+    z-index: 2;
+
+    font-size: clamp(42px, 5vw, 57px);
+    line-height: 1;
+
+    font-weight: 750;
+
+    letter-spacing: -3px;
+
+    color: #f8f8ff;
+
+    animation:
+        welcomeIn 0.8s ease both;
+}
+
+.welcome-title span {
+    background:
+        linear-gradient(
+            100deg,
+            #7c68ff,
+            #48b8ff
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    background-size: 200% 100%;
+
+    animation:
+        gradientMove 4s ease infinite;
+}
+
+@keyframes gradientMove {
+    0%,
+    100% {
+        background-position: 0%;
+    }
+
+    50% {
+        background-position: 100%;
+    }
+}
+
+@keyframes welcomeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcome-subtitle {
+    position: relative;
+    z-index: 2;
+
+    margin-top: 14px;
+
+    color: #727c9b;
+
+    font-size: 13px;
+
+    animation:
+        welcomeIn 0.8s 0.12s ease both;
+}
+
+.sparkle {
+    color: #ffcf48;
+    margin-left: 4px;
 }
 
 
 /* =========================================================
-   7. HERO ORB — PREVENT OVERFLOW
-========================================================= */
+   HERO ORB
+   ========================================================= */
 
 .hero-orb {
+    position: relative;
+
+    width: 300px;
+    height: 190px;
+
+    margin-top: 22px;
+
+    display: grid;
+    place-items: center;
+
     flex-shrink: 0;
-    max-width: 100%;
+
+    animation:
+        heroFloat 5s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.hero-core {
+    position: relative;
+    z-index: 5;
+
+    width: 88px;
+    height: 88px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 22%,
+            #d6f4ff 0%,
+            #7db9ff 10%,
+            #6655ed 45%,
+            #36106d 100%
+        );
+
+    box-shadow:
+        0 0 25px rgba(89, 80, 255, 0.65),
+        0 0 60px rgba(103, 43, 255, 0.4);
+
+    animation:
+        heroCoreGlow 3s ease-in-out infinite;
+}
+
+.core-shine {
+    position: absolute;
+
+    width: 20px;
+    height: 20px;
+
+    left: 18px;
+    top: 12px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.85);
+
+    filter: blur(4px);
+}
+
+@keyframes heroCoreGlow {
+    0%,
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+        filter: brightness(1.15);
+    }
+}
+
+.hero-glow {
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(97, 69, 255, 0.28),
+            transparent 65%
+        );
+
+    filter: blur(15px);
 }
 
 .hero-orbit {
-    max-width: none;
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border: 1px solid rgba(107, 75, 255, 0.3);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+.hero-orb .orbit-1 {
+    width: 270px;
+    height: 80px;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(-4deg);
+
+    animation:
+        heroOrbitOne 7s linear infinite;
+}
+
+.hero-orb .orbit-2 {
+    width: 190px;
+    height: 160px;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(45deg);
+
+    animation:
+        heroOrbitTwo 9s linear infinite;
+}
+
+.hero-orb .orbit-3 {
+    width: 125px;
+    height: 185px;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(-45deg);
+
+    opacity: 0.5;
+
+    animation:
+        heroOrbitThree 11s linear infinite reverse;
+}
+
+@keyframes heroOrbitOne {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(-4deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(356deg);
+    }
+}
+
+@keyframes heroOrbitTwo {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(45deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(405deg);
+    }
+}
+
+@keyframes heroOrbitThree {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(-45deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(315deg);
+    }
 }
 
 
 /* =========================================================
-   8. QUICK CARDS FIX
-========================================================= */
+   QUICK CARDS
+   ========================================================= */
 
 .quick-cards {
     position: relative;
+    z-index: 5;
+
+    width: min(980px, 100%);
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-top: 5px;
 }
 
 .quick-card {
     min-width: 0;
-    overflow: hidden;
+    min-height: 102px;
+
+    padding: 15px;
+
+    border: 1px solid rgba(98, 113, 164, 0.17);
+    border-radius: 13px;
+
+    background:
+        rgba(12, 20, 42, 0.72);
+
+    color: #fff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
-.quick-card strong,
+.quick-card:hover {
+    transform: translateY(-7px);
+
+    border-color:
+        rgba(126, 82, 255, 0.55);
+
+    background:
+        rgba(23, 26, 57, 0.9);
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.25),
+        0 0 25px rgba(91, 48, 255, 0.08);
+}
+
+.card-icon {
+    margin-bottom: 11px;
+    font-size: 16px;
+}
+
+.card-icon.idea {
+    color: #bb72ff;
+}
+
+.card-icon.write {
+    color: #62a5ff;
+}
+
+.card-icon.code {
+    color: #40e2f2;
+}
+
+.card-icon.data {
+    color: #ff9c3d;
+}
+
+.card-icon.design {
+    color: #ff6db0;
+}
+
+.quick-card strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 15px;
+}
+
 .quick-card span {
-    overflow-wrap: anywhere;
+    display: block;
+
+    color: #6f7995;
+
+    font-size: 12px;
 }
 
 
 /* =========================================================
-   9. CHAT MESSAGE FIX
-========================================================= */
+   CHAT MESSAGES
+   ========================================================= */
 
 .chat-messages {
-    min-width: 0;
+    width: min(900px, calc(100% - 40px));
+
+    margin: 0 auto;
+
+    padding:
+        40px
+        0
+        230px;
 }
 
 .chat-message {
-    min-width: 0;
+    display: flex;
+
+    margin-bottom: 22px;
+
+    animation:
+        messageIn 0.35s ease both;
+}
+
+.chat-message.user {
+    justify-content: flex-end;
 }
 
 .chat-bubble {
-    min-width: 0;
+    max-width: 75%;
+
+    padding: 14px 17px;
+
+    border-radius: 17px;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+
+    overflow-wrap: anywhere;
 }
 
-.chat-bubble p {
-    margin: 0 0 8px;
+.chat-message.user .chat-bubble {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7140e8,
+            #526cff
+        );
+
+    border-bottom-right-radius: 5px;
+
+    box-shadow:
+        0 8px 25px rgba(86, 58, 220, 0.2);
 }
 
-.chat-bubble p:last-child {
-    margin-bottom: 0;
+.chat-message.ai .chat-bubble {
+    color: #dce2f7;
+
+    background:
+        rgba(14, 22, 45, 0.92);
+
+    border:
+        1px solid rgba(110, 125, 180, 0.16);
+
+    border-bottom-left-radius: 5px;
 }
-
-.chat-bubble ul,
-.chat-bubble ol {
-    margin: 8px 0;
-    padding-left: 20px;
-}
-
-.chat-bubble li {
-    margin-bottom: 4px;
-}
-
-
-/* =========================================================
-   10. CODE BLOCK FIX
-========================================================= */
 
 .chat-bubble pre {
     max-width: 100%;
-    white-space: pre;
+
     overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+
+    margin-top: 12px;
+    padding: 13px;
+
+    border-radius: 10px;
+
+    background: #060a17;
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.chat-bubble pre code {
-    white-space: pre;
+.chat-bubble code {
+    font-family:
+        Consolas,
+        Monaco,
+        monospace;
+
+    font-size: 12px;
+}
+
+@keyframes messageIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
 /* =========================================================
-   11. IMAGE FIX
-========================================================= */
+   COMPOSER AREA
+   ========================================================= */
+
+.composer-area {
+    position: absolute;
+
+    z-index: 40;
+
+    left: 50%;
+    bottom: 16px;
+
+    transform: translateX(-50%);
+
+    width: min(900px, calc(100% - 40px));
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+/* =========================================================
+   ATTACHMENT PREVIEW
+   ========================================================= */
+
+.attachment-preview {
+    width: 100%;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 8px;
+}
+
+.attachment-item,
+.image-attachment {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 7px 10px;
+
+    border:
+        1px solid rgba(120, 75, 255, 0.25);
+
+    border-radius: 10px;
+
+    background:
+        rgba(13, 20, 43, 0.95);
+
+    color: #bfc7dd;
+
+    font-size: 11px;
+
+    animation:
+        attachmentIn 0.2s ease;
+}
+
+.image-attachment {
+    padding: 6px;
+}
+
+.attachment-image-preview {
+    width: 55px;
+    height: 55px;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+}
+
+.attachment-name {
+    max-width: 120px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 12px;
+}
+
+.remove-file {
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #777f96;
+
+    cursor: pointer;
+
+    font-size: 16px;
+}
+
+.remove-file:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+@keyframes attachmentIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* =========================================================
+   COMPOSER
+   ========================================================= */
+
+.composer {
+    position: relative;
+
+    width: 100%;
+
+    min-height: 105px;
+
+    padding:
+        17px
+        16px
+        10px;
+
+    border:
+        1px solid rgba(126, 74, 255, 0.72);
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 16, 38, 0.98),
+            rgba(5, 9, 25, 0.98)
+        );
+
+    box-shadow:
+        0 18px 55px rgba(0, 0, 0, 0.42),
+        0 0 35px rgba(91, 49, 255, 0.07);
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.composer::after {
+    content: "";
+
+    position: absolute;
+
+    inset: -1px;
+
+    border-radius: inherit;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(133, 75, 255, 0.5),
+            transparent
+        );
+
+    background-size: 200% 100%;
+
+    opacity: 0;
+
+    animation:
+        composerGlow 4s linear infinite;
+}
+
+.composer:focus-within {
+    border-color: #8657ff;
+
+    box-shadow:
+        0 18px 60px rgba(0, 0, 0, 0.5),
+        0 0 45px rgba(100, 50, 255, 0.12);
+}
+
+.composer:focus-within::after {
+    opacity: 0.5;
+}
+
+@keyframes composerGlow {
+    from {
+        background-position: -200% 0;
+    }
+
+    to {
+        background-position: 200% 0;
+    }
+}
+
+
+/* =========================================================
+   MESSAGE INPUT
+   ========================================================= */
+
+.message-input {
+    display: block;
+
+    width: calc(100% - 25px);
+
+    min-height: 35px;
+    max-height: 200px;
+
+    margin: 0 0 17px;
+
+    padding: 1px 0;
+
+    resize: none;
+
+    overflow-y: auto;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    color: #f3f4ff;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+.message-input::placeholder {
+    color: #707a96;
+}
+
+.message-input::-webkit-scrollbar {
+    width: 3px;
+}
+
+.message-input::-webkit-scrollbar-thumb {
+    background: #4c397b;
+}
+
+
+/* =========================================================
+   EXPAND
+   ========================================================= */
+
+.composer-expand {
+    position: absolute;
+
+    top: 16px;
+    right: 14px;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #707a96;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.composer-expand:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.composer-toolbar {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.composer-left,
+.composer-right {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+}
+
+.tool-btn {
+    width: 31px;
+    height: 31px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #75809a;
+
+    cursor: pointer;
+
+    font-size: 17px;
+
+    transition:
+        color 0.22s ease,
+        background 0.22s ease,
+        transform 0.22s ease;
+}
+
+.tool-btn:hover {
+    color: #fff;
+
+    background:
+        rgba(111, 65, 255, 0.12);
+
+    transform: translateY(-2px);
+}
+
+.tool-btn.active {
+    color: #a87cff;
+
+    background:
+        rgba(113, 66, 255, 0.18);
+
+    box-shadow:
+        0 0 15px rgba(105, 55, 255, 0.15);
+}
+
+
+/* =========================================================
+   SEND BUTTON
+   ========================================================= */
+
+.send-btn {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7041ed,
+            #5b76ff
+        );
+
+    color: #fff;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 7px 22px rgba(91, 64, 230, 0.35);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.send-btn:hover {
+    transform:
+        translateY(-3px)
+        scale(1.05);
+
+    box-shadow:
+        0 10px 30px rgba(91, 64, 230, 0.55);
+}
+
+.send-btn:active {
+    transform: scale(0.91);
+}
+
+.send-btn.loading {
+    font-size: 0;
+    pointer-events: none;
+}
+
+.send-btn.loading::after {
+    content: "";
+
+    width: 16px;
+    height: 16px;
+
+    border:
+        2px solid rgba(255, 255, 255, 0.3);
+
+    border-top-color: #fff;
+
+    border-radius: 50%;
+
+    animation:
+        spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* =========================================================
+   TOOLS POPUP
+   ========================================================= */
+
+.tools-popup {
+    position: absolute;
+
+    left: 12px;
+    bottom: calc(100% + 11px);
+
+    width: 265px;
+
+    padding: 8px;
+
+    border:
+        1px solid rgba(120, 75, 255, 0.3);
+
+    border-radius: 14px;
+
+    background:
+        rgba(9, 15, 35, 0.97);
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.5);
+
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform:
+        translateY(10px)
+        scale(0.95);
+
+    transform-origin: bottom left;
+
+    transition:
+        opacity 0.22s ease,
+        visibility 0.22s ease,
+        transform 0.22s ease;
+}
+
+.tools-popup.show {
+    opacity: 1;
+    visibility: visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.tool-option {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 11px;
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #fff;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease;
+}
+
+.tool-option:hover {
+    background:
+        rgba(111, 62, 255, 0.12);
+}
+
+.tool-option > span {
+    width: 25px;
+
+    color: #a878ff;
+
+    font-size: 17px;
+}
+
+.tool-option strong {
+    display: block;
+
+    font-size: 12px;
+}
+
+.tool-option small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #68728c;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   DISCLAIMER
+   ========================================================= */
+
+.composer-disclaimer {
+    margin-top: 6px;
+
+    color: #454d65;
+
+    font-size: 9px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   IMAGES
+   ========================================================= */
 
 .message-images {
-    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 8px;
 }
 
 .message-image {
-    max-width: min(280px, 100%);
-    height: auto;
+    width: min(280px, 100%);
+    max-height: 280px;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 14px;
 }
 
 .ai-generated-image {
-    height: auto;
+    display: block;
+
+    width: min(600px, 100%);
+    max-height: 600px;
+
+    object-fit: contain;
+
+    margin-top: 12px;
+
+    border-radius: 16px;
 }
 
 .chat-message img,
 .chat-bubble img {
+    max-width: 100%;
+    max-height: 500px;
+
+    width: auto;
     height: auto;
+
+    display: block;
+
+    object-fit: contain;
+
+    border-radius: 12px;
 }
 
 
 /* =========================================================
-   12. PREVIEW FIX
-========================================================= */
+   WEBSITE / PSD PREVIEW
+   ========================================================= */
 
 .website-preview,
 .psd-preview,
 .preview-container {
-    position: relative;
-    min-width: 0;
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
 }
 
 .website-preview iframe,
 .psd-preview iframe,
 .preview-container iframe {
+    width: 100%;
     max-width: 100%;
+    height: 520px;
+
+    display: block;
+
+    border: 0;
+    border-radius: 12px;
+
     background: #fff;
 }
 
+.website-preview img,
+.psd-preview img,
+.preview-container img {
+    width: 100%;
+    max-width: 100%;
+    max-height: 520px;
+
+    height: auto;
+
+    display: block;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+}
+
 
 /* =========================================================
-   13. COMPOSER FIX
-========================================================= */
+   PREMIUM AI LOGO
+   ========================================================= */
 
-.composer-area {
+.ai-logo {
+    position: relative;
+
+    width: 72px;
+    height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    isolation: isolate;
+}
+
+.ai-core {
+    position: relative;
+    z-index: 5;
+
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            #fff 0%,
+            #a78bfa 12%,
+            #6366f1 40%,
+            #4f46e5 65%,
+            #312e81 100%
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.45);
+
+    box-shadow:
+        0 0 10px rgba(99, 102, 241, 0.9),
+        0 0 25px rgba(124, 58, 237, 0.8),
+        0 0 55px rgba(79, 70, 229, 0.55),
+        inset 0 0 15px rgba(255, 255, 255, 0.3);
+
+    animation:
+        aiLogoFloat 3s ease-in-out infinite,
+        aiLogoPulse 2.5s ease-in-out infinite;
+}
+
+.ai-core span {
+    color: #fff;
+
+    font-size: 21px;
+    font-weight: 900;
+
+    letter-spacing: -1px;
+
+    text-shadow:
+        0 0 5px #fff,
+        0 0 12px rgba(255, 255, 255, 0.8);
+}
+
+.ai-orbit {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 68px;
+    height: 25px;
+
+    border:
+        1px solid rgba(139, 92, 246, 0.7);
+
+    border-radius: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
     pointer-events: none;
 }
 
-.composer-area > * {
-    pointer-events: auto;
+.ai-logo .orbit-1 {
+    animation:
+        aiOrbitOne 4s linear infinite;
 }
 
-.composer {
-    overflow: visible;
+.ai-logo .orbit-2 {
+    width: 58px;
+    height: 58px;
+
+    border-color:
+        rgba(59, 130, 246, 0.35);
+
+    animation:
+        aiOrbitTwo 6s linear infinite;
 }
 
-.composer::after {
+.ai-logo .orbit-3 {
+    width: 80px;
+    height: 32px;
+
+    border-color:
+        rgba(168, 85, 247, 0.25);
+
+    animation:
+        aiOrbitOne 7s linear infinite;
+}
+
+.ai-glow {
+    position: absolute;
+
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(99, 102, 241, 0.4);
+
+    filter: blur(20px);
+
     z-index: -1;
+
+    animation:
+        aiGlowPulse 2s ease-in-out infinite;
 }
 
-.composer-toolbar {
-    min-width: 0;
+.ai-particle {
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: #a78bfa;
+
+    box-shadow:
+        0 0 6px #8b5cf6,
+        0 0 12px #6366f1;
+
+    animation:
+        aiParticleFloat 3s ease-in-out infinite;
 }
 
-.composer-left,
-.composer-right {
-    min-width: 0;
+.ai-logo .p1 {
+    top: 2px;
+    left: 22px;
 }
 
-.message-input {
-    box-sizing: border-box;
+.ai-logo .p2 {
+    right: 0;
+    top: 28px;
+
+    animation-delay: 0.7s;
 }
 
+.ai-logo .p3 {
+    bottom: 4px;
+    left: 10px;
 
-/* =========================================================
-   14. TEXTAREA FIX
-========================================================= */
-
-.message-input {
-    scrollbar-width: thin;
-    scrollbar-color: #4c397b transparent;
+    animation-delay: 1.3s;
 }
 
-.message-input:focus {
-    outline: none;
+.ai-logo .p4 {
+    left: 2px;
+    top: 18px;
+
+    animation-delay: 1.8s;
 }
 
+@keyframes aiLogoFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
 
-/* =========================================================
-   15. TOOL BUTTON FIX
-========================================================= */
-
-.tool-btn,
-.send-btn,
-.top-icon,
-.mobile-menu-btn,
-.new-chat-btn,
-.pro-btn,
-.model-selector,
-.conversation,
-.sidebar-bottom-btn,
-.tool-option,
-.composer-expand {
-    touch-action: manipulation;
+    50% {
+        transform: translateY(-4px);
+    }
 }
 
+@keyframes aiLogoPulse {
+    0%,
+    100% {
+        box-shadow:
+            0 0 10px rgba(99, 102, 241, 0.9),
+            0 0 25px rgba(124, 58, 237, 0.8),
+            0 0 55px rgba(79, 70, 229, 0.55),
+            inset 0 0 15px rgba(255, 255, 255, 0.3);
+    }
 
-/* =========================================================
-   16. SEND BUTTON SAFETY
-========================================================= */
-
-.send-btn {
-    flex: 0 0 auto;
+    50% {
+        box-shadow:
+            0 0 15px rgba(99, 102, 241, 1),
+            0 0 35px rgba(124, 58, 237, 1),
+            0 0 75px rgba(79, 70, 229, 0.8),
+            inset 0 0 20px rgba(255, 255, 255, 0.5);
+    }
 }
 
-.send-btn:disabled {
-    opacity: .55;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none;
+@keyframes aiOrbitOne {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+    }
 }
 
+@keyframes aiOrbitTwo {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+    }
 
-/* =========================================================
-   17. TOOLS POPUP FIX
-========================================================= */
-
-.tools-popup {
-    z-index: 100;
-    max-width: calc(100vw - 30px);
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
 }
 
-.tool-option {
-    min-width: 0;
+@keyframes aiGlowPulse {
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.8);
+
+        opacity: 0.5;
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.3);
+
+        opacity: 0.9;
+    }
 }
 
-.tool-option > div {
-    min-width: 0;
-}
+@keyframes aiParticleFloat {
+    0%,
+    100% {
+        transform:
+            translate(0, 0)
+            scale(0.7);
 
+        opacity: 0.3;
+    }
 
-/* =========================================================
-   18. ATTACHMENT FIX
-========================================================= */
+    50% {
+        transform:
+            translate(8px, -10px)
+            scale(1.4);
 
-.attachment-preview {
-    max-height: 110px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-}
-
-.attachment-item,
-.image-attachment {
-    max-width: 100%;
-}
-
-.attachment-name {
-    min-width: 0;
-}
-
-
-/* =========================================================
-   19. PREMIUM CURSOR SAFETY
-========================================================= */
-
-.ai-cursor,
-.cursor-trail {
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-@media (hover: none), (pointer: coarse) {
-
-    .ai-cursor,
-    .cursor-trail {
-        display: none !important;
+        opacity: 1;
     }
 }
 
 
 /* =========================================================
-   20. MOBILE SIDEBAR FIX
-========================================================= */
+   MANI AI LOGO
+   ========================================================= */
+
+.mani-ai-logo {
+    position: relative;
+
+    width: 430px;
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 25px auto 45px;
+
+    perspective: 800px;
+}
+
+.mani-ai-text {
+    position: relative;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 62px;
+    font-weight: 900;
+
+    letter-spacing: -4px;
+
+    animation:
+        maniTextFloat 4s ease-in-out infinite;
+
+    filter:
+        drop-shadow(0 0 8px rgba(99, 102, 241, 0.5))
+        drop-shadow(0 0 25px rgba(124, 58, 237, 0.25));
+}
+
+.mani-main {
+    color: #fff;
+}
+
+.mani-ai {
+    margin-left: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #c4b5fd 0%,
+            #8b5cf6 25%,
+            #6366f1 55%,
+            #38bdf8 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    animation:
+        maniAIColor 3s ease-in-out infinite;
+}
+
+.mani-ai-ring {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    transform-style: preserve-3d;
+}
+
+.mani-ai-logo .ring-one {
+    width: 410px;
+    height: 75px;
+
+    border:
+        1px solid rgba(124, 58, 237, 0.28);
+
+    transform:
+        translate(-50%, -50%)
+        rotateX(65deg);
+
+    animation:
+        maniRingOne 7s linear infinite;
+}
+
+.mani-ai-logo .ring-two {
+    width: 280px;
+    height: 100px;
+
+    border:
+        1px solid rgba(56, 189, 248, 0.2);
+
+    transform:
+        translate(-50%, -50%)
+        rotateY(65deg)
+        rotateZ(25deg);
+
+    animation:
+        maniRingTwo 9s linear infinite;
+}
+
+.mani-ai-logo::before {
+    content: "";
+
+    position: absolute;
+
+    width: 260px;
+    height: 100px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(99, 102, 241, 0.25),
+            rgba(124, 58, 237, 0.12),
+            transparent 70%
+        );
+
+    filter: blur(25px);
+
+    animation:
+        maniGlow 3s ease-in-out infinite;
+}
+
+.mani-ai-line {
+    position: absolute;
+
+    width: 190px;
+    height: 1px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #6366f1,
+            #a78bfa,
+            #38bdf8,
+            transparent
+        );
+
+    opacity: 0.35;
+
+    animation:
+        maniEnergy 2.5s ease-in-out infinite;
+}
+
+.mani-particle {
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #8b5cf6;
+
+    box-shadow:
+        0 0 6px #8b5cf6,
+        0 0 15px #6366f1;
+
+    animation:
+        maniParticle 4s ease-in-out infinite;
+}
+
+.particle-one {
+    left: 55px;
+    top: 45px;
+}
+
+.particle-two {
+    right: 60px;
+    top: 35px;
+
+    animation-delay: 1s;
+}
+
+.particle-three {
+    left: 95px;
+    bottom: 35px;
+
+    animation-delay: 1.8s;
+}
+
+.particle-four {
+    right: 100px;
+    bottom: 30px;
+
+    animation-delay: 2.6s;
+}
+
+@keyframes maniTextFloat {
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translateY(-5px)
+            scale(1.015);
+    }
+}
+
+@keyframes maniAIColor {
+    0%,
+    100% {
+        filter:
+            brightness(1)
+            saturate(1);
+    }
+
+    50% {
+        filter:
+            brightness(1.35)
+            saturate(1.3);
+    }
+}
+
+@keyframes maniRingOne {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotateX(65deg)
+            rotateZ(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotateX(65deg)
+            rotateZ(360deg);
+    }
+}
+
+@keyframes maniRingTwo {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotateY(65deg)
+            rotateZ(25deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotateY(65deg)
+            rotateZ(385deg);
+    }
+}
+
+@keyframes maniGlow {
+    0%,
+    100% {
+        opacity: 0.55;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.9);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+    }
+}
+
+@keyframes maniEnergy {
+    0%,
+    100% {
+        opacity: 0.15;
+        width: 120px;
+    }
+
+    50% {
+        opacity: 0.7;
+        width: 250px;
+    }
+}
+
+@keyframes maniParticle {
+    0%,
+    100% {
+        transform:
+            translate(0, 0)
+            scale(0.5);
+
+        opacity: 0.2;
+    }
+
+    25% {
+        transform:
+            translate(10px, -15px)
+            scale(1);
+
+        opacity: 1;
+    }
+
+    50% {
+        transform:
+            translate(-8px, -25px)
+            scale(0.7);
+
+        opacity: 0.6;
+    }
+
+    75% {
+        transform:
+            translate(15px, -8px)
+            scale(1.2);
+
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   PREMIUM CURSOR
+   ========================================================= */
+
+.ai-cursor,
+.cursor-trail {
+    position: fixed;
+
+    pointer-events: none;
+
+    z-index: 999999;
+}
+
+.ai-cursor {
+    width: 34px;
+    height: 34px;
+
+    left: 0;
+    top: 0;
+
+    transform:
+        translate(-50%, -50%);
+
+    mix-blend-mode: screen;
+}
+
+.cursor-core {
+    position: absolute;
+
+    width: 6px;
+    height: 6px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #fff;
+
+    box-shadow:
+        0 0 5px #fff,
+        0 0 12px #8b5cf6,
+        0 0 25px #6366f1;
+
+    animation:
+        cursorCorePulse 1.8s ease-in-out infinite;
+}
+
+.cursor-ring {
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(139, 92, 246, 0.8);
+
+    box-shadow:
+        0 0 8px rgba(99, 102, 241, 0.4),
+        inset 0 0 8px rgba(139, 92, 246, 0.15);
+
+    animation:
+        cursorRingRotate 5s linear infinite;
+}
+
+.cursor-glow {
+    position: absolute;
+
+    width: 65px;
+    height: 65px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(99, 102, 241, 0.28),
+            rgba(124, 58, 237, 0.12),
+            transparent 70%
+        );
+
+    filter: blur(10px);
+
+    opacity: 0.8;
+
+    z-index: -1;
+
+    animation:
+        cursorGlowPulse 2s ease-in-out infinite;
+}
+
+.cursor-ring::before {
+    content: "";
+
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    top: -2px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 50%;
+
+    background: #a78bfa;
+
+    box-shadow:
+        0 0 7px #a78bfa,
+        0 0 15px #6366f1;
+}
+
+.cursor-ring::after {
+    content: "";
+
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    right: 2px;
+    bottom: -2px;
+
+    border-radius: 50%;
+
+    background: #38bdf8;
+
+    box-shadow:
+        0 0 7px #38bdf8;
+}
+
+.cursor-trail {
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #fff,
+            #8b5cf6 40%,
+            transparent 70%
+        );
+
+    box-shadow:
+        0 0 8px #8b5cf6,
+        0 0 15px rgba(99, 102, 241, 0.7);
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    opacity: 0;
+}
+
+body.cursor-hover .cursor-ring {
+    width: 55px;
+    height: 55px;
+
+    border-color:
+        rgba(168, 85, 247, 0.95);
+
+    background:
+        rgba(124, 58, 237, 0.08);
+}
+
+body.cursor-hover .cursor-core {
+    width: 9px;
+    height: 9px;
+
+    background: #a78bfa;
+}
+
+body.cursor-hover .cursor-glow {
+    width: 100px;
+    height: 100px;
+
+    opacity: 1;
+}
+
+body.cursor-click .cursor-ring {
+    width: 70px;
+    height: 70px;
+
+    border-color: #38bdf8;
+}
+
+body.cursor-click .cursor-core {
+    transform:
+        translate(-50%, -50%)
+        scale(0.6);
+}
+
+@keyframes cursorCorePulse {
+    0%,
+    100% {
+        opacity: 0.8;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.25);
+    }
+}
+
+@keyframes cursorRingRotate {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+    }
+}
+
+@keyframes cursorGlowPulse {
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.85);
+
+        opacity: 0.55;
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   MOBILE OVERLAY
+   ========================================================= */
+
+.mobile-overlay {
+    display: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1000px
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .sidebar {
+        width: 220px;
+        flex-basis: 220px;
+    }
+
+    .quick-cards {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .quick-card:nth-child(4),
+    .quick-card:nth-child(5) {
+        display: none;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 760px
+   ========================================================= */
 
 @media (max-width: 760px) {
 
     .sidebar {
-        width: min(265px, 86vw);
-        max-width: 86vw;
+        position: fixed;
+
+        z-index: 200;
+
+        left: 0;
+        top: 0;
+
+        width: 265px;
+        height: 100vh;
+
+        margin: 0;
+
+        flex-basis: 265px;
+
+        border-radius:
+            0 18px 18px 0;
+
+        transform:
+            translateX(-110%);
+
+        transition:
+            transform 0.35s cubic-bezier(.2, .8, .2, 1);
     }
 
-    .sidebar-top {
-        padding-bottom: 20px;
+    .sidebar.open {
+        transform:
+            translateX(0);
     }
 
-    .topbar-left {
-        flex: 1;
-        min-width: 0;
+    .mobile-overlay {
+        position: fixed;
+
+        z-index: 150;
+
+        inset: 0;
+
+        display: block;
+
+        background:
+            rgba(0, 0, 0, 0.55);
+
+        backdrop-filter:
+            blur(4px);
+
+        -webkit-backdrop-filter:
+            blur(4px);
+
+        opacity: 0;
+        visibility: hidden;
+
+        transition:
+            opacity 0.3s ease,
+            visibility 0.3s ease;
     }
 
-    .model-selector {
-        max-width: calc(100vw - 150px);
+    .mobile-overlay.show {
+        opacity: 1;
+        visibility: visible;
     }
 
-    .model-selector span {
-        max-width: 120px;
+    .mobile-menu-btn {
+        display: grid;
+        place-items: center;
+    }
+
+    .topbar {
+        height: 65px;
+        flex-basis: 65px;
+
+        padding: 0 12px;
+    }
+
+    .topbar-actions {
+        gap: 2px;
+    }
+
+    .pro-btn {
+        display: none;
+    }
+
+    .top-icon:nth-child(2),
+    .top-icon:nth-child(3) {
+        display: none;
     }
 
     .welcome-screen {
-        width: 100%;
-        min-height: 100%;
-        overflow-x: hidden;
+        padding:
+            80px
+            15px
+            230px;
+    }
+
+    .welcome-title {
+        font-size: 42px;
+    }
+
+    .welcome-subtitle {
+        text-align: center;
+        font-size: 11px;
+    }
+
+    .hero-orb {
+        transform: scale(0.82);
+
+        margin-top: 0;
     }
 
     .quick-cards {
-        padding-bottom: 10px;
+        width: 100%;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .quick-card {
+        min-height: 90px;
+    }
+
+    .quick-card:nth-child(n) {
+        display: block;
+    }
+
+    .quick-card:nth-child(5) {
+        display: none;
     }
 
     .composer-area {
-        width: calc(100% - 20px);
-        max-width: 900px;
+        width:
+            calc(100% - 20px);
+
+        bottom: 9px;
+    }
+
+    .composer {
+        min-height: 105px;
     }
 
     .chat-messages {
-        padding-top: 25px;
-        padding-bottom: 225px;
+        width:
+            calc(100% - 20px);
+
+        padding-bottom: 220px;
+    }
+
+    .chat-bubble {
+        max-width: 88%;
+    }
+
+    .website-preview,
+    .psd-preview,
+    .preview-container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .website-preview iframe,
+    .psd-preview iframe,
+    .preview-container iframe {
+        height: 400px;
+    }
+
+    .website-preview img,
+    .psd-preview img,
+    .preview-container img {
+        max-height: 400px;
+    }
+
+    .chat-message img,
+    .chat-bubble img {
+        max-width: 100%;
+        max-height: 400px;
     }
 }
 
 
 /* =========================================================
-   21. SMALL MOBILE FIX
-========================================================= */
+   MOBILE — 600px
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .ai-logo {
+        width: 62px;
+        height: 62px;
+    }
+
+    .ai-core {
+        width: 42px;
+        height: 42px;
+
+        border-radius: 14px;
+    }
+
+    .ai-core span {
+        font-size: 18px;
+    }
+
+    .ai-logo .orbit-1 {
+        width: 60px;
+        height: 22px;
+    }
+
+    .ai-logo .orbit-2 {
+        width: 50px;
+        height: 50px;
+    }
+
+    .ai-logo .orbit-3 {
+        width: 70px;
+        height: 28px;
+    }
+
+    .mani-ai-logo {
+        width: 300px;
+        height: 110px;
+
+        margin:
+            15px auto 30px;
+    }
+
+    .mani-ai-text {
+        font-size: 44px;
+        letter-spacing: -3px;
+    }
+
+    .mani-ai-logo .ring-one {
+        width: 280px;
+        height: 55px;
+    }
+
+    .mani-ai-logo .ring-two {
+        width: 210px;
+        height: 75px;
+    }
+
+    .mani-ai-line {
+        width: 130px;
+    }
+
+    .particle-one {
+        left: 25px;
+    }
+
+    .particle-two {
+        right: 25px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE — 480px
+   ========================================================= */
 
 @media (max-width: 480px) {
 
-    .topbar {
-        padding: 0 8px;
-    }
-
-    .mobile-menu-btn {
-        width: 36px;
-        height: 36px;
-        margin-right: 4px;
-    }
-
-    .model-selector {
-        padding: 8px 10px;
-        gap: 6px;
-        font-size: 11px;
-        max-width: 145px;
-    }
-
-    .model-spark {
-        display: none;
-    }
-
-    .top-icon {
-        width: 32px;
-        height: 32px;
-    }
-
-    .ai-orb-small {
-        width: 42px;
-        height: 42px;
-        margin-left: 2px;
-    }
-
-    .orb-core {
-        width: 34px;
-        height: 34px;
-    }
-
     .welcome-screen {
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-top: 70px;
     }
 
     .welcome-title {
-        text-align: center;
-        max-width: 100%;
+        font-size: 36px;
+        letter-spacing: -2px;
     }
 
-    .welcome-subtitle {
-        max-width: 300px;
-        line-height: 1.5;
-    }
+    .hero-orb {
+        transform: scale(0.65);
 
-    .quick-cards {
-        gap: 7px;
+        margin-top: -15px;
+        margin-bottom: -15px;
     }
 
     .quick-card {
-        min-height: 82px;
-        padding: 10px;
+        padding: 11px;
     }
 
-    .card-icon {
-        margin-bottom: 7px;
+    .quick-card strong {
+        font-size: 11px;
     }
 
-    .composer-area {
-        width: calc(100% - 12px);
-        bottom: 6px;
+    .quick-card span {
+        font-size: 9px;
     }
 
     .composer {
-        padding:
-            14px
-            12px
-            8px;
+        border-radius: 15px;
     }
 
     .message-input {
-        width: calc(100% - 20px);
-        margin-bottom: 12px;
-    }
-
-    .tool-btn {
-        width: 29px;
-        height: 29px;
-        font-size: 16px;
+        font-size: 13px;
     }
 
     .send-btn {
@@ -556,183 +3149,42 @@ img {
     }
 
     .tools-popup {
-        left: 0;
-        width: min(265px, calc(100vw - 24px));
-    }
-
-    .chat-messages {
-        width: calc(100% - 14px);
-        padding-bottom: 215px;
-    }
-
-    .chat-bubble {
-        max-width: 92%;
-        padding: 12px 14px;
-        font-size: 13px;
+        width: min(265px, calc(100vw - 35px));
     }
 }
 
 
 /* =========================================================
-   22. VERY SMALL DEVICES
-========================================================= */
+   TOUCH DEVICES
+   ========================================================= */
 
-@media (max-width: 360px) {
+@media (hover: none) and (pointer: coarse) {
 
-    .model-selector {
-        max-width: 120px;
+    .ai-cursor,
+    .cursor-trail {
+        display: none !important;
     }
 
-    .model-selector span {
-        max-width: 75px;
-    }
-
-    .top-icon {
-        display: none;
-    }
-
-    .quick-card strong {
-        font-size: 10px;
-    }
-
-    .quick-card span {
-        font-size: 8px;
-    }
-
-    .composer-left {
-        gap: 2px;
-    }
-
-    .tool-btn {
-        width: 27px;
-        height: 27px;
+    .quick-card:hover,
+    .new-chat-btn:hover,
+    .send-btn:hover {
+        transform: none;
     }
 }
 
 
 /* =========================================================
-   23. LANDSCAPE MOBILE
-========================================================= */
-
-@media (max-width: 760px) and (orientation: landscape) {
-
-    .welcome-screen {
-        padding-top: 40px;
-        padding-bottom: 180px;
-    }
-
-    .hero-orb {
-        transform: scale(.65);
-        margin-top: -20px;
-        margin-bottom: -30px;
-    }
-
-    .composer-area {
-        bottom: 6px;
-    }
-
-    .composer {
-        min-height: 88px;
-    }
-
-    .message-input {
-        max-height: 90px;
-        margin-bottom: 8px;
-    }
-}
-
-
-/* =========================================================
-   24. SAFE AREA — MODERN PHONES
-========================================================= */
-
-@supports (padding: env(safe-area-inset-bottom)) {
-
-    .composer-area {
-        bottom: max(8px, env(safe-area-inset-bottom));
-    }
-
-    @media (max-width: 480px) {
-
-        .composer-area {
-            bottom: max(6px, env(safe-area-inset-bottom));
-        }
-    }
-}
-
-
-/* =========================================================
-   25. ACCESSIBILITY
-========================================================= */
-
-button:focus-visible,
-textarea:focus-visible,
-input:focus-visible {
-    outline: 2px solid rgba(139, 92, 246, .85);
-    outline-offset: 2px;
-}
-
-
-/* =========================================================
-   26. REDUCE MOTION
-========================================================= */
+   REDUCED MOTION
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
     *,
     *::before,
     *::after {
-        animation-duration: .01ms !important;
+        animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: .01ms !important;
+        transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
-
-    .ai-cursor,
-    .cursor-trail {
-        display: none !important;
-    }
-}
-
-
-/* =========================================================
-   27. PREVENT HORIZONTAL PAGE SCROLL
-========================================================= */
-
-html,
-body,
-.app,
-.main {
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
-
-/* =========================================================
-   28. FINAL Z-INDEX ORDER
-========================================================= */
-
-.topbar {
-    z-index: 50;
-}
-
-.composer-area {
-    z-index: 100;
-}
-
-.tools-popup {
-    z-index: 110;
-}
-
-.mobile-overlay {
-    z-index: 150;
-}
-
-.sidebar {
-    z-index: 200;
-}
-
-.ai-cursor,
-.cursor-trail {
-    z-index: 999999;
 }
