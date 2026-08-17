@@ -175,9 +175,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sending) return;
 
 
+        if (!input) return;
+
+
         const message =
             input.value.trim();
 
+
+        /* =============================================
+           CHECK MESSAGE / IMAGE
+        ============================================= */
 
         if (
             !message &&
@@ -192,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           SAVE FILES BEFORE CLEARING
+           SAVE FILES
         ============================================= */
 
         const filesToSend =
@@ -220,23 +227,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (
-            filesToSend.length > 0
+            filesToSend.length > 0 &&
+            !message
         ) {
 
-            if (!message) {
-
-                displayMessage =
-                    filesToSend.length === 1
-                        ? "Please analyze this image."
-                        : `Please analyze these ${filesToSend.length} images.`;
-
-            }
+            displayMessage =
+                filesToSend.length === 1
+                    ? "Please analyze this image."
+                    : `Please analyze these ${filesToSend.length} images.`;
 
         }
 
 
         /* =============================================
-           SHOW USER MESSAGE + IMAGE
+           SHOW USER MESSAGE
         ============================================= */
 
         addUserMessage(
@@ -264,10 +268,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           LOADING
+           START LOADING
         ============================================= */
 
         setLoading(true);
+
+
+        /*
+         * IMPORTANT:
+         *
+         * Do NOT push current user message
+         * into conversation before API request.
+         *
+         * Backend itself adds current message.
+         *
+         * This prevents duplicate user messages.
+         */
 
 
         try {
@@ -283,22 +299,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               ADD CURRENT USER MESSAGE TO HISTORY
+               COPY PREVIOUS HISTORY ONLY
             ========================================= */
 
-            conversation.push({
+            const previousConversation =
+                conversation.map(
+                    item => ({
 
-                role: "user",
+                        role:
+                            item.role,
 
-                content:
-                    message ||
-                    (
-                        filesToSend.length > 0
-                            ? "Please analyze the uploaded image."
-                            : ""
-                    )
+                        content:
+                            item.content
 
-            });
+                    })
+                );
 
 
             /* =========================================
@@ -326,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     message,
 
                                 messages:
-                                    conversation,
+                                    previousConversation,
 
                                 webSearch:
                                     webMode,
@@ -388,13 +403,13 @@ document.addEventListener("DOMContentLoaded", () => {
             ========================================= */
 
             if (
-                data?.type === "error" ||
-                data?.success === false
+                !data ||
+                data.success !== true
             ) {
 
                 throw new Error(
 
-                    data.error ||
+                    data?.error ||
                     "AI request failed."
 
                 );
@@ -403,50 +418,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               GENERATED IMAGE
+               GET AI FINAL ANSWER ONLY
             ========================================= */
 
-            if (
-                data?.type === "image" &&
-                data?.image
-            ) {
-
-                await showGeneratedImage(
+            const reply =
+                getAIOnlyReply(
                     data
                 );
 
 
-                conversation.push({
+            if (!reply) {
 
-                    role: "assistant",
-
-                    content:
-                        data.reply ||
-                        "Image generated."
-
-                });
-
-
-                saveRecentChat(
-                    message ||
-                    "Generated image"
+                throw new Error(
+                    "AI returned an empty response."
                 );
-
-
-                return;
 
             }
 
 
             /* =========================================
-               TEXT / IMAGE ANALYSIS RESPONSE
+               SHOW ONLY AI FINAL ANSWER
             ========================================= */
-
-            const reply =
-                getReplyFromResponse(
-                    data
-                );
-
 
             await typeAIMessage(
                 reply
@@ -454,7 +446,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               SAVE AI RESPONSE
+               SAVE USER MESSAGE TO HISTORY
+            ========================================= */
+
+            conversation.push({
+
+                role: "user",
+
+                content:
+                    message ||
+                    (
+                        filesToSend.length > 0
+                            ? "Please analyze the uploaded image."
+                            : ""
+                    )
+
+            });
+
+
+            /* =========================================
+               SAVE AI FINAL ANSWER TO HISTORY
             ========================================= */
 
             conversation.push({
@@ -491,31 +502,30 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-            addMessage(
-                "ai",
-                `⚠️ ${error.message || "I couldn't connect to the AI right now. Please try again."}`
-            );
-
-
             /* =========================================
-               REMOVE FAILED USER MESSAGE FROM HISTORY
+               ERROR MESSAGE
             ========================================= */
 
-            if (
-                conversation.length > 0 &&
-                conversation[
-                    conversation.length - 1
-                ].role === "user"
-            ) {
-
-                conversation.pop();
-
-            }
+            addMessage(
+                "ai",
+                `⚠️ ${
+                    error?.message ||
+                    "I couldn't connect to the AI right now. Please try again."
+                }`
+            );
 
         } finally {
 
+            /* =========================================
+               STOP LOADING
+            ========================================= */
+
             setLoading(false);
 
+
+            /* =========================================
+               CLEAR SELECTED FILES
+            ========================================= */
 
             selectedFiles = [];
 
@@ -678,6 +688,9 @@ document.addEventListener("DOMContentLoaded", () => {
         files = []
     ) {
 
+        if (!chatMessages) return;
+
+
         const wrapper =
             document.createElement(
                 "div"
@@ -699,7 +712,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           TEXT
+           USER TEXT
         ============================================= */
 
         if (text) {
@@ -724,7 +737,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           IMAGES
+           USER IMAGES
         ============================================= */
 
         if (
@@ -769,10 +782,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         file.name;
 
 
-                    image.src =
+                    const imageUrl =
                         URL.createObjectURL(
                             file
                         );
+
+
+                    image.src =
+                        imageUrl;
 
 
                     image.loading =
@@ -780,7 +797,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                     /* =================================
-                       CLICK IMAGE TO OPEN
+                       OPEN IMAGE
                     ================================= */
 
                     image.addEventListener(
@@ -788,7 +805,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         () => {
 
                             openImageViewer(
-                                image.src
+                                imageUrl
                             );
 
                         }
@@ -846,28 +863,82 @@ document.addEventListener("DOMContentLoaded", () => {
             "image-viewer";
 
 
-        viewer.innerHTML = `
+        const backdrop =
+            document.createElement(
+                "div"
+            );
 
-            <div class="image-viewer-backdrop"></div>
 
-            <div class="image-viewer-content">
+        backdrop.className =
+            "image-viewer-backdrop";
 
-                <button
-                    type="button"
-                    class="image-viewer-close"
-                    aria-label="Close"
-                >
-                    ×
-                </button>
 
-                <img
-                    src="${imageSrc}"
-                    alt="Uploaded image"
-                >
+        const content =
+            document.createElement(
+                "div"
+            );
 
-            </div>
 
-        `;
+        content.className =
+            "image-viewer-content";
+
+
+        const closeButton =
+            document.createElement(
+                "button"
+            );
+
+
+        closeButton.type =
+            "button";
+
+
+        closeButton.className =
+            "image-viewer-close";
+
+
+        closeButton.setAttribute(
+            "aria-label",
+            "Close"
+        );
+
+
+        closeButton.textContent =
+            "×";
+
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.src =
+            imageSrc;
+
+
+        image.alt =
+            "Uploaded image";
+
+
+        content.appendChild(
+            closeButton
+        );
+
+
+        content.appendChild(
+            image
+        );
+
+
+        viewer.appendChild(
+            backdrop
+        );
+
+
+        viewer.appendChild(
+            content
+        );
 
 
         document.body.appendChild(
@@ -875,21 +946,29 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-        const closeButton =
-            viewer.querySelector(
-                ".image-viewer-close"
-            );
-
-
-        const backdrop =
-            viewer.querySelector(
-                ".image-viewer-backdrop"
-            );
-
-
         function closeViewer() {
 
             viewer.remove();
+
+            document.removeEventListener(
+                "keydown",
+                escapeViewer
+            );
+
+        }
+
+
+        function escapeViewer(
+            event
+        ) {
+
+            if (
+                event.key === "Escape"
+            ) {
+
+                closeViewer();
+
+            }
 
         }
 
@@ -908,22 +987,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.addEventListener(
             "keydown",
-            function escapeViewer(event) {
-
-                if (
-                    event.key === "Escape"
-                ) {
-
-                    closeViewer();
-
-                    document.removeEventListener(
-                        "keydown",
-                        escapeViewer
-                    );
-
-                }
-
-            }
+            escapeViewer
         );
 
     }
@@ -937,6 +1001,9 @@ document.addEventListener("DOMContentLoaded", () => {
         type,
         text
     ) {
+
+        if (!chatMessages) return;
+
 
         const wrapper =
             document.createElement(
@@ -990,6 +1057,9 @@ document.addEventListener("DOMContentLoaded", () => {
         text
     ) {
 
+        if (!chatMessages) return;
+
+
         const wrapper =
             document.createElement(
                 "div"
@@ -1029,6 +1099,10 @@ document.addEventListener("DOMContentLoaded", () => {
         let current = "";
 
 
+        /* =============================================
+           TYPE AI ANSWER
+        ============================================= */
+
         for (
             let i = 0;
             i < plain.length;
@@ -1057,6 +1131,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
+        /* =============================================
+           FINAL FORMATTED AI ANSWER
+        ============================================= */
+
         bubble.innerHTML =
             formatMessage(
                 text
@@ -1069,16 +1147,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       GET API RESPONSE
+       GET AI FINAL ANSWER ONLY
     ================================================= */
 
-    function getReplyFromResponse(
+    function getAIOnlyReply(
         data
     ) {
 
+        /*
+         * IMPORTANT:
+         *
+         * We ONLY accept:
+         *
+         * data.reply
+         *
+         * We intentionally DO NOT use:
+         *
+         * data.message
+         * data.response
+         * data.content
+         * data.model
+         * data.success
+         * data.hasImages
+         * data.imageCount
+         */
+
         if (!data) {
 
-            return "I didn't receive a response.";
+            return "";
 
         }
 
@@ -1087,7 +1183,7 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof data === "string"
         ) {
 
-            return data;
+            return data.trim();
 
         }
 
@@ -1096,69 +1192,12 @@ document.addEventListener("DOMContentLoaded", () => {
             typeof data.reply === "string"
         ) {
 
-            return data.reply;
+            return data.reply.trim();
 
         }
 
 
-        if (
-            typeof data.message === "string"
-        ) {
-
-            return data.message;
-
-        }
-
-
-        if (
-            typeof data.response === "string"
-        ) {
-
-            return data.response;
-
-        }
-
-
-        if (
-            typeof data.content === "string"
-        ) {
-
-            return data.content;
-
-        }
-
-
-        if (
-            data.choices &&
-            data.choices[0]
-        ) {
-
-            const choice =
-                data.choices[0];
-
-
-            if (
-                choice.message &&
-                typeof choice.message.content === "string"
-            ) {
-
-                return choice.message.content;
-
-            }
-
-
-            if (
-                typeof choice.text === "string"
-            ) {
-
-                return choice.text;
-
-            }
-
-        }
-
-
-        return "I couldn't generate a response.";
+        return "";
 
     }
 
@@ -1180,12 +1219,20 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
+        /* =============================================
+           CODE BLOCK
+        ============================================= */
+
         safe =
             safe.replace(
                 /```([\s\S]*?)```/g,
                 "<pre><code>$1</code></pre>"
             );
 
+
+        /* =============================================
+           BOLD
+        ============================================= */
 
         safe =
             safe.replace(
@@ -1194,12 +1241,20 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
+        /* =============================================
+           INLINE CODE
+        ============================================= */
+
         safe =
             safe.replace(
                 /`([^`]+)`/g,
                 "<code>$1</code>"
             );
 
+
+        /* =============================================
+           NEW LINE
+        ============================================= */
 
         safe =
             safe.replace(
@@ -1387,13 +1442,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                input.placeholder =
-                    webMode
-                        ? "Search the web with Mini AI..."
-                        : "Message Mini AI...";
+                if (input) {
 
+                    input.placeholder =
+                        webMode
+                            ? "Search the web with Mini AI..."
+                            : "Message Mini AI...";
 
-                input.focus();
+                    input.focus();
+
+                }
 
             }
         );
@@ -1473,21 +1531,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 /* =========================================
-                   ADD FILES
+                   MAX 3 IMAGES
                 ========================================= */
 
+                const remainingSlots =
+                    3 -
+                    selectedFiles.length;
+
+
+                if (
+                    remainingSlots <= 0
+                ) {
+
+                    alert(
+                        "You can upload up to 3 images at a time."
+                    );
+
+                    fileInput.value = "";
+
+                    return;
+
+                }
+
+
                 selectedFiles.push(
-                    ...validFiles
+                    ...validFiles.slice(
+                        0,
+                        remainingSlots
+                    )
                 );
+
+
+                if (
+                    validFiles.length >
+                    remainingSlots
+                ) {
+
+                    alert(
+                        "Only 3 images can be uploaded at a time."
+                    );
+
+                }
 
 
                 renderAttachments();
 
 
-                /*
-                 * Reset input so same image
-                 * can be selected again.
-                 */
+                /* =========================================
+                   RESET INPUT
+                ========================================= */
 
                 fileInput.value = "";
 
@@ -1544,10 +1636,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     file.name;
 
 
-                thumbnail.src =
+                const thumbnailUrl =
                     URL.createObjectURL(
                         file
                     );
+
+
+                thumbnail.src =
+                    thumbnailUrl;
 
 
                 /* =====================================
@@ -1645,6 +1741,9 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
+                if (!input) return;
+
+
                 input.focus();
 
 
@@ -1674,6 +1773,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 option.addEventListener(
                     "click",
                     () => {
+
+                        if (!input) return;
+
 
                         const action =
                             option.dataset.action;
@@ -1741,6 +1843,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 "click",
                 () => {
 
+                    if (!input) return;
+
+
                     const prompt =
                         card.dataset.prompt;
 
@@ -1781,7 +1886,11 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () => {
 
-                input.focus();
+                if (input) {
+
+                    input.focus();
+
+                }
 
             }
         );
@@ -1797,8 +1906,12 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedFiles = [];
 
 
-        chatMessages.innerHTML =
-            "";
+        if (chatMessages) {
+
+            chatMessages.innerHTML =
+                "";
+
+        }
 
 
         if (welcomeScreen) {
@@ -1809,11 +1922,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        input.value =
-            "";
+        if (input) {
 
+            input.value =
+                "";
 
-        autoResize();
+            autoResize();
+
+        }
 
 
         renderAttachments();
@@ -1828,7 +1944,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        input.focus();
+        if (input) {
+
+            input.focus();
+
+        }
 
 
         closeMobileSidebar();
@@ -1868,27 +1988,49 @@ document.addEventListener("DOMContentLoaded", () => {
             "conversation";
 
 
-        item.innerHTML = `
+        const icon =
+            document.createElement(
+                "span"
+            );
 
-            <span class="conversation-icon">
-                ◇
-            </span>
 
-            <span>
-                ${escapeHTML(
-                    message.substring(
-                        0,
-                        24
-                    )
-                )}
-            </span>
+        icon.className =
+            "conversation-icon";
 
-        `;
+
+        icon.textContent =
+            "◇";
+
+
+        const title =
+            document.createElement(
+                "span"
+            );
+
+
+        title.textContent =
+            message.substring(
+                0,
+                24
+            );
+
+
+        item.appendChild(
+            icon
+        );
+
+
+        item.appendChild(
+            title
+        );
 
 
         item.addEventListener(
             "click",
             () => {
+
+                if (!input) return;
+
 
                 input.value =
                     message;
@@ -1945,10 +2087,6 @@ document.addEventListener("DOMContentLoaded", () => {
             true;
 
 
-        /* =============================================
-           TELUGU + ENGLISH
-        ============================================= */
-
         recognition.lang =
             "te-IN";
 
@@ -1956,13 +2094,21 @@ document.addEventListener("DOMContentLoaded", () => {
         recognition.onstart =
             () => {
 
-                micBtn.classList.add(
-                    "active"
-                );
+                if (micBtn) {
+
+                    micBtn.classList.add(
+                        "active"
+                    );
+
+                }
 
 
-                input.placeholder =
-                    "Listening...";
+                if (input) {
+
+                    input.placeholder =
+                        "Listening...";
+
+                }
 
             };
 
@@ -1991,11 +2137,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                input.value =
-                    transcript;
+                if (input) {
 
+                    input.value =
+                        transcript;
 
-                autoResize();
+                    autoResize();
+
+                }
 
             };
 
@@ -2003,15 +2152,23 @@ document.addEventListener("DOMContentLoaded", () => {
         recognition.onend =
             () => {
 
-                micBtn.classList.remove(
-                    "active"
-                );
+                if (micBtn) {
+
+                    micBtn.classList.remove(
+                        "active"
+                    );
+
+                }
 
 
-                input.placeholder =
-                    webMode
-                        ? "Search the web with Mini AI..."
-                        : "Message Mini AI...";
+                if (input) {
+
+                    input.placeholder =
+                        webMode
+                            ? "Search the web with Mini AI..."
+                            : "Message Mini AI...";
+
+                }
 
             };
 
@@ -2025,9 +2182,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                micBtn.classList.remove(
-                    "active"
-                );
+                if (micBtn) {
+
+                    micBtn.classList.remove(
+                        "active"
+                    );
+
+                }
 
             };
 
@@ -2081,6 +2242,9 @@ document.addEventListener("DOMContentLoaded", () => {
         composerExpand.addEventListener(
             "click",
             () => {
+
+                if (!input) return;
+
 
                 input.focus();
 
@@ -2177,7 +2341,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                input.focus();
+
+                if (input) {
+
+                    input.focus();
+
+                }
 
             }
 
