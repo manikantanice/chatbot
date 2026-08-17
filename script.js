@@ -6,30 +6,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
+
     const chatArea = document.querySelector(".chat-area");
     const chatMessages = document.getElementById("chatMessages");
     const welcomeScreen = document.getElementById("welcomeScreen");
+
     const newChatBtn = document.getElementById("newChatBtn");
-    const currentConversation = document.getElementById("currentConversation");
-    const recentChats = document.getElementById("recentChats");
+    const currentConversation =
+        document.getElementById("currentConversation");
 
-    const plusBtn = document.getElementById("plusBtn");
-    const toolsPopup = document.getElementById("toolsPopup");
-    const webBtn = document.getElementById("webBtn");
+    const recentChats =
+        document.getElementById("recentChats");
 
-    const attachBtn = document.getElementById("attachBtn");
-    const fileInput = document.getElementById("fileInput");
-    const attachmentPreview = document.getElementById("attachmentPreview");
+    const plusBtn =
+        document.getElementById("plusBtn");
 
-    const magicBtn = document.getElementById("magicBtn");
-    const micBtn = document.getElementById("micBtn");
-    const composerExpand = document.getElementById("composerExpand");
+    const toolsPopup =
+        document.getElementById("toolsPopup");
 
-    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-    const sidebar = document.getElementById("sidebar");
-    const mobileOverlay = document.getElementById("mobileOverlay");
+    const webBtn =
+        document.getElementById("webBtn");
 
-    const quickCards = document.querySelectorAll(".quick-card");
+    const attachBtn =
+        document.getElementById("attachBtn");
+
+    const fileInput =
+        document.getElementById("fileInput");
+
+    const attachmentPreview =
+        document.getElementById("attachmentPreview");
+
+    const magicBtn =
+        document.getElementById("magicBtn");
+
+    const micBtn =
+        document.getElementById("micBtn");
+
+    const composerExpand =
+        document.getElementById("composerExpand");
+
+    const mobileMenuBtn =
+        document.getElementById("mobileMenuBtn");
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const mobileOverlay =
+        document.getElementById("mobileOverlay");
+
+    const quickCards =
+        document.querySelectorAll(".quick-card");
 
 
     /* =================================================
@@ -52,6 +78,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
+       SAFE EVENT LISTENER
+    ================================================= */
+
+    function on(element, event, callback) {
+
+        if (!element) return;
+
+        element.addEventListener(event, callback);
+
+    }
+
+
+    /* =================================================
        TEXTAREA AUTO RESIZE
     ================================================= */
 
@@ -63,17 +102,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         input.style.height =
             Math.min(input.scrollHeight, 200) + "px";
+
     }
 
 
-    input?.addEventListener("input", autoResize);
+    on(input, "input", autoResize);
 
 
     /* =================================================
        ENTER TO SEND
     ================================================= */
 
-    input?.addEventListener("keydown", event => {
+    on(input, "keydown", event => {
 
         if (
             event.key === "Enter" &&
@@ -83,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
             event.preventDefault();
 
             sendMessage();
+
         }
 
     });
@@ -92,10 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
        SEND BUTTON
     ================================================= */
 
-    sendBtn?.addEventListener(
-        "click",
-        sendMessage
-    );
+    on(sendBtn, "click", sendMessage);
 
 
     /* =================================================
@@ -107,16 +145,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (sending) return;
 
         const message =
-            input.value.trim();
+            input?.value.trim() || "";
+
+
+        /* =============================================
+           EMPTY MESSAGE CHECK
+        ============================================= */
 
         if (
             !message &&
             selectedFiles.length === 0
         ) {
 
-            input.focus();
+            input?.focus();
 
             return;
+
         }
 
 
@@ -126,18 +170,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (welcomeScreen) {
 
-            welcomeScreen.style.display =
-                "none";
+            welcomeScreen.style.display = "none";
 
         }
 
 
         /* =============================================
-           DISPLAY USER MESSAGE
+           DISPLAY MESSAGE
         ============================================= */
 
-        let displayMessage =
-            message;
+        let displayMessage = message;
 
 
         if (selectedFiles.length > 0) {
@@ -153,6 +195,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
 
+
+        /* =============================================
+           SHOW USER MESSAGE
+        ============================================= */
 
         addMessage(
             "user",
@@ -170,17 +216,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
             content:
                 message ||
-                (
-                    selectedFiles.length === 1
-                        ? "Please analyze this image."
-                        : "Please analyze these images."
-                )
+                "Analyze the uploaded image."
 
         });
 
 
         /* =============================================
-           COPY FILES BEFORE CLEARING
+           COPY FILES
         ============================================= */
 
         const filesToSend =
@@ -191,14 +233,16 @@ document.addEventListener("DOMContentLoaded", () => {
            CLEAR INPUT
         ============================================= */
 
-        input.value = "";
+        if (input) {
 
-        autoResize();
+            input.value = "";
+
+            autoResize();
+
+        }
 
 
-        toolsPopup?.classList.remove(
-            "show"
-        );
+        toolsPopup?.classList.remove("show");
 
 
         /* =============================================
@@ -215,9 +259,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ========================================= */
 
             const images =
-                await filesToBase64(
-                    filesToSend
-                );
+                filesToSend.length > 0
+                    ? await filesToBase64(filesToSend)
+                    : [];
 
 
             /* =========================================
@@ -225,82 +269,66 @@ document.addEventListener("DOMContentLoaded", () => {
             ========================================= */
 
             const response =
-                await fetch(
-                    "/api/chat",
-                    {
+                await fetch("/api/chat", {
 
-                        method: "POST",
+                    method: "POST",
 
-                        headers: {
+                    headers: {
 
-                            "Content-Type":
-                                "application/json"
+                        "Content-Type":
+                            "application/json"
 
-                        },
+                    },
 
-                        body:
-                            JSON.stringify({
+                    body: JSON.stringify({
 
-                                message:
-                                    message,
+                        message: message,
 
-                                messages:
-                                    conversation,
+                        messages: conversation,
 
-                                webSearch:
-                                    webMode,
+                        webSearch: webMode,
 
-                                images:
-                                    images
+                        images: images
 
-                            })
+                    })
 
-                    }
-                );
+                });
 
 
             /* =========================================
-               CHECK HTTP STATUS
+               HTTP ERROR
             ========================================= */
 
             if (!response.ok) {
 
-                let errorMessage =
-                    `API error ${response.status}`;
+                let errorData = null;
 
                 try {
 
-                    const errorData =
+                    errorData =
                         await response.json();
-
-                    if (
-                        errorData &&
-                        errorData.error
-                    ) {
-
-                        errorMessage =
-                            errorData.error;
-
-                    }
 
                 } catch (error) {
 
                     console.warn(
-                        "Could not parse API error:",
-                        error
+                        "Could not parse error response."
                     );
 
                 }
 
+
                 throw new Error(
-                    errorMessage
+
+                    errorData?.error ||
+                    `API error ${response.status}`
+
                 );
 
             }
 
 
             /* =========================================
-               READ JSON
+               JSON RESPONSE
             ========================================= */
 
             const data =
@@ -308,17 +336,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               API ERROR RESPONSE
+               API ERROR
             ========================================= */
 
-            if (
-                data?.type === "error" ||
-                data?.error
-            ) {
+            if (data?.type === "error") {
 
                 throw new Error(
+
                     data.error ||
                     "AI request failed."
+
                 );
 
             }
@@ -333,9 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 data?.image
             ) {
 
-                await showGeneratedImage(
-                    data
-                );
+                await showGeneratedImage(data);
 
 
                 conversation.push({
@@ -344,14 +369,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     content:
                         data.reply ||
-                        "Image generated successfully."
+                        "Image generated."
 
                 });
 
 
                 saveRecentChat(
-                    message ||
-                    "Generated image"
+                    message || "Generated image"
                 );
 
 
@@ -361,27 +385,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               TEXT RESPONSE
+               NORMAL RESPONSE
             ========================================= */
 
             const reply =
-                getReplyFromResponse(
-                    data
-                );
+                getReplyFromResponse(data);
 
 
-            if (!reply) {
-
-                throw new Error(
-                    "Empty response received from AI."
-                );
-
-            }
-
-
-            await typeAIMessage(
-                reply
-            );
+            await typeAIMessage(reply);
 
 
             /* =========================================
@@ -392,14 +403,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 role: "assistant",
 
-                content:
-                    reply
+                content: reply
 
             });
 
 
             /* =========================================
-               SAVE RECENT CHAT
+               RECENT CHAT
             ========================================= */
 
             saveRecentChat(
@@ -427,10 +437,6 @@ document.addEventListener("DOMContentLoaded", () => {
             setLoading(false);
 
 
-            /* =========================================
-               CLEAR SELECTED FILES
-            ========================================= */
-
             selectedFiles = [];
 
 
@@ -449,17 +455,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       FILES -> BASE64
+       FILES TO BASE64
     ================================================= */
 
     function filesToBase64(files) {
-
-        if (!files || files.length === 0) {
-
-            return Promise.resolve([]);
-
-        }
-
 
         return Promise.all(
 
@@ -478,9 +477,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         ) {
 
                             reject(
+
                                 new Error(
                                     `${file.name} is not an image. Please upload JPG, PNG, WEBP or another image file.`
                                 )
+
                             );
 
                             return;
@@ -489,21 +490,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                         /* =================================
-                           MAX FILE SIZE
+                           FILE SIZE CHECK
                         ================================= */
 
                         const maxSize =
                             3.5 * 1024 * 1024;
 
 
-                        if (
-                            file.size > maxSize
-                        ) {
+                        if (file.size > maxSize) {
 
                             reject(
+
                                 new Error(
                                     `${file.name} is too large. Please upload an image smaller than 3.5 MB.`
                                 )
+
                             );
 
                             return;
@@ -543,17 +544,17 @@ document.addEventListener("DOMContentLoaded", () => {
                         reader.onerror = () => {
 
                             reject(
+
                                 new Error(
                                     `Could not read ${file.name}.`
                                 )
+
                             );
 
                         };
 
 
-                        reader.readAsDataURL(
-                            file
-                        );
+                        reader.readAsDataURL(file);
 
                     }
                 );
@@ -598,20 +599,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             text.innerHTML =
-                formatMessage(
-                    data.reply
-                );
+                formatMessage(data.reply);
 
 
-            bubble.appendChild(
-                text
-            );
+            bubble.appendChild(text);
 
         }
 
 
         /* =============================================
-           GENERATED IMAGE
+           IMAGE
         ============================================= */
 
         const image =
@@ -630,10 +627,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "lazy";
 
 
-        image.style.display =
-            "block";
-
-
         image.style.width =
             "100%";
 
@@ -650,37 +643,46 @@ document.addEventListener("DOMContentLoaded", () => {
             "contain";
 
 
+        image.style.display =
+            "block";
+
+
         image.style.marginTop =
-            data.reply
-                ? "12px"
-                : "0";
+            "12px";
 
 
         image.style.borderRadius =
             "16px";
 
 
-        image.onerror = () => {
-
-            image.alt =
-                "Generated image could not be loaded.";
-
-        };
+        image.style.cursor =
+            "pointer";
 
 
-        bubble.appendChild(
-            image
+        /* =============================================
+           OPEN IMAGE
+        ============================================= */
+
+        image.addEventListener(
+            "click",
+            () => {
+
+                window.open(
+                    data.image,
+                    "_blank"
+                );
+
+            }
         );
 
 
-        wrapper.appendChild(
-            bubble
-        );
+        bubble.appendChild(image);
 
 
-        chatMessages.appendChild(
-            wrapper
-        );
+        wrapper.appendChild(bubble);
+
+
+        chatMessages?.appendChild(wrapper);
 
 
         scrollChat();
@@ -705,9 +707,7 @@ document.addEventListener("DOMContentLoaded", () => {
            STRING RESPONSE
         ============================================= */
 
-        if (
-            typeof data === "string"
-        ) {
+        if (typeof data === "string") {
 
             return data;
 
@@ -715,7 +715,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           NORMAL API RESPONSE
+           NORMAL API
         ============================================= */
 
         if (
@@ -768,7 +768,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (
-                choice?.message &&
+                choice.message &&
                 typeof choice.message.content === "string"
             ) {
 
@@ -778,7 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (
-                typeof choice?.text === "string"
+                typeof choice.text === "string"
             ) {
 
                 return choice.text;
@@ -799,6 +799,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function addMessage(type, text) {
 
+        if (!chatMessages) return null;
+
+
         const wrapper =
             document.createElement("div");
 
@@ -816,19 +819,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         bubble.innerHTML =
-            formatMessage(
-                text
-            );
+            formatMessage(text);
 
 
-        wrapper.appendChild(
-            bubble
-        );
+        wrapper.appendChild(bubble);
 
 
-        chatMessages.appendChild(
-            wrapper
-        );
+        chatMessages.appendChild(wrapper);
 
 
         scrollChat();
@@ -844,6 +841,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ================================================= */
 
     async function typeAIMessage(text) {
+
+        if (!chatMessages) return;
+
 
         const wrapper =
             document.createElement("div");
@@ -861,24 +861,18 @@ document.addEventListener("DOMContentLoaded", () => {
             "chat-bubble";
 
 
-        wrapper.appendChild(
-            bubble
-        );
+        wrapper.appendChild(bubble);
 
 
-        chatMessages.appendChild(
-            wrapper
-        );
+        chatMessages.appendChild(wrapper);
 
 
         /* =============================================
-           REMOVE MARKDOWN / HTML FOR TYPING
+           REMOVE HTML FOR TYPING
         ============================================= */
 
         const plain =
-            stripHTML(
-                text
-            );
+            stripHTML(text);
 
 
         let current = "";
@@ -890,8 +884,7 @@ document.addEventListener("DOMContentLoaded", () => {
             i++
         ) {
 
-            current +=
-                plain[i];
+            current += plain[i];
 
 
             bubble.textContent =
@@ -911,13 +904,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           FINAL FORMATTED RESPONSE
+           FINAL FORMATTED MESSAGE
         ============================================= */
 
         bubble.innerHTML =
-            formatMessage(
-                text
-            );
+            formatMessage(text);
 
 
         scrollChat();
@@ -935,41 +926,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         let safe =
-            escapeHTML(
-                String(text)
-            );
+            escapeHTML(String(text));
 
 
         /* =============================================
-           CODE BLOCKS
+           CODE BLOCK
         ============================================= */
-
-        const codeBlocks = [];
-
 
         safe =
             safe.replace(
-                /```(?:([a-zA-Z0-9_-]+)\n)?([\s\S]*?)```/g,
-                (match, language, code) => {
-
-                    const index =
-                        codeBlocks.length;
-
-
-                    const lang =
-                        language
-                            ? `<span class="code-language">${escapeHTML(language)}</span>`
-                            : "";
-
-
-                    codeBlocks.push(
-                        `<pre class="code-block">${lang}<code>${code.trim()}</code></pre>`
-                    );
-
-
-                    return `___CODE_BLOCK_${index}___`;
-
-                }
+                /```([\s\S]*?)```/g,
+                "<pre><code>$1</code></pre>"
             );
 
 
@@ -996,7 +963,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           NEW LINES
+           NEW LINE
         ============================================= */
 
         safe =
@@ -1004,23 +971,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 /\n/g,
                 "<br>"
             );
-
-
-        /* =============================================
-           RESTORE CODE BLOCKS
-        ============================================= */
-
-        codeBlocks.forEach(
-            (block, index) => {
-
-                safe =
-                    safe.replace(
-                        `___CODE_BLOCK_${index}___`,
-                        block
-                    );
-
-            }
-        );
 
 
         return safe;
@@ -1102,8 +1052,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setLoading(state) {
 
-        sending =
-            state;
+        sending = state;
 
 
         sendBtn?.classList.toggle(
@@ -1134,30 +1083,29 @@ document.addEventListener("DOMContentLoaded", () => {
        PLUS BUTTON
     ================================================= */
 
-    plusBtn?.addEventListener(
-        "click",
-        event => {
+    on(plusBtn, "click", event => {
 
-            event.stopPropagation();
+        event.stopPropagation();
 
 
-            toolsPopup?.classList.toggle(
-                "show"
-            );
+        toolsPopup?.classList.toggle(
+            "show"
+        );
 
-        }
-    );
+    });
 
 
     /* =================================================
-       CLOSE TOOL POPUP
+       CLOSE TOOLS POPUP
     ================================================= */
 
     document.addEventListener(
         "click",
         event => {
 
-            if (!toolsPopup || !plusBtn) return;
+            if (!toolsPopup || !plusBtn) {
+                return;
+            }
 
 
             if (
@@ -1176,143 +1124,121 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       WEB SEARCH MODE
+       WEB MODE
     ================================================= */
 
-    webBtn?.addEventListener(
-        "click",
-        () => {
+    on(webBtn, "click", () => {
 
-            webMode =
-                !webMode;
+        webMode =
+            !webMode;
 
 
-            webBtn.classList.toggle(
-                "active",
-                webMode
-            );
+        webBtn.classList.toggle(
+            "active",
+            webMode
+        );
 
+
+        if (input) {
 
             input.placeholder =
                 webMode
                     ? "Search the web with Mini AI..."
                     : "Message Mini AI...";
 
-
-            input.focus();
-
         }
-    );
+
+
+        input?.focus();
+
+    });
 
 
     /* =================================================
-       ATTACH IMAGE
+       ATTACH FILE
     ================================================= */
 
-    attachBtn?.addEventListener(
-        "click",
-        () => {
+    on(attachBtn, "click", () => {
 
-            if (!sending) {
+        fileInput?.click();
 
-                fileInput?.click();
-
-            }
-
-        }
-    );
+    });
 
 
     /* =================================================
        FILE SELECT
     ================================================= */
 
-    fileInput?.addEventListener(
-        "change",
-        () => {
+    on(fileInput, "change", () => {
 
-            const files =
-                Array.from(
-                    fileInput.files || []
-                );
+        if (!fileInput.files) return;
 
 
-            if (files.length === 0) {
-
-                return;
-
-            }
+        const files =
+            Array.from(fileInput.files);
 
 
-            /* =========================================
-               ONLY IMAGES
-            ========================================= */
-
-            const validFiles =
-                files.filter(
-                    file =>
-                        file.type &&
-                        file.type.startsWith("image/")
-                );
+        if (files.length === 0) {
+            return;
+        }
 
 
-            if (
-                validFiles.length !== files.length
-            ) {
+        /* =============================================
+           ONLY IMAGES
+        ============================================= */
 
-                alert(
-                    "Please upload image files only."
-                );
-
-            }
-
-
-            /* =========================================
-               AVOID DUPLICATES
-            ========================================= */
-
-            validFiles.forEach(file => {
-
-                const exists =
-                    selectedFiles.some(
-                        existing =>
-                            existing.name === file.name &&
-                            existing.size === file.size &&
-                            existing.lastModified === file.lastModified
-                    );
+        const validFiles =
+            files.filter(file =>
+                file.type &&
+                file.type.startsWith("image/")
+            );
 
 
-                if (!exists) {
+        if (
+            validFiles.length !== files.length
+        ) {
 
-                    selectedFiles.push(
-                        file
-                    );
-
-                }
-
-            });
-
-
-            renderAttachments();
-
-
-            /* =========================================
-               RESET INPUT
-            ========================================= */
-
-            fileInput.value = "";
+            alert(
+                "Please upload image files only."
+            );
 
         }
-    );
+
+
+        /* =============================================
+           ADD VALID FILES
+        ============================================= */
+
+        selectedFiles.push(
+            ...validFiles
+        );
+
+
+        /* =============================================
+           RENDER
+        ============================================= */
+
+        renderAttachments();
+
+
+        /* =============================================
+           RESET INPUT
+        ============================================= */
+
+        fileInput.value = "";
+
+    });
 
 
     /* =================================================
-       IMAGE PREVIEW
+       IMAGE ATTACHMENT PREVIEW
     ================================================= */
 
     function renderAttachments() {
 
-        if (!attachmentPreview) return;
+        if (!attachmentPreview) {
+            return;
+        }
 
 
         attachmentPreview.innerHTML =
@@ -1331,7 +1257,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 /* =====================================
-                   IMAGE
+                   THUMBNAIL
                 ===================================== */
 
                 const thumbnail =
@@ -1347,9 +1273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 const objectURL =
-                    URL.createObjectURL(
-                        file
-                    );
+                    URL.createObjectURL(file);
 
 
                 thumbnail.src =
@@ -1401,22 +1325,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     index;
 
 
+                remove.textContent =
+                    "×";
+
+
                 remove.setAttribute(
                     "aria-label",
                     `Remove ${file.name}`
                 );
 
 
-                remove.textContent =
-                    "×";
-
-
                 remove.addEventListener(
                     "click",
-                    event => {
-
-                        event.stopPropagation();
-
+                    () => {
 
                         selectedFiles.splice(
                             index,
@@ -1429,6 +1350,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 );
 
+
+                /* =====================================
+                   APPEND
+                ===================================== */
 
                 item.appendChild(
                     thumbnail
@@ -1459,21 +1384,21 @@ document.addEventListener("DOMContentLoaded", () => {
        MAGIC AI
     ================================================= */
 
-    magicBtn?.addEventListener(
-        "click",
-        () => {
+    on(magicBtn, "click", () => {
 
-            input.focus();
+        if (!input) return;
 
 
-            input.value =
-                "Help me with ";
+        input.focus();
 
 
-            autoResize();
+        input.value =
+            "Help me with ";
 
-        }
-    );
+
+        autoResize();
+
+    });
 
 
     /* =================================================
@@ -1490,6 +1415,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const action =
                         option.dataset.action;
+
+
+                    if (!input) return;
 
 
                     switch (action) {
@@ -1550,7 +1478,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     card.dataset.prompt;
 
 
-                if (!prompt) return;
+                if (!input || !prompt) {
+                    return;
+                }
 
 
                 input.value =
@@ -1572,23 +1502,20 @@ document.addEventListener("DOMContentLoaded", () => {
        NEW CHAT
     ================================================= */
 
-    newChatBtn?.addEventListener(
-        "click",
-        newChat
-    );
+    on(newChatBtn, "click", newChat);
 
 
-    currentConversation?.addEventListener(
-        "click",
-        () => {
+    on(currentConversation, "click", () => {
 
-            input.focus();
+        input?.focus();
 
-        }
-    );
+    });
 
 
     function newChat() {
+
+        if (sending) return;
+
 
         conversation = [];
 
@@ -1612,11 +1539,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        input.value =
-            "";
+        if (input) {
 
+            input.value =
+                "";
 
-        autoResize();
+            autoResize();
+
+        }
 
 
         renderAttachments();
@@ -1627,7 +1557,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-        input.focus();
+        input?.focus();
 
 
         closeMobileSidebar();
@@ -1641,7 +1571,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function saveRecentChat(message) {
 
-        if (!message || !recentChats) return;
+        if (
+            !message ||
+            !recentChats
+        ) {
+
+            return;
+
+        }
 
 
         const item =
@@ -1656,39 +1593,31 @@ document.addEventListener("DOMContentLoaded", () => {
             "conversation";
 
 
-        const icon =
-            document.createElement("span");
+        const safeMessage =
+            escapeHTML(
+                message.substring(0, 24)
+            );
 
 
-        icon.className =
-            "conversation-icon";
+        item.innerHTML = `
 
+            <span class="conversation-icon">
+                ◇
+            </span>
 
-        icon.textContent =
-            "◇";
+            <span>
+                ${safeMessage}
+            </span>
 
-
-        const text =
-            document.createElement("span");
-
-
-        text.textContent =
-            message.substring(0, 24);
-
-
-        item.appendChild(
-            icon
-        );
-
-
-        item.appendChild(
-            text
-        );
+        `;
 
 
         item.addEventListener(
             "click",
             () => {
+
+                if (!input) return;
+
 
                 input.value =
                     message;
@@ -1703,9 +1632,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-        recentChats.prepend(
-            item
-        );
+        recentChats.prepend(item);
 
 
         while (
@@ -1745,12 +1672,8 @@ document.addEventListener("DOMContentLoaded", () => {
             true;
 
 
-        /* =============================================
-           TELUGU VOICE
-        ============================================= */
-
         recognition.lang =
-            "te-IN";
+            "en-US";
 
 
         recognition.onstart =
@@ -1779,12 +1702,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 for (
-                    let i =
-                        event.resultIndex;
-
-                    i <
-                    event.results.length;
-
+                    let i = event.resultIndex;
+                    i < event.results.length;
                     i++
                 ) {
 
@@ -1795,11 +1714,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                input.value =
-                    transcript;
+                if (input) {
 
+                    input.value =
+                        transcript;
 
-                autoResize();
+                    autoResize();
+
+                }
 
             };
 
@@ -1828,7 +1750,7 @@ document.addEventListener("DOMContentLoaded", () => {
             error => {
 
                 console.error(
-                    "Voice recognition error:",
+                    "Voice error:",
                     error
                 );
 
@@ -1843,83 +1765,80 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       MICROPHONE BUTTON
+       MIC BUTTON
     ================================================= */
 
-    micBtn?.addEventListener(
-        "click",
-        () => {
+    on(micBtn, "click", () => {
 
-            if (!recognition) {
+        if (!recognition) {
 
-                alert(
-                    "Voice input is not supported in this browser."
+            alert(
+                "Voice input is not supported in this browser."
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            micBtn.classList.contains("active")
+        ) {
+
+            recognition.stop();
+
+        } else {
+
+            try {
+
+                recognition.start();
+
+            } catch (error) {
+
+                console.warn(
+                    "Recognition already running."
                 );
-
-
-                return;
-
-            }
-
-
-            if (
-                micBtn.classList.contains(
-                    "active"
-                )
-            ) {
-
-                recognition.stop();
-
-            } else {
-
-                try {
-
-                    recognition.start();
-
-                } catch (error) {
-
-                    console.warn(
-                        "Recognition start error:",
-                        error
-                    );
-
-                }
 
             }
 
         }
-    );
+
+    });
 
 
     /* =================================================
        EXPAND COMPOSER
     ================================================= */
 
-    composerExpand?.addEventListener(
-        "click",
-        () => {
+    on(composerExpand, "click", () => {
 
-            input.focus();
+        input?.focus();
 
+
+        if (input) {
 
             input.style.height =
                 "180px";
 
         }
-    );
+
+    });
 
 
     /* =================================================
        MOBILE SIDEBAR
     ================================================= */
 
-    mobileMenuBtn?.addEventListener(
+    on(
+        mobileMenuBtn,
         "click",
         openMobileSidebar
     );
 
 
-    mobileOverlay?.addEventListener(
+    on(
+        mobileOverlay,
         "click",
         closeMobileSidebar
     );
@@ -1972,8 +1891,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-
-                input.focus();
+                input?.focus();
 
             }
 
@@ -2000,7 +1918,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       HELPER
+       SLEEP HELPER
     ================================================= */
 
     function sleep(ms) {
@@ -2095,7 +2013,7 @@ document.addEventListener(
 
 
         /* =============================================
-           ANIMATE CURSOR
+           CURSOR ANIMATION
         ============================================= */
 
         function animateCursor() {
@@ -2127,29 +2045,30 @@ document.addEventListener(
 
 
             trails.forEach(
-                (
-                    trail,
-                    index
-                ) => {
+                (trail, index) => {
 
                     const position =
                         trailPositions[index];
 
 
-                    position.x +=
-                        (previousX - position.x) *
+                    if (!position) return;
+
+
+                    const speed =
                         Math.max(
                             0.08,
                             0.22 - index * 0.02
                         );
+
+
+                    position.x +=
+                        (previousX - position.x) *
+                        speed;
 
 
                     position.y +=
                         (previousY - position.y) *
-                        Math.max(
-                            0.08,
-                            0.22 - index * 0.02
-                        );
+                        speed;
 
 
                     trail.style.left =
@@ -2162,7 +2081,7 @@ document.addEventListener(
 
                     const scale =
                         Math.max(
-                            0.3,
+                            0.25,
                             1 - index * 0.12
                         );
 
@@ -2204,7 +2123,7 @@ document.addEventListener(
 
 
         /* =============================================
-           HOVER EFFECT
+           HOVER ELEMENTS
         ============================================= */
 
         const interactiveElements =
