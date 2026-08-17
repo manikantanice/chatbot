@@ -1,6 +1,6 @@
 /* =====================================================
-   RESET
-===================================================== */
+   MANI AI — FINAL FIXED STYLE.CSS
+   ===================================================== */
 
 * {
     box-sizing: border-box;
@@ -8,16 +8,15 @@
     padding: 0;
 }
 
-html {
+html,
+body {
     width: 100%;
     height: 100%;
 }
 
 body {
-    width: 100%;
-    min-height: 100%;
+    min-height: 100vh;
     overflow: hidden;
-
     background: #030617;
     color: #eef1ff;
 
@@ -32,7 +31,8 @@ body {
 }
 
 button,
-textarea {
+textarea,
+input {
     font-family: inherit;
 }
 
@@ -57,7 +57,6 @@ button {
             rgba(91, 49, 210, .08),
             transparent 32%
         ),
-
         #030617;
 }
 
@@ -81,7 +80,6 @@ button {
     justify-content: space-between;
 
     border: 1px solid rgba(119, 88, 220, .27);
-
     border-radius: 20px;
 
     background:
@@ -180,7 +178,6 @@ button {
 }
 
 @keyframes logoFloat {
-
     0%,
     100% {
         transform: translateY(0);
@@ -192,7 +189,6 @@ button {
 }
 
 @keyframes logoRing {
-
     0%,
     100% {
         opacity: .2;
@@ -357,7 +353,6 @@ button {
     padding: 10px;
 
     border: 0;
-
     border-radius: 9px;
 
     background: transparent;
@@ -541,7 +536,7 @@ button {
 
 
 /* =====================================================
-   AI SMALL ORB
+   SMALL AI ORB
 ===================================================== */
 
 .ai-orb-small {
@@ -580,14 +575,10 @@ button {
     font-size: 14px;
     font-weight: 800;
 
-    box-shadow:
-        0 0 22px rgba(92, 93, 255, .65);
-
-    animation: aiPulse 2.5s ease-in-out infinite;
+    animation: smallOrbPulse 2.5s ease-in-out infinite;
 }
 
-@keyframes aiPulse {
-
+@keyframes smallOrbPulse {
     0%,
     100% {
         box-shadow:
@@ -607,22 +598,22 @@ button {
 
     border-radius: 50%;
 
-    animation: orbRotate 6s linear infinite;
+    animation: smallOrbRotate 6s linear infinite;
 }
 
-.ring-one {
+.ai-orb-small .ring-one {
     width: 48px;
     height: 30px;
 }
 
-.ring-two {
+.ai-orb-small .ring-two {
     width: 32px;
     height: 48px;
 
     animation-direction: reverse;
 }
 
-@keyframes orbRotate {
+@keyframes smallOrbRotate {
     to {
         transform: rotate(360deg);
     }
@@ -692,7 +683,7 @@ button {
     align-items: center;
 
     padding:
-        135px
+        90px
         25px
         240px;
 
@@ -755,7 +746,6 @@ button {
 }
 
 @keyframes gradientMove {
-
     0%,
     100% {
         background-position: 0;
@@ -767,7 +757,6 @@ button {
 }
 
 @keyframes welcomeIn {
-
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -817,7 +806,6 @@ button {
 }
 
 @keyframes heroFloat {
-
     0%,
     100% {
         transform: translateY(0);
@@ -850,7 +838,7 @@ button {
         0 0 25px rgba(89, 80, 255, .65),
         0 0 60px rgba(103, 43, 255, .4);
 
-    animation: coreGlow 3s ease-in-out infinite;
+    animation: heroCoreGlow 3s ease-in-out infinite;
 }
 
 .core-shine {
@@ -869,8 +857,7 @@ button {
     filter: blur(4px);
 }
 
-@keyframes coreGlow {
-
+@keyframes heroCoreGlow {
     0%,
     100% {
         transform: scale(1);
@@ -910,41 +897,46 @@ button {
     border: 1px solid rgba(107, 75, 255, .3);
 
     border-radius: 50%;
+
+    pointer-events: none;
 }
 
-.orbit-1 {
+.hero-orb .orbit-1 {
     width: 270px;
     height: 80px;
 
-    transform: translate(-50%, -50%)
+    transform:
+        translate(-50%, -50%)
         rotate(-4deg);
 
-    animation: orbitOne 7s linear infinite;
+    animation: heroOrbitOne 7s linear infinite;
 }
 
-.orbit-2 {
+.hero-orb .orbit-2 {
     width: 190px;
     height: 160px;
 
-    transform: translate(-50%, -50%)
+    transform:
+        translate(-50%, -50%)
         rotate(45deg);
 
-    animation: orbitTwo 9s linear infinite;
+    animation: heroOrbitTwo 9s linear infinite;
 }
 
-.orbit-3 {
+.hero-orb .orbit-3 {
     width: 125px;
     height: 185px;
 
-    transform: translate(-50%, -50%)
+    transform:
+        translate(-50%, -50%)
         rotate(-45deg);
 
     opacity: .5;
 
-    animation: orbitTwo 11s linear infinite reverse;
+    animation: heroOrbitThree 11s linear infinite reverse;
 }
 
-@keyframes orbitOne {
+@keyframes heroOrbitOne {
     to {
         transform:
             translate(-50%, -50%)
@@ -952,11 +944,19 @@ button {
     }
 }
 
-@keyframes orbitTwo {
+@keyframes heroOrbitTwo {
     to {
         transform:
             translate(-50%, -50%)
             rotate(405deg);
+    }
+}
+
+@keyframes heroOrbitThree {
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(315deg);
     }
 }
 
@@ -972,6 +972,7 @@ button {
     width: min(980px, 100%);
 
     display: grid;
+
     grid-template-columns:
         repeat(5, 1fr);
 
@@ -1006,8 +1007,7 @@ button {
 }
 
 .quick-card:hover {
-    transform:
-        translateY(-7px);
+    transform: translateY(-7px);
 
     border-color:
         rgba(126, 82, 255, .55);
@@ -1022,7 +1022,6 @@ button {
 
 .card-icon {
     margin-bottom: 11px;
-
     font-size: 16px;
 }
 
@@ -1048,14 +1047,18 @@ button {
 
 .quick-card strong {
     display: block;
+
     font-size: 15px;
+
     margin-bottom: 6px;
 }
 
 .quick-card span {
     display: block;
+
     color: #6f7995;
-    font-size: 15px;
+
+    font-size: 12px;
 }
 
 
@@ -1097,6 +1100,8 @@ button {
     font-size: 14px;
 
     line-height: 1.65;
+
+    overflow-wrap: anywhere;
 }
 
 .chat-message.user .chat-bubble {
@@ -1141,15 +1146,11 @@ button {
 }
 
 .chat-bubble code {
-    font-family:
-        Consolas,
-        monospace;
-
+    font-family: Consolas, monospace;
     font-size: 12px;
 }
 
 @keyframes messageIn {
-
     from {
         opacity: 0;
         transform: translateY(12px);
@@ -1163,7 +1164,7 @@ button {
 
 
 /* =====================================================
-   COMPOSER AREA
+   COMPOSER
 ===================================================== */
 
 .composer-area {
@@ -1185,7 +1186,7 @@ button {
 
 
 /* =====================================================
-   ATTACHMENTS
+   ATTACHMENT PREVIEW
 ===================================================== */
 
 .attachment-preview {
@@ -1194,12 +1195,15 @@ button {
     display: flex;
     flex-wrap: wrap;
 
-    gap: 7px;
+    gap: 8px;
 
     margin-bottom: 8px;
 }
 
-.attachment-item {
+.attachment-item,
+.image-attachment {
+    position: relative;
+
     display: flex;
     align-items: center;
 
@@ -1210,7 +1214,7 @@ button {
     border:
         1px solid rgba(120, 75, 255, .25);
 
-    border-radius: 9px;
+    border-radius: 10px;
 
     background:
         rgba(13, 20, 43, .95);
@@ -1222,8 +1226,61 @@ button {
     animation: attachmentIn .2s ease;
 }
 
-@keyframes attachmentIn {
+.image-attachment {
+    padding: 6px;
+}
 
+.attachment-image-preview {
+    width: 55px;
+    height: 55px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    display: block;
+}
+
+.attachment-name {
+    max-width: 120px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 12px;
+}
+
+.remove-file {
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #777f96;
+
+    cursor: pointer;
+
+    font-size: 16px;
+}
+
+.remove-file:hover {
+    color: #fff;
+
+    background: rgba(255,255,255,.08);
+}
+
+@keyframes attachmentIn {
     from {
         opacity: 0;
         transform: scale(.9);
@@ -1235,22 +1292,9 @@ button {
     }
 }
 
-.remove-file {
-    border: 0;
-    background: transparent;
-
-    color: #777f96;
-
-    cursor: pointer;
-}
-
-.remove-file:hover {
-    color: #fff;
-}
-
 
 /* =====================================================
-   COMPOSER
+   COMPOSER BOX
 ===================================================== */
 
 .composer {
@@ -1314,7 +1358,6 @@ button {
 }
 
 @keyframes composerGlow {
-
     from {
         background-position: -200% 0;
     }
@@ -1478,66 +1521,6 @@ button {
 
 
 /* =====================================================
-   GLOBE
-===================================================== */
-
-.globe {
-    width: 13px;
-    height: 13px;
-
-    border:
-        1.5px solid currentColor;
-
-    border-radius: 50%;
-
-    position: relative;
-}
-
-.globe::before {
-    content: "";
-
-    position: absolute;
-
-    left: 2px;
-    right: 2px;
-    top: 5px;
-
-    border-top:
-        1px solid currentColor;
-}
-
-.globe::after {
-    content: "";
-
-    position: absolute;
-
-    top: 1px;
-    bottom: 1px;
-
-    left: 5px;
-
-    border-left:
-        1px solid currentColor;
-}
-
-
-/* =====================================================
-   MAGIC
-===================================================== */
-
-.magic-btn {
-    color: #a66cff;
-}
-
-.magic-btn:hover {
-    color: #d0aaff;
-
-    box-shadow:
-        0 0 20px rgba(140, 70, 255, .25);
-}
-
-
-/* =====================================================
    SEND
 ===================================================== */
 
@@ -1605,8 +1588,7 @@ button {
 
     border-radius: 50%;
 
-    animation:
-        spin .7s linear infinite;
+    animation: spin .7s linear infinite;
 }
 
 @keyframes spin {
@@ -1652,8 +1634,7 @@ button {
 
     transform-origin: bottom left;
 
-    transition:
-        .22s ease;
+    transition: .22s ease;
 }
 
 .tools-popup.show {
@@ -1736,6 +1717,1007 @@ button {
 
 
 /* =====================================================
+   IMAGE INSIDE CHAT
+===================================================== */
+
+.message-images {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 8px;
+}
+
+.message-image {
+    width: min(280px, 100%);
+
+    max-height: 280px;
+
+    object-fit: cover;
+
+    border-radius: 14px;
+
+    display: block;
+}
+
+.ai-generated-image {
+    display: block;
+
+    width: min(600px, 100%);
+
+    max-height: 600px;
+
+    object-fit: contain;
+
+    margin-top: 12px;
+
+    border-radius: 16px;
+}
+
+.chat-message img,
+.chat-bubble img {
+    max-width: 100%;
+
+    max-height: 500px;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+
+    display: block;
+
+    border-radius: 12px;
+}
+
+
+/* =====================================================
+   PSD / WEBSITE PREVIEW
+===================================================== */
+
+.website-preview,
+.psd-preview,
+.preview-container {
+    width: 100%;
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
+}
+
+.website-preview iframe,
+.psd-preview iframe,
+.preview-container iframe {
+    width: 100%;
+    max-width: 100%;
+
+    height: 520px;
+
+    display: block;
+
+    border: 0;
+
+    border-radius: 12px;
+}
+
+.website-preview img,
+.psd-preview img,
+.preview-container img {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+
+    max-height: 520px;
+
+    height: auto;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+}
+
+
+/* =====================================================
+   PREMIUM AI LOGO
+===================================================== */
+
+.ai-logo {
+    width: 72px;
+    height: 72px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    isolation: isolate;
+}
+
+.ai-core {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+    z-index: 5;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            #ffffff 0%,
+            #a78bfa 12%,
+            #6366f1 40%,
+            #4f46e5 65%,
+            #312e81 100%
+        );
+
+    border: 1px solid rgba(255,255,255,.45);
+
+    box-shadow:
+        0 0 10px rgba(99,102,241,.9),
+        0 0 25px rgba(124,58,237,.8),
+        0 0 55px rgba(79,70,229,.55),
+        inset 0 0 15px rgba(255,255,255,.3);
+
+    animation:
+        aiLogoFloat 3s ease-in-out infinite,
+        aiLogoPulse 2.5s ease-in-out infinite;
+}
+
+.ai-core span {
+    color: white;
+
+    font-size: 21px;
+    font-weight: 900;
+
+    letter-spacing: -1px;
+
+    text-shadow:
+        0 0 5px white,
+        0 0 12px rgba(255,255,255,.8);
+}
+
+.ai-orbit {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 68px;
+    height: 25px;
+
+    border: 1px solid rgba(139,92,246,.7);
+
+    border-radius: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    pointer-events: none;
+}
+
+.ai-logo .orbit-1 {
+    animation: aiOrbitOne 4s linear infinite;
+}
+
+.ai-logo .orbit-2 {
+    width: 58px;
+    height: 58px;
+
+    border-color: rgba(59,130,246,.35);
+
+    animation: aiOrbitTwo 6s linear infinite;
+}
+
+.ai-logo .orbit-3 {
+    width: 80px;
+    height: 32px;
+
+    border-color: rgba(168,85,247,.25);
+
+    animation: aiOrbitOne 7s linear infinite;
+}
+
+.ai-glow {
+    position: absolute;
+
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+
+    background: rgba(99,102,241,.4);
+
+    filter: blur(20px);
+
+    z-index: -1;
+
+    animation: aiGlowPulse 2s ease-in-out infinite;
+}
+
+.ai-particle {
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: #a78bfa;
+
+    box-shadow:
+        0 0 6px #8b5cf6,
+        0 0 12px #6366f1;
+
+    animation: aiParticleFloat 3s ease-in-out infinite;
+}
+
+.ai-logo .p1 {
+    top: 2px;
+    left: 22px;
+}
+
+.ai-logo .p2 {
+    right: 0;
+    top: 28px;
+
+    animation-delay: .7s;
+}
+
+.ai-logo .p3 {
+    bottom: 4px;
+    left: 10px;
+
+    animation-delay: 1.3s;
+}
+
+.ai-logo .p4 {
+    left: 2px;
+    top: 18px;
+
+    animation-delay: 1.8s;
+}
+
+@keyframes aiLogoFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes aiLogoPulse {
+    0%,
+    100% {
+        box-shadow:
+            0 0 10px rgba(99,102,241,.9),
+            0 0 25px rgba(124,58,237,.8),
+            0 0 55px rgba(79,70,229,.55),
+            inset 0 0 15px rgba(255,255,255,.3);
+    }
+
+    50% {
+        box-shadow:
+            0 0 15px rgba(99,102,241,1),
+            0 0 35px rgba(124,58,237,1),
+            0 0 75px rgba(79,70,229,.8),
+            inset 0 0 20px rgba(255,255,255,.5);
+    }
+}
+
+@keyframes aiOrbitOne {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+    }
+}
+
+@keyframes aiOrbitTwo {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
+}
+
+@keyframes aiGlowPulse {
+    0%,
+    100% {
+        transform: scale(.8);
+        opacity: .5;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: .9;
+    }
+}
+
+@keyframes aiParticleFloat {
+    0%,
+    100% {
+        transform:
+            translate(0, 0)
+            scale(.7);
+
+        opacity: .3;
+    }
+
+    50% {
+        transform:
+            translate(8px, -10px)
+            scale(1.4);
+
+        opacity: 1;
+    }
+}
+
+.ai-logo:hover .ai-core {
+    transform: scale(1.12);
+    transition: .35s ease;
+}
+
+.ai-logo:hover .ai-orbit {
+    animation-duration: 1.5s;
+}
+
+
+/* =====================================================
+   MANI AI LOGO
+===================================================== */
+
+.mani-ai-logo {
+    position: relative;
+
+    width: 430px;
+    height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 25px auto 45px;
+
+    perspective: 800px;
+}
+
+.mani-ai-text {
+    position: relative;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    font-size: 62px;
+    font-weight: 900;
+
+    letter-spacing: -4px;
+
+    animation:
+        maniTextFloat 4s ease-in-out infinite;
+
+    filter:
+        drop-shadow(0 0 8px rgba(99,102,241,.5))
+        drop-shadow(0 0 25px rgba(124,58,237,.25));
+}
+
+.mani-main {
+    color: #ffffff;
+}
+
+.mani-ai {
+    margin-left: 12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #c4b5fd 0%,
+            #8b5cf6 25%,
+            #6366f1 55%,
+            #38bdf8 100%
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+
+    animation:
+        maniAIColor 3s ease-in-out infinite;
+}
+
+.mani-ai-ring {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    transform-style: preserve-3d;
+}
+
+.mani-ai-logo .ring-one {
+    width: 410px;
+    height: 75px;
+
+    border:
+        1px solid rgba(124,58,237,.28);
+
+    transform:
+        translate(-50%, -50%)
+        rotateX(65deg);
+
+    animation:
+        maniRingOne 7s linear infinite;
+}
+
+.mani-ai-logo .ring-two {
+    width: 280px;
+    height: 100px;
+
+    border:
+        1px solid rgba(56,189,248,.2);
+
+    transform:
+        translate(-50%, -50%)
+        rotateY(65deg)
+        rotateZ(25deg);
+
+    animation:
+        maniRingTwo 9s linear infinite;
+}
+
+.mani-ai-logo::before {
+    content: "";
+
+    position: absolute;
+
+    width: 260px;
+    height: 100px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(99,102,241,.25),
+            rgba(124,58,237,.12),
+            transparent 70%
+        );
+
+    filter: blur(25px);
+
+    animation:
+        maniGlow 3s ease-in-out infinite;
+}
+
+.mani-ai-line {
+    position: absolute;
+
+    width: 190px;
+    height: 1px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #6366f1,
+            #a78bfa,
+            #38bdf8,
+            transparent
+        );
+
+    opacity: .35;
+
+    animation:
+        maniEnergy 2.5s ease-in-out infinite;
+}
+
+.mani-particle {
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #8b5cf6;
+
+    box-shadow:
+        0 0 6px #8b5cf6,
+        0 0 15px #6366f1;
+
+    animation:
+        maniParticle 4s ease-in-out infinite;
+}
+
+.particle-one {
+    left: 55px;
+    top: 45px;
+}
+
+.particle-two {
+    right: 60px;
+    top: 35px;
+
+    animation-delay: 1s;
+}
+
+.particle-three {
+    left: 95px;
+    bottom: 35px;
+
+    animation-delay: 1.8s;
+}
+
+.particle-four {
+    right: 100px;
+    bottom: 30px;
+
+    animation-delay: 2.6s;
+}
+
+@keyframes maniTextFloat {
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translateY(-5px)
+            scale(1.015);
+    }
+}
+
+@keyframes maniAIColor {
+    0%,
+    100% {
+        filter:
+            brightness(1)
+            saturate(1);
+    }
+
+    50% {
+        filter:
+            brightness(1.35)
+            saturate(1.3);
+    }
+}
+
+@keyframes maniRingOne {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotateX(65deg)
+            rotateZ(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotateX(65deg)
+            rotateZ(360deg);
+    }
+}
+
+@keyframes maniRingTwo {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotateY(65deg)
+            rotateZ(25deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotateY(65deg)
+            rotateZ(385deg);
+    }
+}
+
+@keyframes maniGlow {
+    0%,
+    100% {
+        opacity: .55;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.9);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+    }
+}
+
+@keyframes maniEnergy {
+    0%,
+    100% {
+        opacity: .15;
+        width: 120px;
+    }
+
+    50% {
+        opacity: .7;
+        width: 250px;
+    }
+}
+
+@keyframes maniParticle {
+    0%,
+    100% {
+        transform:
+            translate(0, 0)
+            scale(.5);
+
+        opacity: .2;
+    }
+
+    25% {
+        transform:
+            translate(10px, -15px)
+            scale(1);
+
+        opacity: 1;
+    }
+
+    50% {
+        transform:
+            translate(-8px, -25px)
+            scale(.7);
+
+        opacity: .6;
+    }
+
+    75% {
+        transform:
+            translate(15px, -8px)
+            scale(1.2);
+
+        opacity: 1;
+    }
+}
+
+.mani-ai-logo:hover .mani-ai-text {
+    transform: scale(1.06);
+
+    filter:
+        drop-shadow(0 0 12px rgba(99,102,241,.8))
+        drop-shadow(0 0 35px rgba(124,58,237,.5));
+
+    transition: .4s ease;
+}
+
+
+/* =====================================================
+   PREMIUM CURSOR
+===================================================== */
+
+/*
+   IMPORTANT:
+   Normal cursor is kept enabled.
+   This prevents buttons / inputs from becoming difficult
+   to use when JS cursor code is not loaded.
+*/
+
+.ai-cursor,
+.cursor-trail {
+    position: fixed;
+
+    pointer-events: none;
+
+    z-index: 999999;
+}
+
+.ai-cursor {
+    width: 34px;
+    height: 34px;
+
+    left: 0;
+    top: 0;
+
+    transform:
+        translate(-50%, -50%);
+
+    mix-blend-mode: screen;
+}
+
+.cursor-core {
+    position: absolute;
+
+    width: 6px;
+    height: 6px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 5px #ffffff,
+        0 0 12px #8b5cf6,
+        0 0 25px #6366f1;
+
+    animation:
+        cursorCorePulse 1.8s ease-in-out infinite;
+}
+
+.cursor-ring {
+    position: absolute;
+
+    width: 30px;
+    height: 30px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(139,92,246,.8);
+
+    box-shadow:
+        0 0 8px rgba(99,102,241,.4),
+        inset 0 0 8px rgba(139,92,246,.15);
+
+    animation:
+        cursorRingRotate 5s linear infinite;
+}
+
+.cursor-glow {
+    position: absolute;
+
+    width: 65px;
+    height: 65px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(99,102,241,.28),
+            rgba(124,58,237,.12),
+            transparent 70%
+        );
+
+    filter: blur(10px);
+
+    opacity: .8;
+
+    z-index: -1;
+
+    animation:
+        cursorGlowPulse 2s ease-in-out infinite;
+}
+
+.cursor-ring::before {
+    content: "";
+
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    background: #a78bfa;
+
+    border-radius: 50%;
+
+    top: -2px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    box-shadow:
+        0 0 7px #a78bfa,
+        0 0 15px #6366f1;
+}
+
+.cursor-ring::after {
+    content: "";
+
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    background: #38bdf8;
+
+    border-radius: 50%;
+
+    bottom: -2px;
+    right: 2px;
+
+    box-shadow:
+        0 0 7px #38bdf8;
+}
+
+.cursor-trail {
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #ffffff,
+            #8b5cf6 40%,
+            transparent 70%
+        );
+
+    box-shadow:
+        0 0 8px #8b5cf6,
+        0 0 15px rgba(99,102,241,.7);
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    opacity: 0;
+}
+
+body.cursor-hover .cursor-ring {
+    width: 55px;
+    height: 55px;
+
+    border-color:
+        rgba(168,85,247,.95);
+
+    background:
+        rgba(124,58,237,.08);
+}
+
+body.cursor-hover .cursor-core {
+    width: 9px;
+    height: 9px;
+
+    background: #a78bfa;
+}
+
+body.cursor-hover .cursor-glow {
+    width: 100px;
+    height: 100px;
+
+    opacity: 1;
+}
+
+body.cursor-click .cursor-ring {
+    width: 70px;
+    height: 70px;
+
+    border-color: #38bdf8;
+}
+
+body.cursor-click .cursor-core {
+    transform:
+        translate(-50%, -50%)
+        scale(.6);
+}
+
+@keyframes cursorCorePulse {
+    0%,
+    100% {
+        opacity: .8;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.25);
+    }
+}
+
+@keyframes cursorRingRotate {
+    from {
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+    }
+
+    to {
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+    }
+}
+
+@keyframes cursorGlowPulse {
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(.85);
+
+        opacity: .55;
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+
+        opacity: 1;
+    }
+}
+
+
+/* =====================================================
    MOBILE OVERLAY
 ===================================================== */
 
@@ -1745,7 +2727,7 @@ button {
 
 
 /* =====================================================
-   RESPONSIVE
+   RESPONSIVE — 1000px
 ===================================================== */
 
 @media (max-width: 1000px) {
@@ -1766,6 +2748,10 @@ button {
 }
 
 
+/* =====================================================
+   RESPONSIVE — 760px
+===================================================== */
+
 @media (max-width: 760px) {
 
     body {
@@ -1785,16 +2771,19 @@ button {
 
         margin: 0;
 
-        border-radius: 0 18px 18px 0;
+        border-radius:
+            0 18px 18px 0;
 
-        transform: translateX(-110%);
+        transform:
+            translateX(-110%);
 
         transition:
             transform .35s cubic-bezier(.2,.8,.2,1);
     }
 
     .sidebar.open {
-        transform: translateX(0);
+        transform:
+            translateX(0);
     }
 
     .mobile-overlay {
@@ -1847,10 +2836,6 @@ button {
         display: none;
     }
 
-    .ai-orb-small {
-        margin-left: 2px;
-    }
-
     .welcome-screen {
         padding:
             100px
@@ -1864,11 +2849,13 @@ button {
 
     .welcome-subtitle {
         text-align: center;
+
         font-size: 11px;
     }
 
     .hero-orb {
         transform: scale(.82);
+
         margin-top: 0;
     }
 
@@ -1914,8 +2901,112 @@ button {
     .chat-bubble {
         max-width: 88%;
     }
+
+    .website-preview,
+    .psd-preview,
+    .preview-container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .website-preview iframe,
+    .psd-preview iframe,
+    .preview-container iframe {
+        height: 400px;
+    }
+
+    .website-preview img,
+    .psd-preview img,
+    .preview-container img {
+        max-height: 400px;
+    }
+
+    .chat-message img,
+    .chat-bubble img {
+        max-width: 100%;
+        max-height: 400px;
+    }
 }
 
+
+/* =====================================================
+   MOBILE — 600px
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .ai-logo {
+        width: 62px;
+        height: 62px;
+    }
+
+    .ai-core {
+        width: 42px;
+        height: 42px;
+
+        border-radius: 14px;
+    }
+
+    .ai-core span {
+        font-size: 18px;
+    }
+
+    .ai-logo .orbit-1 {
+        width: 60px;
+        height: 22px;
+    }
+
+    .ai-logo .orbit-2 {
+        width: 50px;
+        height: 50px;
+    }
+
+    .ai-logo .orbit-3 {
+        width: 70px;
+        height: 28px;
+    }
+
+    .mani-ai-logo {
+        width: 300px;
+        height: 110px;
+
+        margin:
+            15px auto 30px;
+    }
+
+    .mani-ai-text {
+        font-size: 44px;
+
+        letter-spacing: -3px;
+    }
+
+    .mani-ai-logo .ring-one {
+        width: 280px;
+        height: 55px;
+    }
+
+    .mani-ai-logo .ring-two {
+        width: 210px;
+        height: 75px;
+    }
+
+    .mani-ai-line {
+        width: 130px;
+    }
+
+    .particle-one {
+        left: 25px;
+    }
+
+    .particle-two {
+        right: 25px;
+    }
+}
+
+
+/* =====================================================
+   MOBILE — 480px
+===================================================== */
 
 @media (max-width: 480px) {
 
@@ -1925,11 +3016,13 @@ button {
 
     .welcome-title {
         font-size: 36px;
+
         letter-spacing: -2px;
     }
 
     .hero-orb {
         transform: scale(.65);
+
         margin-top: -15px;
         margin-bottom: -15px;
     }
@@ -1959,1390 +3052,22 @@ button {
         height: 38px;
     }
 }
-/* =========================
-   PREMIUM AI LOGO
-========================= */
 
-.ai-logo {
-    width: 72px;
-    height: 72px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    isolation: isolate;
-}
 
-/* Main glowing core */
-.ai-core {
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
+/* =====================================================
+   TOUCH DEVICES
+===================================================== */
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    position: relative;
-    z-index: 5;
-
-    background:
-        radial-gradient(
-            circle at 30% 25%,
-            #ffffff 0%,
-            #a78bfa 12%,
-            #6366f1 40%,
-            #4f46e5 65%,
-            #312e81 100%
-        );
-
-    border: 1px solid rgba(255,255,255,.45);
-
-    box-shadow:
-        0 0 10px rgba(99,102,241,.9),
-        0 0 25px rgba(124,58,237,.8),
-        0 0 55px rgba(79,70,229,.55),
-        inset 0 0 15px rgba(255,255,255,.3);
-
-    animation:
-        aiFloat 3s ease-in-out infinite,
-        aiPulse 2.5s ease-in-out infinite;
-}
-
-/* AI text */
-.ai-core span {
-    color: white;
-    font-size: 21px;
-    font-weight: 900;
-    letter-spacing: -1px;
-
-    text-shadow:
-        0 0 5px white,
-        0 0 12px rgba(255,255,255,.8);
-
-    animation: aiTextGlow 2s ease-in-out infinite;
-}
-
-
-/* =========================
-   ROTATING ORBITS
-========================= */
-
-.ai-orbit {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-
-    width: 68px;
-    height: 25px;
-
-    border: 1px solid rgba(139,92,246,.7);
-    border-radius: 50%;
-
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-}
-
-.orbit-1 {
-    animation: orbitRotate 4s linear infinite;
-}
-
-.orbit-2 {
-    width: 58px;
-    height: 58px;
-
-    border-color: rgba(59,130,246,.35);
-
-    animation: orbitRotateReverse 6s linear infinite;
-}
-
-.orbit-3 {
-    width: 80px;
-    height: 32px;
-
-    border-color: rgba(168,85,247,.25);
-
-    animation: orbitRotate 7s linear infinite;
-}
-
-
-/* =========================
-   OUTER GLOW
-========================= */
-
-.ai-glow {
-    position: absolute;
-
-    width: 55px;
-    height: 55px;
-
-    border-radius: 50%;
-
-    background: rgba(99,102,241,.4);
-
-    filter: blur(20px);
-
-    z-index: -1;
-
-    animation: glowPulse 2s ease-in-out infinite;
-}
-
-.ai-particle {
-    position: absolute;
-
-    width: 4px;
-    height: 4px;
-
-    border-radius: 50%;
-
-    background: #a78bfa;
-
-    box-shadow:
-        0 0 6px #8b5cf6,
-        0 0 12px #6366f1;
-
-    animation: particleFloat 3s ease-in-out infinite;
-}
-
-.p1 {
-    top: 2px;
-    left: 22px;
-    animation-delay: 0s;
-}
-
-.p2 {
-    right: 0;
-    top: 28px;
-    animation-delay: .7s;
-}
-
-.p3 {
-    bottom: 4px;
-    left: 10px;
-    animation-delay: 1.3s;
-}
-
-.p4 {
-    left: 2px;
-    top: 18px;
-    animation-delay: 1.8s;
-}
-
-
-/* =========================
-   ANIMATIONS
-========================= */
-
-@keyframes aiFloat {
-
-    0%,
-    100% {
-        transform: translateY(0) rotate(0deg);
-    }
-
-    50% {
-        transform: translateY(-4px) rotate(2deg);
-    }
-}
-
-
-@keyframes aiPulse {
-
-    0%,
-    100% {
-        box-shadow:
-            0 0 10px rgba(99,102,241,.9),
-            0 0 25px rgba(124,58,237,.8),
-            0 0 55px rgba(79,70,229,.55),
-            inset 0 0 15px rgba(255,255,255,.3);
-    }
-
-    50% {
-        box-shadow:
-            0 0 15px rgba(99,102,241,1),
-            0 0 35px rgba(124,58,237,1),
-            0 0 75px rgba(79,70,229,.8),
-            inset 0 0 20px rgba(255,255,255,.5);
-    }
-}
-
-
-@keyframes aiTextGlow {
-
-    0%,
-    100% {
-        text-shadow:
-            0 0 5px white,
-            0 0 12px rgba(255,255,255,.8);
-    }
-
-    50% {
-        text-shadow:
-            0 0 8px white,
-            0 0 20px #a78bfa,
-            0 0 30px #6366f1;
-    }
-}
-
-
-@keyframes orbitRotate {
-
-    from {
-        transform:
-            translate(-50%, -50%)
-            rotate(0deg);
-    }
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            rotate(360deg);
-    }
-}
-
-
-@keyframes orbitRotateReverse {
-
-    from {
-        transform:
-            translate(-50%, -50%)
-            rotate(360deg);
-    }
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            rotate(0deg);
-    }
-}
-
-
-@keyframes glowPulse {
-
-    0%,
-    100% {
-        transform: scale(.8);
-        opacity: .5;
-    }
-
-    50% {
-        transform: scale(1.3);
-        opacity: .9;
-    }
-}
-
-
-@keyframes aiShine {
-
-    0% {
-        left: -35px;
-    }
-
-    45%,
-    100% {
-        left: 70px;
-    }
-}
-
-
-@keyframes particleFloat {
-
-    0%,
-    100% {
-        transform: translate(0, 0) scale(.7);
-        opacity: .3;
-    }
-
-    50% {
-        transform: translate(8px, -10px) scale(1.4);
-        opacity: 1;
-    }
-}
-
-
-/* =========================
-   HOVER BOOST
-========================= */
-
-.ai-logo:hover .ai-core {
-    transform: scale(1.12);
-    transition: .35s ease;
-
-    box-shadow:
-        0 0 20px #6366f1,
-        0 0 45px #7c3aed,
-        0 0 90px rgba(99,102,241,.8);
-}
-
-.ai-logo:hover .ai-orbit {
-    animation-duration: 1.5s;
-}
-
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 600px) {
-
-    .ai-logo {
-        width: 62px;
-        height: 62px;
-    }
-
-    .ai-core {
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-    }
-
-    .ai-core span {
-        font-size: 18px;
-    }
-
-    .orbit-1 {
-        width: 60px;
-        height: 22px;
-    }
-
-    .orbit-2 {
-        width: 50px;
-        height: 50px;
-    }
-
-    .orbit-3 {
-        width: 70px;
-        height: 28px;
-    }
-}
-/* =========================================
-   MANI AI — PREMIUM ANIMATED BRAND LOGO
-========================================= */
-
-.mani-ai-logo {
-    position: relative;
-    width: 430px;
-    height: 150px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin: 25px auto 45px;
-
-    perspective: 800px;
-}
-
-
-/* =========================================
-   MAIN TEXT
-========================================= */
-
-.mani-ai-text {
-    position: relative;
-    z-index: 10;
-
-    display: flex;
-    align-items: center;
-
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    font-size: 62px;
-    font-weight: 900;
-
-    letter-spacing: -4px;
-
-    animation: maniTextFloat 4s ease-in-out infinite;
-
-    filter:
-        drop-shadow(0 0 8px rgba(99,102,241,.5))
-        drop-shadow(0 0 25px rgba(124,58,237,.25));
-}
-
-
-/* MANI */
-
-.mani-main {
-    color: #ffffff;
-
-    position: relative;
-
-    text-shadow:
-        0 0 5px rgba(255,255,255,.25),
-        0 0 25px rgba(255,255,255,.08);
-}
-
-
-/* AI */
-
-.mani-ai {
-    margin-left: 12px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #c4b5fd 0%,
-            #8b5cf6 25%,
-            #6366f1 55%,
-            #38bdf8 100%
-        );
-
-    -webkit-background-clip: text;
-    background-clip: text;
-
-    color: transparent;
-
-    position: relative;
-
-    text-shadow: none;
-
-    animation: maniAIColor 3s ease-in-out infinite;
-}
-
-
-
-.mani-ai-ring {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    border-radius: 50%;
-    pointer-events: none;
-    transform-style: preserve-3d;
-}
-
-
-/* horizontal ring */
-
-.ring-one {
-
-    width: 410px;
-    height: 75px;
-
-    border:
-        1px solid rgba(124,58,237,.28);
-
-    transform:
-        translate(-50%, -50%)
-        rotateX(65deg);
-
-    animation:
-        maniRingOne 7s linear infinite;
-}
-
-
-/* vertical ring */
-
-.ring-two {
-
-    width: 280px;
-    height: 100px;
-
-    border:
-        1px solid rgba(56,189,248,.2);
-
-    transform:
-        translate(-50%, -50%)
-        rotateY(65deg)
-        rotateZ(25deg);
-
-    animation:
-        maniRingTwo 9s linear infinite;
-}
-
-
-/* =========================================
-   CENTER GLOW
-========================================= */
-
-.mani-ai-logo::before {
-
-    content: "";
-
-    position: absolute;
-
-    width: 260px;
-    height: 100px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    background:
-        radial-gradient(
-            ellipse,
-            rgba(99,102,241,.25),
-            rgba(124,58,237,.12),
-            transparent 70%
-        );
-
-    filter: blur(25px);
-
-    animation: maniGlow 3s ease-in-out infinite;
-}
-
-
-/* =========================================
-   ENERGY LINE
-========================================= */
-
-.mani-ai-line {
-
-    position: absolute;
-
-    width: 190px;
-    height: 1px;
-
-    left: 50%;
-    top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            #6366f1,
-            #a78bfa,
-            #38bdf8,
-            transparent
-        );
-
-    opacity: .35;
-
-    filter: blur(.5px);
-
-    animation: maniEnergy 2.5s ease-in-out infinite;
-}
-
-
-/* =========================================
-   PARTICLES
-========================================= */
-
-.mani-particle {
-
-    position: absolute;
-
-    width: 5px;
-    height: 5px;
-
-    border-radius: 50%;
-
-    background: #8b5cf6;
-
-    box-shadow:
-        0 0 6px #8b5cf6,
-        0 0 15px #6366f1;
-
-    animation:
-        maniParticle 4s ease-in-out infinite;
-}
-
-
-/* particle positions */
-
-.particle-one {
-    left: 55px;
-    top: 45px;
-    animation-delay: 0s;
-}
-
-.particle-two {
-    right: 60px;
-    top: 35px;
-    animation-delay: 1s;
-}
-
-.particle-three {
-    left: 95px;
-    bottom: 35px;
-    animation-delay: 1.8s;
-}
-
-.particle-four {
-    right: 100px;
-    bottom: 30px;
-    animation-delay: 2.6s;
-}
-
-
-/* =========================================
-   ANIMATIONS
-========================================= */
-
-@keyframes maniTextFloat {
-
-    0%,
-    100% {
-        transform:
-            translateY(0)
-            scale(1);
-    }
-
-    50% {
-        transform:
-            translateY(-5px)
-            scale(1.015);
-    }
-}
-
-
-@keyframes maniAIColor {
-
-    0%,
-    100% {
-        filter:
-            brightness(1)
-            saturate(1);
-    }
-
-    50% {
-        filter:
-            brightness(1.35)
-            saturate(1.3);
-    }
-}
-
-
-@keyframes maniShine {
-
-    0% {
-        left: -30px;
-        opacity: 0;
-    }
-
-    15% {
-        opacity: 1;
-    }
-
-    45% {
-        left: 100%;
-        opacity: 0;
-    }
-
-    100% {
-        left: 100%;
-        opacity: 0;
-    }
-}
-
-
-@keyframes maniRingOne {
-
-    0% {
-        transform:
-            translate(-50%, -50%)
-            rotateX(65deg)
-            rotateZ(0deg);
-    }
-
-    100% {
-        transform:
-            translate(-50%, -50%)
-            rotateX(65deg)
-            rotateZ(360deg);
-    }
-}
-
-
-@keyframes maniRingTwo {
-
-    0% {
-        transform:
-            translate(-50%, -50%)
-            rotateY(65deg)
-            rotateZ(25deg);
-    }
-
-    100% {
-        transform:
-            translate(-50%, -50%)
-            rotateY(65deg)
-            rotateZ(385deg);
-    }
-}
-
-
-@keyframes maniGlow {
-
-    0%,
-    100% {
-        opacity: .55;
-        transform:
-            translate(-50%, -50%)
-            scale(.9);
-    }
-
-    50% {
-        opacity: 1;
-        transform:
-            translate(-50%, -50%)
-            scale(1.15);
-    }
-}
-
-
-@keyframes maniEnergy {
-
-    0%,
-    100% {
-        opacity: .15;
-        width: 120px;
-    }
-
-    50% {
-        opacity: .7;
-        width: 250px;
-    }
-}
-
-
-@keyframes maniParticle {
-
-    0%,
-    100% {
-        transform:
-            translate(0, 0)
-            scale(.5);
-
-        opacity: .2;
-    }
-
-    25% {
-        transform:
-            translate(10px, -15px)
-            scale(1);
-
-        opacity: 1;
-    }
-
-    50% {
-        transform:
-            translate(-8px, -25px)
-            scale(.7);
-
-        opacity: .6;
-    }
-
-    75% {
-        transform:
-            translate(15px, -8px)
-            scale(1.2);
-
-        opacity: 1;
-    }
-}
-
-
-/* =========================================
-   HOVER
-========================================= */
-
-.mani-ai-logo:hover .mani-ai-text {
-
-    transform: scale(1.06);
-
-    filter:
-        drop-shadow(0 0 12px rgba(99,102,241,.8))
-        drop-shadow(0 0 35px rgba(124,58,237,.5));
-
-    transition: .4s ease;
-}
-
-
-.mani-ai-logo:hover .ring-one {
-    animation-duration: 2.5s;
-}
-
-
-.mani-ai-logo:hover .ring-two {
-    animation-duration: 3s;
-}
-
-
-/* =========================================
-   MOBILE
-========================================= */
-
-@media (max-width: 600px) {
-
-    .mani-ai-logo {
-        width: 300px;
-        height: 110px;
-
-        margin: 15px auto 30px;
-    }
-
-    .mani-ai-text {
-        font-size: 44px;
-        letter-spacing: -3px;
-    }
-
-    .ring-one {
-        width: 280px;
-        height: 55px;
-    }
-
-    .ring-two {
-        width: 210px;
-        height: 75px;
-    }
-
-    .mani-ai-line {
-        width: 130px;
-    }
-
-    .particle-one {
-        left: 25px;
-    }
-
-    .particle-two {
-        right: 25px;
-    }
-}
-/* =========================================
-   PREMIUM AI CURSOR
-========================================= */
-
-html,
-body {
-    cursor: none;
-}
-
-
-/* Hide normal cursor everywhere */
-
-* {
-    cursor: none !important;
-}
-
-
-/* =========================================
-   MAIN CURSOR
-========================================= */
-
-.ai-cursor {
-    position: fixed;
-
-    width: 34px;
-    height: 34px;
-
-    left: 0;
-    top: 0;
-
-    pointer-events: none;
-
-    z-index: 999999;
-
-    transform: translate(-50%, -50%);
-
-    mix-blend-mode: screen;
-}
-
-
-/* =========================================
-   CORE
-========================================= */
-
-.cursor-core {
-
-    position: absolute;
-
-    width: 6px;
-    height: 6px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    border-radius: 50%;
-
-    background: #ffffff;
-
-    box-shadow:
-        0 0 5px #ffffff,
-        0 0 12px #8b5cf6,
-        0 0 25px #6366f1;
-
-    z-index: 3;
-
-    animation: cursorCorePulse 1.8s ease-in-out infinite;
-}
-
-
-/* =========================================
-   OUTER RING
-========================================= */
-
-.cursor-ring {
-
-    position: absolute;
-
-    width: 30px;
-    height: 30px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    border-radius: 50%;
-
-    border: 1px solid rgba(139, 92, 246, .8);
-
-    box-shadow:
-        0 0 8px rgba(99, 102, 241, .4),
-        inset 0 0 8px rgba(139, 92, 246, .15);
-
-    transition:
-        width .25s ease,
-        height .25s ease,
-        border-color .25s ease,
-        background .25s ease;
-
-    animation: cursorRingRotate 5s linear infinite;
-}
-
-
-/* =========================================
-   CURSOR GLOW
-========================================= */
-
-.cursor-glow {
-
-    position: absolute;
-
-    width: 65px;
-    height: 65px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    border-radius: 50%;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(99,102,241,.28),
-            rgba(124,58,237,.12),
-            transparent 70%
-        );
-
-    filter: blur(10px);
-
-    opacity: .8;
-
-    z-index: -1;
-
-    animation: cursorGlowPulse 2s ease-in-out infinite;
-}
-
-
-/* =========================================
-   ROTATING DOTS
-========================================= */
-
-.cursor-ring::before {
-
-    content: "";
-
-    position: absolute;
-
-    width: 4px;
-    height: 4px;
-
-    background: #a78bfa;
-
-    border-radius: 50%;
-
-    top: -2px;
-    left: 50%;
-
-    transform: translateX(-50%);
-
-    box-shadow:
-        0 0 7px #a78bfa,
-        0 0 15px #6366f1;
-}
-
-
-.cursor-ring::after {
-
-    content: "";
-
-    position: absolute;
-
-    width: 3px;
-    height: 3px;
-
-    background: #38bdf8;
-
-    border-radius: 50%;
-
-    bottom: -2px;
-    right: 2px;
-
-    box-shadow:
-        0 0 7px #38bdf8;
-}
-
-
-/* =========================================
-   TRAIL PARTICLES
-========================================= */
-
-.cursor-trail {
-
-    position: fixed;
-
-    width: 5px;
-    height: 5px;
-
-    border-radius: 50%;
-
-    pointer-events: none;
-
-    z-index: 999998;
-
-    background:
-        radial-gradient(
-            circle,
-            #ffffff,
-            #8b5cf6 40%,
-            transparent 70%
-        );
-
-    box-shadow:
-        0 0 8px #8b5cf6,
-        0 0 15px rgba(99,102,241,.7);
-
-    transform: translate(-50%, -50%) scale(0);
-
-    opacity: 0;
-}
-
-
-/* =========================================
-   CURSOR HOVER
-========================================= */
-
-body.cursor-hover .cursor-ring {
-
-    width: 55px;
-    height: 55px;
-
-    border-color: rgba(168,85,247,.95);
-
-    background:
-        rgba(124,58,237,.08);
-
-    box-shadow:
-        0 0 15px rgba(139,92,246,.5),
-        0 0 35px rgba(99,102,241,.25),
-        inset 0 0 15px rgba(139,92,246,.15);
-}
-
-
-body.cursor-hover .cursor-core {
-
-    width: 9px;
-    height: 9px;
-
-    background: #a78bfa;
-
-    box-shadow:
-        0 0 10px #ffffff,
-        0 0 20px #a78bfa,
-        0 0 35px #6366f1;
-}
-
-
-body.cursor-hover .cursor-glow {
-
-    width: 100px;
-    height: 100px;
-
-    opacity: 1;
-}
-
-
-/* =========================================
-   CLICK EFFECT
-========================================= */
-
-body.cursor-click .cursor-ring {
-
-    width: 70px;
-    height: 70px;
-
-    border-color: #38bdf8;
-
-    transition: .1s ease;
-}
-
-
-body.cursor-click .cursor-core {
-
-    transform:
-        translate(-50%, -50%)
-        scale(.6);
-}
-
-
-/* =========================================
-   ANIMATIONS
-========================================= */
-
-@keyframes cursorCorePulse {
-
-    0%,
-    100% {
-        opacity: .8;
-        transform:
-            translate(-50%, -50%)
-            scale(1);
-    }
-
-    50% {
-        opacity: 1;
-        transform:
-            translate(-50%, -50%)
-            scale(1.25);
-    }
-}
-
-
-@keyframes cursorRingRotate {
-
-    from {
-        transform:
-            translate(-50%, -50%)
-            rotate(0deg);
-    }
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            rotate(360deg);
-    }
-}
-
-
-@keyframes cursorGlowPulse {
-
-    0%,
-    100% {
-        transform:
-            translate(-50%, -50%)
-            scale(.85);
-
-        opacity: .55;
-    }
-
-    50% {
-        transform:
-            translate(-50%, -50%)
-            scale(1.15);
-
-        opacity: 1;
-    }
-}
-
-
-/* =========================================
-   MOBILE
-========================================= */
-
-@media (max-width: 768px) {
-
-    html,
-    body,
-    * {
-        cursor: auto !important;
-    }
+@media (hover: none) and (pointer: coarse) {
 
     .ai-cursor,
     .cursor-trail {
-        display: none;
-    }
-}
-/* =========================================
-   IMAGE ATTACHMENT PREVIEW
-========================================= */
-
-.attachment-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.image-attachment {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.attachment-image-preview {
-    width: 55px;
-    height: 55px;
-    object-fit: cover;
-    border-radius: 8px;
-    display: block;
-}
-
-.attachment-name {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 12px;
-}
-
-.remove-file {
-    width: 22px;
-    height: 22px;
-    border: 0;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-
-/* =========================================
-   IMAGES INSIDE CHAT
-========================================= */
-
-.message-images {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.message-image {
-    width: min(280px, 100%);
-    max-height: 280px;
-    object-fit: cover;
-    border-radius: 14px;
-    display: block;
-}
-
-
-/* =========================================
-   AI GENERATED IMAGE
-========================================= */
-
-.ai-generated-image {
-    display: block;
-    width: min(600px, 100%);
-    max-height: 600px;
-    object-fit: contain;
-    margin-top: 12px;
-    border-radius: 16px;
-}
-/* =========================================
-   PSD / WEBSITE PREVIEW FIX
-========================================= */
-
-.website-preview,
-.psd-preview,
-.preview-container {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    overflow: hidden;
-}
-
-/* Preview iframe */
-.website-preview iframe,
-.psd-preview iframe,
-.preview-container iframe {
-    width: 100%;
-    max-width: 100%;
-    height: 520px;
-    display: block;
-    border: 0;
-    border-radius: 12px;
-}
-
-/* Preview image */
-.website-preview img,
-.psd-preview img,
-.preview-container img {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    max-height: 520px;
-    height: auto;
-    object-fit: contain;
-    border-radius: 12px;
-}
-
-/* Chat message images */
-.chat-message img {
-    max-width: min(700px, 100%);
-    max-height: 500px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    display: block;
-    border-radius: 12px;
-}
-
-/* Generated image bubble */
-.chat-bubble img {
-    max-width: 100%;
-    max-height: 500px;
-    object-fit: contain;
-    display: block;
-    margin-top: 8px;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-
-    .website-preview,
-    .psd-preview,
-    .preview-container {
-        width: 100%;
-        max-width: 100%;
+        display: none !important;
     }
 
-    .website-preview iframe,
-    .psd-preview iframe,
-    .preview-container iframe {
-        height: 400px;
-    }
-
-    .website-preview img,
-    .psd-preview img,
-    .preview-container img {
-        max-height: 400px;
-    }
-
-    .chat-message img,
-    .chat-bubble img {
-        max-width: 100%;
-        max-height: 400px;
+    .quick-card:hover,
+    .new-chat-btn:hover,
+    .send-btn:hover {
+        transform: none;
     }
 }
