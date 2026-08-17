@@ -3260,3 +3260,89 @@ body.cursor-click .cursor-core {
     margin-top: 12px;
     border-radius: 16px;
 }
+/* =========================================
+   PSD / WEBSITE PREVIEW FIX
+========================================= */
+
+.website-preview,
+.psd-preview,
+.preview-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* Preview iframe */
+.website-preview iframe,
+.psd-preview iframe,
+.preview-container iframe {
+    width: 100%;
+    max-width: 100%;
+    height: 520px;
+    display: block;
+    border: 0;
+    border-radius: 12px;
+}
+
+/* Preview image */
+.website-preview img,
+.psd-preview img,
+.preview-container img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    max-height: 520px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+/* Chat message images */
+.chat-message img {
+    max-width: min(700px, 100%);
+    max-height: 500px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    border-radius: 12px;
+}
+
+/* Generated image bubble */
+.chat-bubble img {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    display: block;
+    margin-top: 8px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .website-preview,
+    .psd-preview,
+    .preview-container {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .website-preview iframe,
+    .psd-preview iframe,
+    .preview-container iframe {
+        height: 400px;
+    }
+
+    .website-preview img,
+    .psd-preview img,
+    .preview-container img {
+        max-height: 400px;
+    }
+
+    .chat-message img,
+    .chat-bubble img {
+        max-width: 100%;
+        max-height: 400px;
+    }
+}
