@@ -4,14 +4,24 @@ document.addEventListener("DOMContentLoaded", () => {
        ELEMENTS
     ================================================= */
 
-    const input = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
+    const input =
+        document.getElementById("messageInput");
 
-    const chatArea = document.querySelector(".chat-area");
-    const chatMessages = document.getElementById("chatMessages");
-    const welcomeScreen = document.getElementById("welcomeScreen");
+    const sendBtn =
+        document.getElementById("sendBtn");
 
-    const newChatBtn = document.getElementById("newChatBtn");
+    const chatArea =
+        document.querySelector(".chat-area");
+
+    const chatMessages =
+        document.getElementById("chatMessages");
+
+    const welcomeScreen =
+        document.getElementById("welcomeScreen");
+
+    const newChatBtn =
+        document.getElementById("newChatBtn");
+
     const currentConversation =
         document.getElementById("currentConversation");
 
@@ -63,9 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
     ================================================= */
 
     let conversation = [];
+
     let selectedFiles = [];
+
     let webMode = false;
+
     let sending = false;
+
     let recognition = null;
 
 
@@ -73,19 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
        INITIALIZE
     ================================================= */
 
-    input?.focus();
-    autoResize();
+    if (input) {
 
+        input.focus();
 
-    /* =================================================
-       SAFE EVENT LISTENER
-    ================================================= */
-
-    function on(element, event, callback) {
-
-        if (!element) return;
-
-        element.addEventListener(event, callback);
+        autoResize();
 
     }
 
@@ -101,39 +107,63 @@ document.addEventListener("DOMContentLoaded", () => {
         input.style.height = "auto";
 
         input.style.height =
-            Math.min(input.scrollHeight, 200) + "px";
+            Math.min(
+                input.scrollHeight,
+                200
+            ) + "px";
 
     }
 
 
-    on(input, "input", autoResize);
+    if (input) {
+
+        input.addEventListener(
+            "input",
+            autoResize
+        );
+
+    }
 
 
     /* =================================================
-       ENTER TO SEND
+       ENTER SEND
     ================================================= */
 
-    on(input, "keydown", event => {
+    if (input) {
 
-        if (
-            event.key === "Enter" &&
-            !event.shiftKey
-        ) {
+        input.addEventListener(
+            "keydown",
+            event => {
 
-            event.preventDefault();
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
 
-            sendMessage();
+                    event.preventDefault();
 
-        }
+                    sendMessage();
 
-    });
+                }
+
+            }
+        );
+
+    }
 
 
     /* =================================================
        SEND BUTTON
     ================================================= */
 
-    on(sendBtn, "click", sendMessage);
+    if (sendBtn) {
+
+        sendBtn.addEventListener(
+            "click",
+            sendMessage
+        );
+
+    }
 
 
     /* =================================================
@@ -144,20 +174,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (sending) return;
 
+
         const message =
-            input?.value.trim() || "";
+            input.value.trim();
 
-
-        /* =============================================
-           EMPTY MESSAGE CHECK
-        ============================================= */
 
         if (
             !message &&
             selectedFiles.length === 0
         ) {
 
-            input?.focus();
+            input.focus();
 
             return;
 
@@ -165,64 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           HIDE WELCOME SCREEN
-        ============================================= */
-
-        if (welcomeScreen) {
-
-            welcomeScreen.style.display = "none";
-
-        }
-
-
-        /* =============================================
-           DISPLAY MESSAGE
-        ============================================= */
-
-        let displayMessage = message;
-
-
-        if (selectedFiles.length > 0) {
-
-            if (!message) {
-
-                displayMessage =
-                    selectedFiles.length === 1
-                        ? "Please analyze this image."
-                        : `Please analyze these ${selectedFiles.length} images.`;
-
-            }
-
-        }
-
-
-        /* =============================================
-           SHOW USER MESSAGE
-        ============================================= */
-
-        addMessage(
-            "user",
-            displayMessage
-        );
-
-
-        /* =============================================
-           SAVE USER MESSAGE
-        ============================================= */
-
-        conversation.push({
-
-            role: "user",
-
-            content:
-                message ||
-                "Analyze the uploaded image."
-
-        });
-
-
-        /* =============================================
-           COPY FILES
+           SAVE FILES BEFORE CLEARING
         ============================================= */
 
         const filesToSend =
@@ -230,23 +200,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           CLEAR INPUT
+           HIDE WELCOME
         ============================================= */
 
-        if (input) {
+        if (welcomeScreen) {
 
-            input.value = "";
-
-            autoResize();
+            welcomeScreen.style.display =
+                "none";
 
         }
 
 
-        toolsPopup?.classList.remove("show");
+        /* =============================================
+           USER DISPLAY MESSAGE
+        ============================================= */
+
+        let displayMessage =
+            message;
+
+
+        if (
+            filesToSend.length > 0
+        ) {
+
+            if (!message) {
+
+                displayMessage =
+                    filesToSend.length === 1
+                        ? "Please analyze this image."
+                        : `Please analyze these ${filesToSend.length} images.`;
+
+            }
+
+        }
 
 
         /* =============================================
-           START LOADING
+           SHOW USER MESSAGE + IMAGE
+        ============================================= */
+
+        addUserMessage(
+            displayMessage,
+            filesToSend
+        );
+
+
+        /* =============================================
+           CLEAR INPUT
+        ============================================= */
+
+        input.value = "";
+
+        autoResize();
+
+
+        if (toolsPopup) {
+
+            toolsPopup.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        /* =============================================
+           LOADING
         ============================================= */
 
         setLoading(true);
@@ -259,9 +277,28 @@ document.addEventListener("DOMContentLoaded", () => {
             ========================================= */
 
             const images =
-                filesToSend.length > 0
-                    ? await filesToBase64(filesToSend)
-                    : [];
+                await filesToBase64(
+                    filesToSend
+                );
+
+
+            /* =========================================
+               ADD CURRENT USER MESSAGE TO HISTORY
+            ========================================= */
+
+            conversation.push({
+
+                role: "user",
+
+                content:
+                    message ||
+                    (
+                        filesToSend.length > 0
+                            ? "Please analyze the uploaded image."
+                            : ""
+                    )
+
+            });
 
 
             /* =========================================
@@ -269,30 +306,38 @@ document.addEventListener("DOMContentLoaded", () => {
             ========================================= */
 
             const response =
-                await fetch("/api/chat", {
+                await fetch(
+                    "/api/chat",
+                    {
 
-                    method: "POST",
+                        method: "POST",
 
-                    headers: {
+                        headers: {
 
-                        "Content-Type":
-                            "application/json"
+                            "Content-Type":
+                                "application/json"
 
-                    },
+                        },
 
-                    body: JSON.stringify({
+                        body:
+                            JSON.stringify({
 
-                        message: message,
+                                message:
+                                    message,
 
-                        messages: conversation,
+                                messages:
+                                    conversation,
 
-                        webSearch: webMode,
+                                webSearch:
+                                    webMode,
 
-                        images: images
+                                images:
+                                    images
 
-                    })
+                            })
 
-                });
+                    }
+                );
 
 
             /* =========================================
@@ -303,6 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 let errorData = null;
 
+
                 try {
 
                     errorData =
@@ -310,8 +356,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 } catch (error) {
 
-                    console.warn(
-                        "Could not parse error response."
+                    console.error(
+                        "Could not parse API error:",
+                        error
                     );
 
                 }
@@ -320,6 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw new Error(
 
                     errorData?.error ||
+
                     `API error ${response.status}`
 
                 );
@@ -328,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               JSON RESPONSE
+               API JSON
             ========================================= */
 
             const data =
@@ -339,7 +387,10 @@ document.addEventListener("DOMContentLoaded", () => {
                API ERROR
             ========================================= */
 
-            if (data?.type === "error") {
+            if (
+                data?.type === "error" ||
+                data?.success === false
+            ) {
 
                 throw new Error(
 
@@ -360,7 +411,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 data?.image
             ) {
 
-                await showGeneratedImage(data);
+                await showGeneratedImage(
+                    data
+                );
 
 
                 conversation.push({
@@ -375,7 +428,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 saveRecentChat(
-                    message || "Generated image"
+                    message ||
+                    "Generated image"
                 );
 
 
@@ -385,14 +439,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               NORMAL RESPONSE
+               TEXT / IMAGE ANALYSIS RESPONSE
             ========================================= */
 
             const reply =
-                getReplyFromResponse(data);
+                getReplyFromResponse(
+                    data
+                );
 
 
-            await typeAIMessage(reply);
+            await typeAIMessage(
+                reply
+            );
 
 
             /* =========================================
@@ -403,7 +461,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 role: "assistant",
 
-                content: reply
+                content:
+                    reply
 
             });
 
@@ -413,8 +472,14 @@ document.addEventListener("DOMContentLoaded", () => {
             ========================================= */
 
             saveRecentChat(
+
                 message ||
-                "Image analysis"
+                (
+                    filesToSend.length > 0
+                        ? "Image analysis"
+                        : "New conversation"
+                )
+
             );
 
 
@@ -431,6 +496,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 `⚠️ ${error.message || "I couldn't connect to the AI right now. Please try again."}`
             );
 
+
+            /* =========================================
+               REMOVE FAILED USER MESSAGE FROM HISTORY
+            ========================================= */
+
+            if (
+                conversation.length > 0 &&
+                conversation[
+                    conversation.length - 1
+                ].role === "user"
+            ) {
+
+                conversation.pop();
+
+            }
 
         } finally {
 
@@ -455,111 +535,134 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       FILES TO BASE64
+       FILE -> BASE64
     ================================================= */
 
-    function filesToBase64(files) {
+    function filesToBase64(
+        files
+    ) {
 
         return Promise.all(
 
-            files.map(file => {
+            files.map(
+                file => {
 
-                return new Promise(
-                    (resolve, reject) => {
+                    return new Promise(
+                        (
+                            resolve,
+                            reject
+                        ) => {
 
-                        /* =================================
-                           IMAGE TYPE CHECK
-                        ================================= */
+                            /* =================================
+                               IMAGE CHECK
+                            ================================= */
 
-                        if (
-                            !file.type ||
-                            !file.type.startsWith("image/")
-                        ) {
-
-                            reject(
-
-                                new Error(
-                                    `${file.name} is not an image. Please upload JPG, PNG, WEBP or another image file.`
+                            if (
+                                !file.type.startsWith(
+                                    "image/"
                                 )
+                            ) {
 
+                                reject(
+
+                                    new Error(
+
+                                        `${file.name} is not an image. Please upload JPG, PNG, WEBP or another image file.`
+
+                                    )
+
+                                );
+
+                                return;
+
+                            }
+
+
+                            /* =================================
+                               SIZE CHECK
+                            ================================= */
+
+                            const maxSize =
+                                3.5 *
+                                1024 *
+                                1024;
+
+
+                            if (
+                                file.size >
+                                maxSize
+                            ) {
+
+                                reject(
+
+                                    new Error(
+
+                                        `${file.name} is too large. Please upload an image smaller than 3.5 MB.`
+
+                                    )
+
+                                );
+
+                                return;
+
+                            }
+
+
+                            /* =================================
+                               FILE READER
+                            ================================= */
+
+                            const reader =
+                                new FileReader();
+
+
+                            reader.onload =
+                                () => {
+
+                                    resolve({
+
+                                        name:
+                                            file.name,
+
+                                        type:
+                                            file.type,
+
+                                        size:
+                                            file.size,
+
+                                        data:
+                                            reader.result
+
+                                    });
+
+                                };
+
+
+                            reader.onerror =
+                                () => {
+
+                                    reject(
+
+                                        new Error(
+
+                                            `Could not read ${file.name}.`
+
+                                        )
+
+                                    );
+
+                                };
+
+
+                            reader.readAsDataURL(
+                                file
                             );
-
-                            return;
 
                         }
+                    );
 
-
-                        /* =================================
-                           FILE SIZE CHECK
-                        ================================= */
-
-                        const maxSize =
-                            3.5 * 1024 * 1024;
-
-
-                        if (file.size > maxSize) {
-
-                            reject(
-
-                                new Error(
-                                    `${file.name} is too large. Please upload an image smaller than 3.5 MB.`
-                                )
-
-                            );
-
-                            return;
-
-                        }
-
-
-                        /* =================================
-                           FILE READER
-                        ================================= */
-
-                        const reader =
-                            new FileReader();
-
-
-                        reader.onload = () => {
-
-                            resolve({
-
-                                name:
-                                    file.name,
-
-                                type:
-                                    file.type,
-
-                                size:
-                                    file.size,
-
-                                data:
-                                    reader.result
-
-                            });
-
-                        };
-
-
-                        reader.onerror = () => {
-
-                            reject(
-
-                                new Error(
-                                    `Could not read ${file.name}.`
-                                )
-
-                            );
-
-                        };
-
-
-                        reader.readAsDataURL(file);
-
-                    }
-                );
-
-            })
+                }
+            )
 
         );
 
@@ -567,21 +670,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       SHOW GENERATED IMAGE
+       ADD USER MESSAGE WITH IMAGES
     ================================================= */
 
-    async function showGeneratedImage(data) {
+    function addUserMessage(
+        text,
+        files = []
+    ) {
 
         const wrapper =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         wrapper.className =
-            "chat-message ai";
+            "chat-message user";
 
 
         const bubble =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         bubble.className =
@@ -589,100 +699,368 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =============================================
-           RESPONSE TEXT
+           TEXT
         ============================================= */
 
-        if (data.reply) {
+        if (text) {
 
-            const text =
-                document.createElement("div");
-
-
-            text.innerHTML =
-                formatMessage(data.reply);
+            const textElement =
+                document.createElement(
+                    "div"
+                );
 
 
-            bubble.appendChild(text);
+            textElement.innerHTML =
+                formatMessage(
+                    text
+                );
+
+
+            bubble.appendChild(
+                textElement
+            );
 
         }
 
 
         /* =============================================
-           IMAGE
+           IMAGES
         ============================================= */
 
-        const image =
-            document.createElement("img");
+        if (
+            files.length > 0
+        ) {
 
-
-        image.src =
-            data.image;
-
-
-        image.alt =
-            "AI generated image";
-
-
-        image.loading =
-            "lazy";
-
-
-        image.style.width =
-            "100%";
-
-
-        image.style.maxWidth =
-            "100%";
-
-
-        image.style.maxHeight =
-            "600px";
-
-
-        image.style.objectFit =
-            "contain";
-
-
-        image.style.display =
-            "block";
-
-
-        image.style.marginTop =
-            "12px";
-
-
-        image.style.borderRadius =
-            "16px";
-
-
-        image.style.cursor =
-            "pointer";
-
-
-        /* =============================================
-           OPEN IMAGE
-        ============================================= */
-
-        image.addEventListener(
-            "click",
-            () => {
-
-                window.open(
-                    data.image,
-                    "_blank"
+            const imagesContainer =
+                document.createElement(
+                    "div"
                 );
+
+
+            imagesContainer.className =
+                "sent-images";
+
+
+            files.forEach(
+                file => {
+
+                    if (
+                        !file.type.startsWith(
+                            "image/"
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const image =
+                        document.createElement(
+                            "img"
+                        );
+
+
+                    image.className =
+                        "sent-image";
+
+
+                    image.alt =
+                        file.name;
+
+
+                    image.src =
+                        URL.createObjectURL(
+                            file
+                        );
+
+
+                    image.loading =
+                        "lazy";
+
+
+                    /* =================================
+                       CLICK IMAGE TO OPEN
+                    ================================= */
+
+                    image.addEventListener(
+                        "click",
+                        () => {
+
+                            openImageViewer(
+                                image.src
+                            );
+
+                        }
+                    );
+
+
+                    imagesContainer.appendChild(
+                        image
+                    );
+
+                }
+            );
+
+
+            bubble.appendChild(
+                imagesContainer
+            );
+
+        }
+
+
+        wrapper.appendChild(
+            bubble
+        );
+
+
+        chatMessages.appendChild(
+            wrapper
+        );
+
+
+        scrollChat();
+
+
+        return bubble;
+
+    }
+
+
+    /* =================================================
+       IMAGE VIEWER
+    ================================================= */
+
+    function openImageViewer(
+        imageSrc
+    ) {
+
+        const viewer =
+            document.createElement(
+                "div"
+            );
+
+
+        viewer.className =
+            "image-viewer";
+
+
+        viewer.innerHTML = `
+
+            <div class="image-viewer-backdrop"></div>
+
+            <div class="image-viewer-content">
+
+                <button
+                    type="button"
+                    class="image-viewer-close"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
+
+                <img
+                    src="${imageSrc}"
+                    alt="Uploaded image"
+                >
+
+            </div>
+
+        `;
+
+
+        document.body.appendChild(
+            viewer
+        );
+
+
+        const closeButton =
+            viewer.querySelector(
+                ".image-viewer-close"
+            );
+
+
+        const backdrop =
+            viewer.querySelector(
+                ".image-viewer-backdrop"
+            );
+
+
+        function closeViewer() {
+
+            viewer.remove();
+
+        }
+
+
+        closeButton.addEventListener(
+            "click",
+            closeViewer
+        );
+
+
+        backdrop.addEventListener(
+            "click",
+            closeViewer
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            function escapeViewer(event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeViewer();
+
+                    document.removeEventListener(
+                        "keydown",
+                        escapeViewer
+                    );
+
+                }
 
             }
         );
 
-
-        bubble.appendChild(image);
-
-
-        wrapper.appendChild(bubble);
+    }
 
 
-        chatMessages?.appendChild(wrapper);
+    /* =================================================
+       ADD NORMAL MESSAGE
+    ================================================= */
+
+    function addMessage(
+        type,
+        text
+    ) {
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        wrapper.className =
+            `chat-message ${type}`;
+
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "chat-bubble";
+
+
+        bubble.innerHTML =
+            formatMessage(
+                text
+            );
+
+
+        wrapper.appendChild(
+            bubble
+        );
+
+
+        chatMessages.appendChild(
+            wrapper
+        );
+
+
+        scrollChat();
+
+
+        return bubble;
+
+    }
+
+
+    /* =================================================
+       AI TYPEWRITER
+    ================================================= */
+
+    async function typeAIMessage(
+        text
+    ) {
+
+        const wrapper =
+            document.createElement(
+                "div"
+            );
+
+
+        wrapper.className =
+            "chat-message ai";
+
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "chat-bubble";
+
+
+        wrapper.appendChild(
+            bubble
+        );
+
+
+        chatMessages.appendChild(
+            wrapper
+        );
+
+
+        const plain =
+            stripHTML(
+                text
+            );
+
+
+        let current = "";
+
+
+        for (
+            let i = 0;
+            i < plain.length;
+            i++
+        ) {
+
+            current +=
+                plain[i];
+
+
+            bubble.textContent =
+                current;
+
+
+            scrollChat();
+
+
+            await sleep(
+
+                plain[i] === " "
+                    ? 5
+                    : 9
+
+            );
+
+        }
+
+
+        bubble.innerHTML =
+            formatMessage(
+                text
+            );
 
 
         scrollChat();
@@ -694,7 +1072,9 @@ document.addEventListener("DOMContentLoaded", () => {
        GET API RESPONSE
     ================================================= */
 
-    function getReplyFromResponse(data) {
+    function getReplyFromResponse(
+        data
+    ) {
 
         if (!data) {
 
@@ -703,20 +1083,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /* =============================================
-           STRING RESPONSE
-        ============================================= */
-
-        if (typeof data === "string") {
+        if (
+            typeof data === "string"
+        ) {
 
             return data;
 
         }
 
-
-        /* =============================================
-           NORMAL API
-        ============================================= */
 
         if (
             typeof data.reply === "string"
@@ -754,13 +1128,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        /* =============================================
-           OPENAI STYLE RESPONSE
-        ============================================= */
-
         if (
-            Array.isArray(data.choices) &&
-            data.choices.length > 0
+            data.choices &&
+            data.choices[0]
         ) {
 
             const choice =
@@ -794,144 +1164,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       ADD MESSAGE
-    ================================================= */
-
-    function addMessage(type, text) {
-
-        if (!chatMessages) return null;
-
-
-        const wrapper =
-            document.createElement("div");
-
-
-        wrapper.className =
-            `chat-message ${type}`;
-
-
-        const bubble =
-            document.createElement("div");
-
-
-        bubble.className =
-            "chat-bubble";
-
-
-        bubble.innerHTML =
-            formatMessage(text);
-
-
-        wrapper.appendChild(bubble);
-
-
-        chatMessages.appendChild(wrapper);
-
-
-        scrollChat();
-
-
-        return bubble;
-
-    }
-
-
-    /* =================================================
-       AI TYPEWRITER
-    ================================================= */
-
-    async function typeAIMessage(text) {
-
-        if (!chatMessages) return;
-
-
-        const wrapper =
-            document.createElement("div");
-
-
-        wrapper.className =
-            "chat-message ai";
-
-
-        const bubble =
-            document.createElement("div");
-
-
-        bubble.className =
-            "chat-bubble";
-
-
-        wrapper.appendChild(bubble);
-
-
-        chatMessages.appendChild(wrapper);
-
-
-        /* =============================================
-           REMOVE HTML FOR TYPING
-        ============================================= */
-
-        const plain =
-            stripHTML(text);
-
-
-        let current = "";
-
-
-        for (
-            let i = 0;
-            i < plain.length;
-            i++
-        ) {
-
-            current += plain[i];
-
-
-            bubble.textContent =
-                current;
-
-
-            scrollChat();
-
-
-            await sleep(
-                plain[i] === " "
-                    ? 4
-                    : 8
-            );
-
-        }
-
-
-        /* =============================================
-           FINAL FORMATTED MESSAGE
-        ============================================= */
-
-        bubble.innerHTML =
-            formatMessage(text);
-
-
-        scrollChat();
-
-    }
-
-
-    /* =================================================
        FORMAT MESSAGE
     ================================================= */
 
-    function formatMessage(text) {
+    function formatMessage(
+        text
+    ) {
 
         if (!text) return "";
 
 
         let safe =
-            escapeHTML(String(text));
+            escapeHTML(
+                String(text)
+            );
 
-
-        /* =============================================
-           CODE BLOCK
-        ============================================= */
 
         safe =
             safe.replace(
@@ -940,10 +1187,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /* =============================================
-           BOLD
-        ============================================= */
-
         safe =
             safe.replace(
                 /\*\*(.*?)\*\*/g,
@@ -951,20 +1194,12 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /* =============================================
-           INLINE CODE
-        ============================================= */
-
         safe =
             safe.replace(
                 /`([^`]+)`/g,
                 "<code>$1</code>"
             );
 
-
-        /* =============================================
-           NEW LINE
-        ============================================= */
 
         safe =
             safe.replace(
@@ -982,10 +1217,14 @@ document.addEventListener("DOMContentLoaded", () => {
        ESCAPE HTML
     ================================================= */
 
-    function escapeHTML(text) {
+    function escapeHTML(
+        text
+    ) {
 
         const div =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         div.textContent =
@@ -1001,10 +1240,14 @@ document.addEventListener("DOMContentLoaded", () => {
        STRIP HTML
     ================================================= */
 
-    function stripHTML(text) {
+    function stripHTML(
+        text
+    ) {
 
         const div =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
 
         div.innerHTML =
@@ -1029,19 +1272,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!chatArea) return;
 
 
-        requestAnimationFrame(() => {
+        requestAnimationFrame(
+            () => {
 
-            chatArea.scrollTo({
+                chatArea.scrollTo({
 
-                top:
-                    chatArea.scrollHeight,
+                    top:
+                        chatArea.scrollHeight,
 
-                behavior:
-                    "smooth"
+                    behavior:
+                        "smooth"
 
-            });
+                });
 
-        });
+            }
+        );
 
     }
 
@@ -1050,29 +1295,20 @@ document.addEventListener("DOMContentLoaded", () => {
        LOADING
     ================================================= */
 
-    function setLoading(state) {
+    function setLoading(
+        state
+    ) {
 
-        sending = state;
-
-
-        sendBtn?.classList.toggle(
-            "loading",
-            state
-        );
+        sending =
+            state;
 
 
         if (sendBtn) {
 
-            sendBtn.disabled =
-                state;
-
-        }
-
-
-        if (input) {
-
-            input.disabled =
-                state;
+            sendBtn.classList.toggle(
+                "loading",
+                state
+            );
 
         }
 
@@ -1083,162 +1319,191 @@ document.addEventListener("DOMContentLoaded", () => {
        PLUS BUTTON
     ================================================= */
 
-    on(plusBtn, "click", event => {
+    if (
+        plusBtn &&
+        toolsPopup
+    ) {
 
-        event.stopPropagation();
+        plusBtn.addEventListener(
+            "click",
+            event => {
 
-
-        toolsPopup?.classList.toggle(
-            "show"
-        );
-
-    });
-
-
-    /* =================================================
-       CLOSE TOOLS POPUP
-    ================================================= */
-
-    document.addEventListener(
-        "click",
-        event => {
-
-            if (!toolsPopup || !plusBtn) {
-                return;
-            }
+                event.stopPropagation();
 
 
-            if (
-                !toolsPopup.contains(event.target) &&
-                !plusBtn.contains(event.target)
-            ) {
-
-                toolsPopup.classList.remove(
+                toolsPopup.classList.toggle(
                     "show"
                 );
 
             }
+        );
 
-        }
-    );
+
+        document.addEventListener(
+            "click",
+            event => {
+
+                if (
+
+                    !toolsPopup.contains(
+                        event.target
+                    ) &&
+
+                    !plusBtn.contains(
+                        event.target
+                    )
+
+                ) {
+
+                    toolsPopup.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+    }
 
 
     /* =================================================
        WEB MODE
     ================================================= */
 
-    on(webBtn, "click", () => {
+    if (webBtn) {
 
-        webMode =
-            !webMode;
+        webBtn.addEventListener(
+            "click",
+            () => {
+
+                webMode =
+                    !webMode;
 
 
-        webBtn.classList.toggle(
-            "active",
-            webMode
+                webBtn.classList.toggle(
+                    "active",
+                    webMode
+                );
+
+
+                input.placeholder =
+                    webMode
+                        ? "Search the web with Mini AI..."
+                        : "Message Mini AI...";
+
+
+                input.focus();
+
+            }
         );
 
-
-        if (input) {
-
-            input.placeholder =
-                webMode
-                    ? "Search the web with Mini AI..."
-                    : "Message Mini AI...";
-
-        }
-
-
-        input?.focus();
-
-    });
+    }
 
 
     /* =================================================
        ATTACH FILE
     ================================================= */
 
-    on(attachBtn, "click", () => {
+    if (
+        attachBtn &&
+        fileInput
+    ) {
 
-        fileInput?.click();
+        attachBtn.addEventListener(
+            "click",
+            () => {
 
-    });
+                fileInput.click();
+
+            }
+        );
+
+    }
 
 
     /* =================================================
        FILE SELECT
     ================================================= */
 
-    on(fileInput, "change", () => {
+    if (fileInput) {
 
-        if (!fileInput.files) return;
+        fileInput.addEventListener(
+            "change",
+            () => {
 
-
-        const files =
-            Array.from(fileInput.files);
-
-
-        if (files.length === 0) {
-            return;
-        }
+                const files =
+                    Array.from(
+                        fileInput.files
+                    );
 
 
-        /* =============================================
-           ONLY IMAGES
-        ============================================= */
+                if (
+                    files.length === 0
+                ) {
 
-        const validFiles =
-            files.filter(file =>
-                file.type &&
-                file.type.startsWith("image/")
-            );
+                    return;
+
+                }
 
 
-        if (
-            validFiles.length !== files.length
-        ) {
+                /* =========================================
+                   ONLY IMAGES
+                ========================================= */
 
-            alert(
-                "Please upload image files only."
-            );
+                const validFiles =
+                    files.filter(
+                        file =>
+                            file.type.startsWith(
+                                "image/"
+                            )
+                    );
 
-        }
+
+                if (
+                    validFiles.length !==
+                    files.length
+                ) {
+
+                    alert(
+                        "Please upload image files only."
+                    );
+
+                }
 
 
-        /* =============================================
-           ADD VALID FILES
-        ============================================= */
+                /* =========================================
+                   ADD FILES
+                ========================================= */
 
-        selectedFiles.push(
-            ...validFiles
+                selectedFiles.push(
+                    ...validFiles
+                );
+
+
+                renderAttachments();
+
+
+                /*
+                 * Reset input so same image
+                 * can be selected again.
+                 */
+
+                fileInput.value = "";
+
+            }
         );
 
-
-        /* =============================================
-           RENDER
-        ============================================= */
-
-        renderAttachments();
-
-
-        /* =============================================
-           RESET INPUT
-        ============================================= */
-
-        fileInput.value = "";
-
-    });
+    }
 
 
     /* =================================================
-       IMAGE ATTACHMENT PREVIEW
+       IMAGE PREVIEW
     ================================================= */
 
     function renderAttachments() {
 
-        if (!attachmentPreview) {
-            return;
-        }
+        if (!attachmentPreview) return;
 
 
         attachmentPreview.innerHTML =
@@ -1246,10 +1511,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         selectedFiles.forEach(
-            (file, index) => {
+            (
+                file,
+                index
+            ) => {
 
                 const item =
-                    document.createElement("div");
+                    document.createElement(
+                        "div"
+                    );
 
 
                 item.className =
@@ -1257,11 +1527,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 /* =====================================
-                   THUMBNAIL
+                   IMAGE THUMBNAIL
                 ===================================== */
 
                 const thumbnail =
-                    document.createElement("img");
+                    document.createElement(
+                        "img"
+                    );
 
 
                 thumbnail.className =
@@ -1272,21 +1544,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     file.name;
 
 
-                const objectURL =
-                    URL.createObjectURL(file);
-
-
                 thumbnail.src =
-                    objectURL;
-
-
-                thumbnail.onload = () => {
-
-                    URL.revokeObjectURL(
-                        objectURL
+                    URL.createObjectURL(
+                        file
                     );
-
-                };
 
 
                 /* =====================================
@@ -1294,7 +1555,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ===================================== */
 
                 const name =
-                    document.createElement("span");
+                    document.createElement(
+                        "span"
+                    );
 
 
                 name.className =
@@ -1310,7 +1573,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 ===================================== */
 
                 const remove =
-                    document.createElement("button");
+                    document.createElement(
+                        "button"
+                    );
 
 
                 remove.type =
@@ -1329,12 +1594,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     "×";
 
 
-                remove.setAttribute(
-                    "aria-label",
-                    `Remove ${file.name}`
-                );
-
-
                 remove.addEventListener(
                     "click",
                     () => {
@@ -1350,10 +1609,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 );
 
-
-                /* =====================================
-                   APPEND
-                ===================================== */
 
                 item.appendChild(
                     thumbnail
@@ -1384,21 +1639,25 @@ document.addEventListener("DOMContentLoaded", () => {
        MAGIC AI
     ================================================= */
 
-    on(magicBtn, "click", () => {
+    if (magicBtn) {
 
-        if (!input) return;
+        magicBtn.addEventListener(
+            "click",
+            () => {
 
-
-        input.focus();
-
-
-        input.value =
-            "Help me with ";
+                input.focus();
 
 
-        autoResize();
+                input.value =
+                    "Help me with ";
 
-    });
+
+                autoResize();
+
+            }
+        );
+
+    }
 
 
     /* =================================================
@@ -1406,46 +1665,88 @@ document.addEventListener("DOMContentLoaded", () => {
     ================================================= */
 
     document
-        .querySelectorAll(".tool-option")
-        .forEach(option => {
+        .querySelectorAll(
+            ".tool-option"
+        )
+        .forEach(
+            option => {
 
-            option.addEventListener(
-                "click",
-                () => {
+                option.addEventListener(
+                    "click",
+                    () => {
 
-                    const action =
-                        option.dataset.action;
-
-
-                    if (!input) return;
+                        const action =
+                            option.dataset.action;
 
 
-                    switch (action) {
-
-                        case "image":
+                        if (
+                            action === "image"
+                        ) {
 
                             input.value =
                                 "Create an image of ";
 
-                            break;
+                        }
 
 
-                        case "code":
+                        if (
+                            action === "code"
+                        ) {
 
                             input.value =
                                 "Write code for ";
 
-                            break;
+                        }
 
 
-                        case "summarize":
+                        if (
+                            action === "summarize"
+                        ) {
 
                             input.value =
                                 "Summarize this: ";
 
-                            break;
+                        }
+
+
+                        autoResize();
+
+
+                        input.focus();
+
+
+                        if (toolsPopup) {
+
+                            toolsPopup.classList.remove(
+                                "show"
+                            );
+
+                        }
 
                     }
+                );
+
+            }
+        );
+
+
+    /* =================================================
+       QUICK CARDS
+    ================================================= */
+
+    quickCards.forEach(
+        card => {
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    const prompt =
+                        card.dataset.prompt;
+
+
+                    input.value =
+                        prompt;
 
 
                     autoResize();
@@ -1453,69 +1754,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     input.focus();
 
-
-                    toolsPopup?.classList.remove(
-                        "show"
-                    );
-
                 }
             );
 
-        });
-
-
-    /* =================================================
-       QUICK CARDS
-    ================================================= */
-
-    quickCards.forEach(card => {
-
-        card.addEventListener(
-            "click",
-            () => {
-
-                const prompt =
-                    card.dataset.prompt;
-
-
-                if (!input || !prompt) {
-                    return;
-                }
-
-
-                input.value =
-                    prompt;
-
-
-                autoResize();
-
-
-                input.focus();
-
-            }
-        );
-
-    });
+        }
+    );
 
 
     /* =================================================
        NEW CHAT
     ================================================= */
 
-    on(newChatBtn, "click", newChat);
+    if (newChatBtn) {
+
+        newChatBtn.addEventListener(
+            "click",
+            newChat
+        );
+
+    }
 
 
-    on(currentConversation, "click", () => {
+    if (currentConversation) {
 
-        input?.focus();
+        currentConversation.addEventListener(
+            "click",
+            () => {
 
-    });
+                input.focus();
+
+            }
+        );
+
+    }
 
 
     function newChat() {
-
-        if (sending) return;
-
 
         conversation = [];
 
@@ -1523,12 +1797,8 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedFiles = [];
 
 
-        if (chatMessages) {
-
-            chatMessages.innerHTML =
-                "";
-
-        }
+        chatMessages.innerHTML =
+            "";
 
 
         if (welcomeScreen) {
@@ -1539,25 +1809,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
 
-        if (input) {
+        input.value =
+            "";
 
-            input.value =
-                "";
 
-            autoResize();
-
-        }
+        autoResize();
 
 
         renderAttachments();
 
 
-        toolsPopup?.classList.remove(
-            "show"
-        );
+        if (toolsPopup) {
+
+            toolsPopup.classList.remove(
+                "show"
+            );
+
+        }
 
 
-        input?.focus();
+        input.focus();
 
 
         closeMobileSidebar();
@@ -1569,7 +1840,9 @@ document.addEventListener("DOMContentLoaded", () => {
        RECENT CHAT
     ================================================= */
 
-    function saveRecentChat(message) {
+    function saveRecentChat(
+        message
+    ) {
 
         if (
             !message ||
@@ -1582,7 +1855,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const item =
-            document.createElement("button");
+            document.createElement(
+                "button"
+            );
 
 
         item.type =
@@ -1593,12 +1868,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "conversation";
 
 
-        const safeMessage =
-            escapeHTML(
-                message.substring(0, 24)
-            );
-
-
         item.innerHTML = `
 
             <span class="conversation-icon">
@@ -1606,7 +1875,12 @@ document.addEventListener("DOMContentLoaded", () => {
             </span>
 
             <span>
-                ${safeMessage}
+                ${escapeHTML(
+                    message.substring(
+                        0,
+                        24
+                    )
+                )}
             </span>
 
         `;
@@ -1615,9 +1889,6 @@ document.addEventListener("DOMContentLoaded", () => {
         item.addEventListener(
             "click",
             () => {
-
-                if (!input) return;
-
 
                 input.value =
                     message;
@@ -1632,7 +1903,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-        recentChats.prepend(item);
+        recentChats.prepend(
+            item
+        );
 
 
         while (
@@ -1647,7 +1920,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       VOICE RECOGNITION
+       VOICE
     ================================================= */
 
     if (
@@ -1672,24 +1945,24 @@ document.addEventListener("DOMContentLoaded", () => {
             true;
 
 
+        /* =============================================
+           TELUGU + ENGLISH
+        ============================================= */
+
         recognition.lang =
-            "en-US";
+            "te-IN";
 
 
         recognition.onstart =
             () => {
 
-                micBtn?.classList.add(
+                micBtn.classList.add(
                     "active"
                 );
 
 
-                if (input) {
-
-                    input.placeholder =
-                        "Listening...";
-
-                }
+                input.placeholder =
+                    "Listening...";
 
             };
 
@@ -1702,8 +1975,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 for (
-                    let i = event.resultIndex;
-                    i < event.results.length;
+                    let i =
+                        event.resultIndex;
+
+                    i <
+                    event.results.length;
+
                     i++
                 ) {
 
@@ -1714,14 +1991,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                if (input) {
+                input.value =
+                    transcript;
 
-                    input.value =
-                        transcript;
 
-                    autoResize();
-
-                }
+                autoResize();
 
             };
 
@@ -1729,19 +2003,15 @@ document.addEventListener("DOMContentLoaded", () => {
         recognition.onend =
             () => {
 
-                micBtn?.classList.remove(
+                micBtn.classList.remove(
                     "active"
                 );
 
 
-                if (input) {
-
-                    input.placeholder =
-                        webMode
-                            ? "Search the web with Mini AI..."
-                            : "Message Mini AI...";
-
-                }
+                input.placeholder =
+                    webMode
+                        ? "Search the web with Mini AI..."
+                        : "Message Mini AI...";
 
             };
 
@@ -1755,7 +2025,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                micBtn?.classList.remove(
+                micBtn.classList.remove(
                     "active"
                 );
 
@@ -1764,110 +2034,130 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =================================================
-       MIC BUTTON
-    ================================================= */
+    if (micBtn) {
 
-    on(micBtn, "click", () => {
+        micBtn.addEventListener(
+            "click",
+            () => {
 
-        if (!recognition) {
+                if (!recognition) {
 
-            alert(
-                "Voice input is not supported in this browser."
-            );
-
-
-            return;
-
-        }
+                    alert(
+                        "Voice input is not supported in this browser."
+                    );
 
 
-        if (
-            micBtn.classList.contains("active")
-        ) {
+                    return;
 
-            recognition.stop();
+                }
 
-        } else {
 
-            try {
+                if (
+                    micBtn.classList.contains(
+                        "active"
+                    )
+                ) {
 
-                recognition.start();
+                    recognition.stop();
 
-            } catch (error) {
+                } else {
 
-                console.warn(
-                    "Recognition already running."
-                );
+                    recognition.start();
+
+                }
 
             }
+        );
 
-        }
-
-    });
+    }
 
 
     /* =================================================
        EXPAND COMPOSER
     ================================================= */
 
-    on(composerExpand, "click", () => {
+    if (composerExpand) {
 
-        input?.focus();
+        composerExpand.addEventListener(
+            "click",
+            () => {
+
+                input.focus();
 
 
-        if (input) {
+                input.style.height =
+                    "180px";
 
-            input.style.height =
-                "180px";
+            }
+        );
 
-        }
-
-    });
+    }
 
 
     /* =================================================
        MOBILE SIDEBAR
     ================================================= */
 
-    on(
-        mobileMenuBtn,
-        "click",
-        openMobileSidebar
-    );
+    if (mobileMenuBtn) {
+
+        mobileMenuBtn.addEventListener(
+            "click",
+            openMobileSidebar
+        );
+
+    }
 
 
-    on(
-        mobileOverlay,
-        "click",
-        closeMobileSidebar
-    );
+    if (mobileOverlay) {
+
+        mobileOverlay.addEventListener(
+            "click",
+            closeMobileSidebar
+        );
+
+    }
 
 
     function openMobileSidebar() {
 
-        sidebar?.classList.add(
-            "open"
-        );
+        if (sidebar) {
+
+            sidebar.classList.add(
+                "open"
+            );
+
+        }
 
 
-        mobileOverlay?.classList.add(
-            "show"
-        );
+        if (mobileOverlay) {
+
+            mobileOverlay.classList.add(
+                "show"
+            );
+
+        }
 
     }
 
 
     function closeMobileSidebar() {
 
-        sidebar?.classList.remove(
-            "open"
-        );
+        if (sidebar) {
+
+            sidebar.classList.remove(
+                "open"
+            );
+
+        }
 
 
-        mobileOverlay?.classList.remove(
-            "show"
-        );
+        if (mobileOverlay) {
+
+            mobileOverlay.classList.remove(
+                "show"
+            );
+
+        }
 
     }
 
@@ -1880,10 +2170,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "keydown",
         event => {
 
-            /* =========================================
-               CTRL + K
-            ========================================= */
-
             if (
                 event.ctrlKey &&
                 event.key.toLowerCase() === "k"
@@ -1891,22 +2177,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                input?.focus();
+                input.focus();
 
             }
 
-
-            /* =========================================
-               ESCAPE
-            ========================================= */
 
             if (
                 event.key === "Escape"
             ) {
 
-                toolsPopup?.classList.remove(
-                    "show"
-                );
+                if (toolsPopup) {
+
+                    toolsPopup.classList.remove(
+                        "show"
+                    );
+
+                }
 
 
                 closeMobileSidebar();
@@ -1918,10 +2204,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       SLEEP HELPER
+       HELPER
     ================================================= */
 
-    function sleep(ms) {
+    function sleep(
+        ms
+    ) {
 
         return new Promise(
             resolve =>
@@ -1978,19 +2266,21 @@ document.addEventListener(
         const trailPositions = [];
 
 
-        trails.forEach(() => {
+        trails.forEach(
+            () => {
 
-            trailPositions.push({
+                trailPositions.push({
 
-                x:
-                    mouseX,
+                    x:
+                        mouseX,
 
-                y:
-                    mouseY
+                    y:
+                        mouseY
 
-            });
+                });
 
-        });
+            }
+        );
 
 
         /* =============================================
@@ -2013,7 +2303,7 @@ document.addEventListener(
 
 
         /* =============================================
-           CURSOR ANIMATION
+           ANIMATE CURSOR
         ============================================= */
 
         function animateCursor() {
@@ -2045,30 +2335,35 @@ document.addEventListener(
 
 
             trails.forEach(
-                (trail, index) => {
+                (
+                    trail,
+                    index
+                ) => {
 
                     const position =
                         trailPositions[index];
 
 
-                    if (!position) return;
-
-
-                    const speed =
-                        Math.max(
-                            0.08,
-                            0.22 - index * 0.02
+                    position.x +=
+                        (
+                            previousX -
+                            position.x
+                        ) *
+                        (
+                            0.22 -
+                            index * 0.02
                         );
 
 
-                    position.x +=
-                        (previousX - position.x) *
-                        speed;
-
-
                     position.y +=
-                        (previousY - position.y) *
-                        speed;
+                        (
+                            previousY -
+                            position.y
+                        ) *
+                        (
+                            0.22 -
+                            index * 0.02
+                        );
 
 
                     trail.style.left =
@@ -2080,17 +2375,13 @@ document.addEventListener(
 
 
                     const scale =
-                        Math.max(
-                            0.25,
-                            1 - index * 0.12
-                        );
+                        1 -
+                        index * 0.12;
 
 
                     const opacity =
-                        Math.max(
-                            0,
-                            0.65 - index * 0.09
-                        );
+                        0.65 -
+                        index * 0.09;
 
 
                     trail.style.transform =
@@ -2123,12 +2414,14 @@ document.addEventListener(
 
 
         /* =============================================
-           HOVER ELEMENTS
+           HOVER
         ============================================= */
 
         const interactiveElements =
             document.querySelectorAll(
+
                 "a, button, input, textarea, select, .feature-card, .mani-ai-logo, .new-chat, [role='button']"
+
             );
 
 
@@ -2163,7 +2456,7 @@ document.addEventListener(
 
 
         /* =============================================
-           CLICK EFFECT
+           CLICK
         ============================================= */
 
         document.addEventListener(
@@ -2214,10 +2507,6 @@ document.addEventListener(
             }
         );
 
-
-        /* =============================================
-           MOUSE ENTER
-        ============================================= */
 
         document.addEventListener(
             "mouseenter",
