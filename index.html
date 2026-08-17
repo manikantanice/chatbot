@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -11,21 +12,31 @@
 
     <title>Mini AI</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
-<!-- =========================================
+<!-- =====================================================
      PREMIUM CURSOR
-========================================= -->
+===================================================== -->
 
 <div class="ai-cursor">
+
     <div class="cursor-core"></div>
+
     <div class="cursor-ring"></div>
+
     <div class="cursor-glow"></div>
+
 </div>
 
+
 <div class="cursor-trail"></div>
 <div class="cursor-trail"></div>
 <div class="cursor-trail"></div>
@@ -34,34 +45,44 @@
 <div class="cursor-trail"></div>
 
 
-<!-- =========================================
+
+<!-- =====================================================
      APP
-========================================= -->
+===================================================== -->
 
 <div class="app">
 
 
-    <!-- =====================================
+    <!-- =================================================
          SIDEBAR
-    ====================================== -->
+    ================================================== -->
 
-    <aside class="sidebar" id="sidebar">
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
 
         <div class="sidebar-top">
+
 
             <!-- LOGO -->
 
             <div class="brand">
 
                 <div class="brand-logo">
+
                     <span>✦</span>
+
                 </div>
 
                 <div class="brand-name">
+
                     Mini <span>AI</span>
+
                 </div>
 
             </div>
+
 
 
             <!-- NEW CHAT -->
@@ -72,13 +93,16 @@
                 type="button"
             >
 
-                <span class="plus-icon">+</span>
+                <span class="plus-icon">
+                    +
+                </span>
 
                 <span>
                     New Chat
                 </span>
 
             </button>
+
 
 
             <!-- TODAY -->
@@ -88,6 +112,7 @@
                 <div class="section-title">
                     TODAY
                 </div>
+
 
                 <button
                     class="conversation active"
@@ -108,9 +133,12 @@
             </div>
 
 
+
             <!-- RECENT -->
 
-            <div class="sidebar-section recent-section">
+            <div
+                class="sidebar-section recent-section"
+            >
 
                 <div class="section-title">
                     RECENT
@@ -123,6 +151,7 @@
         </div>
 
 
+
         <!-- SIDEBAR BOTTOM -->
 
         <div class="sidebar-bottom">
@@ -133,7 +162,9 @@
                 type="button"
             >
 
-                <span>⚙</span>
+                <span>
+                    ⚙
+                </span>
 
                 <span>
                     Settings
@@ -150,18 +181,20 @@
     </aside>
 
 
-    <!-- =====================================
+
+    <!-- =================================================
          MAIN
-    ====================================== -->
+    ================================================== -->
 
     <main class="main">
 
 
-        <!-- =================================
+        <!-- =================================================
              TOP BAR
-        ================================== -->
+        ================================================== -->
 
         <header class="topbar">
+
 
             <div class="topbar-left">
 
@@ -170,15 +203,16 @@
                     id="mobileMenuBtn"
                     type="button"
                 >
+
                     ☰
+
                 </button>
 
             </div>
 
 
-            <div class="topbar-actions">
 
-                <!-- AI LOGO -->
+            <div class="topbar-actions">
 
                 <div class="ai-orb-small">
 
@@ -192,13 +226,22 @@
 
                         <div class="ai-glow"></div>
 
+
                         <div class="ai-core">
-                            <span>AI</span>
+
+                            <span>
+                                AI
+                            </span>
+
                         </div>
 
+
                         <div class="ai-particle p1"></div>
+
                         <div class="ai-particle p2"></div>
+
                         <div class="ai-particle p3"></div>
+
                         <div class="ai-particle p4"></div>
 
                     </div>
@@ -210,14 +253,17 @@
         </header>
 
 
-        <!-- =================================
-             CHAT CONTENT
-        ================================== -->
+
+        <!-- =================================================
+             CHAT AREA
+        ================================================== -->
 
         <section class="chat-area">
 
 
-            <!-- WELCOME -->
+            <!-- =================================================
+                 WELCOME SCREEN
+            ================================================== -->
 
             <div
                 class="welcome-screen"
@@ -233,6 +279,7 @@
 
                     <div class="mani-ai-ring ring-two"></div>
 
+
                     <div class="mani-ai-text">
 
                         <span class="mani-main">
@@ -245,17 +292,25 @@
 
                     </div>
 
+
                     <div class="mani-ai-line"></div>
 
+
                     <div class="mani-particle particle-one"></div>
+
                     <div class="mani-particle particle-two"></div>
+
                     <div class="mani-particle particle-three"></div>
+
                     <div class="mani-particle particle-four"></div>
 
                 </div>
 
 
-                <!-- QUICK CARDS -->
+
+                <!-- =================================================
+                     QUICK CARDS
+                ================================================== -->
 
                 <div class="quick-cards">
 
@@ -281,6 +336,7 @@
                     </button>
 
 
+
                     <button
                         class="quick-card"
                         data-prompt="Help me write professional content"
@@ -300,6 +356,7 @@
                         </span>
 
                     </button>
+
 
 
                     <button
@@ -323,6 +380,7 @@
                     </button>
 
 
+
                     <button
                         class="quick-card"
                         data-prompt="Analyze this data and give me useful insights"
@@ -342,6 +400,7 @@
                         </span>
 
                     </button>
+
 
 
                     <button
@@ -369,30 +428,126 @@
             </div>
 
 
-            <!-- MESSAGES -->
+
+            <!-- =================================================
+                 CHAT MESSAGES
+            ================================================== -->
 
             <div
                 class="chat-messages"
                 id="chatMessages"
             ></div>
 
+
+
+            <!-- =================================================
+                 PSD TO HTML PREVIEW CONTAINER
+
+                 This stays inside chat area and will NOT
+                 take the entire screen.
+            ================================================== -->
+
+            <div
+                class="psd-result"
+                id="psdResult"
+                hidden
+            >
+
+                <div class="psd-result-header">
+
+                    <div>
+
+                        <strong>
+                            PSD To HTML
+                        </strong>
+
+                        <span>
+                            Generated website preview
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="closePsdPreview"
+                        class="psd-close-btn"
+                        title="Close preview"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div
+                    class="psd-status"
+                    id="psdStatus"
+                >
+                    Ready
+                </div>
+
+
+
+                <!-- PREVIEW -->
+
+                <div class="psd-preview-wrapper">
+
+                    <iframe
+                        id="psdPreview"
+                        class="psd-preview"
+                        title="PSD HTML Preview"
+                        loading="lazy"
+                    ></iframe>
+
+                </div>
+
+
+
+                <!-- DOWNLOAD -->
+
+                <div class="psd-actions">
+
+                    <button
+                        type="button"
+                        id="downloadHtmlBtn"
+                        class="psd-download-btn"
+                    >
+                        ↓ Download HTML
+                    </button>
+
+                </div>
+
+            </div>
+
         </section>
 
 
-        <!-- =================================
-             COMPOSER
-        ================================== -->
+
+        <!-- =================================================
+             COMPOSER AREA
+        ================================================== -->
 
         <div class="composer-area">
 
 
-            <!-- IMAGE PREVIEW -->
+            <!-- =================================================
+                 IMAGE ATTACHMENT PREVIEW
+            ================================================== -->
 
             <div
                 class="attachment-preview"
                 id="attachmentPreview"
             ></div>
 
+
+
+            <!-- =================================================
+                 COMPOSER
+            ================================================== -->
 
             <div
                 class="composer"
@@ -411,6 +566,7 @@
                 ></textarea>
 
 
+
                 <!-- EXPAND -->
 
                 <button
@@ -423,7 +579,10 @@
                 </button>
 
 
-                <!-- TOOLBAR -->
+
+                <!-- =================================================
+                     TOOLBAR
+                ================================================== -->
 
                 <div class="composer-toolbar">
 
@@ -443,6 +602,7 @@
                         </button>
 
 
+
                         <!-- WEB -->
 
                         <button
@@ -455,6 +615,7 @@
                             <span class="globe"></span>
 
                         </button>
+
 
 
                         <!-- IMAGE ATTACH -->
@@ -473,6 +634,7 @@
                         </button>
 
 
+
                         <!-- IMAGE FILE INPUT -->
 
                         <input
@@ -482,6 +644,7 @@
                             multiple
                             accept="image/*"
                         >
+
 
 
                         <!-- MAGIC -->
@@ -498,6 +661,7 @@
                     </div>
 
 
+
                     <div class="composer-right">
 
 
@@ -511,6 +675,7 @@
                         >
                             ♫
                         </button>
+
 
 
                         <!-- SEND -->
@@ -529,7 +694,10 @@
                 </div>
 
 
-                <!-- TOOLS MENU -->
+
+                <!-- =================================================
+                     TOOLS POPUP
+                ================================================== -->
 
                 <div
                     class="tools-popup"
@@ -537,13 +705,17 @@
                 >
 
 
+                    <!-- GENERATE IMAGE -->
+
                     <button
                         type="button"
                         class="tool-option"
                         data-action="image"
                     >
 
-                        <span>✦</span>
+                        <span>
+                            ✦
+                        </span>
 
                         <div>
 
@@ -559,6 +731,9 @@
 
                     </button>
 
+
+
+                    <!-- CODE -->
 
                     <button
                         type="button"
@@ -584,6 +759,9 @@
 
                     </button>
 
+
+
+                    <!-- SUMMARIZE -->
 
                     <button
                         type="button"
@@ -614,10 +792,16 @@
             </div>
 
 
-            <!-- DISCLAIMER -->
+
+            <!-- =================================================
+                 DISCLAIMER
+            ================================================== -->
 
             <div class="composer-disclaimer">
-                Mini AI can make mistakes. Check important information.
+
+                Mini AI can make mistakes.
+                Check important information.
+
             </div>
 
         </div>
@@ -627,7 +811,10 @@
 </div>
 
 
-<!-- MOBILE OVERLAY -->
+
+<!-- =====================================================
+     MOBILE OVERLAY
+===================================================== -->
 
 <div
     class="mobile-overlay"
@@ -635,7 +822,149 @@
 ></div>
 
 
+
+<!-- =====================================================
+     SCRIPT
+===================================================== -->
+
 <script src="script.js"></script>
 
+
+<!-- =====================================================
+     PSD PREVIEW CONTROL
+===================================================== -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const psdResult =
+            document.getElementById(
+                "psdResult"
+            );
+
+        const closePsdPreview =
+            document.getElementById(
+                "closePsdPreview"
+            );
+
+        const psdPreview =
+            document.getElementById(
+                "psdPreview"
+            );
+
+        const downloadHtmlBtn =
+            document.getElementById(
+                "downloadHtmlBtn"
+            );
+
+
+
+        /* =========================================
+           CLOSE PREVIEW
+        ========================================= */
+
+        if (closePsdPreview) {
+
+            closePsdPreview.addEventListener(
+                "click",
+                () => {
+
+                    psdResult.hidden = true;
+
+                    psdPreview.src = "";
+
+                }
+            );
+
+        }
+
+
+
+        /* =========================================
+           DOWNLOAD GENERATED HTML
+        ========================================= */
+
+        if (downloadHtmlBtn) {
+
+            downloadHtmlBtn.addEventListener(
+                "click",
+                () => {
+
+                    const html =
+                        psdPreview.contentDocument
+                            ?.documentElement
+                            ?.outerHTML;
+
+                    if (!html) {
+
+                        alert(
+                            "HTML preview is not ready yet."
+                        );
+
+                        return;
+
+                    }
+
+
+                    const blob =
+                        new Blob(
+                            [
+                                "<!DOCTYPE html>\n" +
+                                html
+                            ],
+                            {
+                                type:
+                                    "text/html"
+                            }
+                        );
+
+
+                    const url =
+                        URL.createObjectURL(
+                            blob
+                        );
+
+
+                    const link =
+                        document.createElement(
+                            "a"
+                        );
+
+
+                    link.href =
+                        url;
+
+                    link.download =
+                        "generated-website.html";
+
+
+                    document.body.appendChild(
+                        link
+                    );
+
+                    link.click();
+
+                    link.remove();
+
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+
 </body>
+
 </html>
