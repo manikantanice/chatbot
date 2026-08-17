@@ -4,33 +4,53 @@ document.addEventListener("DOMContentLoaded", () => {
        ELEMENTS
     ================================================= */
 
-    const input = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
+    const input =
+        document.getElementById("messageInput");
 
-    const chatArea = document.querySelector(".chat-area");
-    const chatMessages = document.getElementById("chatMessages");
-    const welcomeScreen = document.getElementById("welcomeScreen");
+    const sendBtn =
+        document.getElementById("sendBtn");
 
-    const newChatBtn = document.getElementById("newChatBtn");
+    const chatArea =
+        document.querySelector(".chat-area");
+
+    const chatMessages =
+        document.getElementById("chatMessages");
+
+    const welcomeScreen =
+        document.getElementById("welcomeScreen");
+
+    const newChatBtn =
+        document.getElementById("newChatBtn");
+
     const currentConversation =
         document.getElementById("currentConversation");
 
     const recentChats =
         document.getElementById("recentChats");
 
-    const plusBtn = document.getElementById("plusBtn");
-    const toolsPopup = document.getElementById("toolsPopup");
+    const plusBtn =
+        document.getElementById("plusBtn");
 
-    const webBtn = document.getElementById("webBtn");
+    const toolsPopup =
+        document.getElementById("toolsPopup");
 
-    const attachBtn = document.getElementById("attachBtn");
-    const fileInput = document.getElementById("fileInput");
+    const webBtn =
+        document.getElementById("webBtn");
+
+    const attachBtn =
+        document.getElementById("attachBtn");
+
+    const fileInput =
+        document.getElementById("fileInput");
 
     const attachmentPreview =
         document.getElementById("attachmentPreview");
 
-    const magicBtn = document.getElementById("magicBtn");
-    const micBtn = document.getElementById("micBtn");
+    const magicBtn =
+        document.getElementById("magicBtn");
+
+    const micBtn =
+        document.getElementById("micBtn");
 
     const composerExpand =
         document.getElementById("composerExpand");
@@ -43,9 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const mobileOverlay =
         document.getElementById("mobileOverlay");
-
-    const settingsBtn =
-        document.getElementById("settingsBtn");
 
     const quickCards =
         document.querySelectorAll(".quick-card");
@@ -88,26 +105,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    input.addEventListener("input", autoResize);
+    input.addEventListener(
+        "input",
+        autoResize
+    );
 
 
     /* =================================================
-       ENTER TO SEND
+       ENTER SEND
     ================================================= */
 
-    input.addEventListener("keydown", event => {
+    input.addEventListener(
+        "keydown",
+        event => {
 
-        if (
-            event.key === "Enter" &&
-            !event.shiftKey
-        ) {
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            sendMessage();
+                sendMessage();
+            }
+
         }
-
-    });
+    );
 
 
     /* =================================================
@@ -148,25 +171,42 @@ document.addEventListener("DOMContentLoaded", () => {
            HIDE WELCOME
         ============================================= */
 
-        welcomeScreen.style.display = "none";
+        welcomeScreen.style.display =
+            "none";
 
 
         /* =============================================
-           SHOW USER MESSAGE
+           USER MESSAGE
         ============================================= */
 
-        const displayMessage =
-            message ||
-            (
-                selectedFiles.length === 1
-                    ? "Uploaded image"
-                    : `Uploaded ${selectedFiles.length} images`
-            );
+        let displayMessage =
+            message;
 
 
-        addUserMessage(
-            displayMessage,
-            selectedFiles
+        if (
+            selectedFiles.length > 0
+        ) {
+
+            if (message) {
+
+                displayMessage =
+                    message;
+
+            } else {
+
+                displayMessage =
+                    selectedFiles.length === 1
+                        ? "Please analyze this image."
+                        : `Please analyze these ${selectedFiles.length} images.`;
+
+            }
+
+        }
+
+
+        addMessage(
+            "user",
+            displayMessage
         );
 
 
@@ -174,17 +214,23 @@ document.addEventListener("DOMContentLoaded", () => {
            SAVE TEXT CONVERSATION
         ============================================= */
 
-        if (message) {
+        conversation.push({
 
-            conversation.push({
+            role: "user",
 
-                role: "user",
+            content:
+                message ||
+                "Analyze the uploaded image."
 
-                content: message
+        });
 
-            });
 
-        }
+        /* =============================================
+           SAVE FILES BEFORE CLEARING
+        ============================================= */
+
+        const filesToSend =
+            [...selectedFiles];
 
 
         /* =============================================
@@ -195,7 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         autoResize();
 
-        toolsPopup.classList.remove("show");
+
+        toolsPopup.classList.remove(
+            "show"
+        );
 
 
         /* =============================================
@@ -212,8 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ========================================= */
 
             const images =
-                await prepareImages(
-                    selectedFiles
+                await filesToBase64(
+                    filesToSend
                 );
 
 
@@ -247,30 +296,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                 webSearch:
                                     webMode,
 
-                                /*
-                                 * Actual image data
-                                 */
                                 images:
-                                    images,
-
-                                /*
-                                 * Compatibility
-                                 */
-                                files:
-                                    selectedFiles.map(
-                                        file => ({
-
-                                            name:
-                                                file.name,
-
-                                            type:
-                                                file.type,
-
-                                            size:
-                                                file.size
-
-                                        })
-                                    )
+                                    images
 
                             })
 
@@ -279,45 +306,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               API ERROR
+               HTTP ERROR
             ========================================= */
 
             if (!response.ok) {
 
-                const errorText =
-                    await response.text();
-
-                let errorMessage =
-                    `API error ${response.status}`;
+                let errorData = null;
 
                 try {
 
-                    const errorData =
-                        JSON.parse(
-                            errorText
-                        );
+                    errorData =
+                        await response.json();
 
-                    errorMessage =
-                        errorData.error ||
-                        errorMessage;
+                } catch (error) {
 
-                } catch {
-
-                    if (errorText) {
-                        errorMessage =
-                            errorText;
-                    }
+                    // Ignore JSON parsing error
 
                 }
 
+
                 throw new Error(
-                    errorMessage
+
+                    errorData?.error ||
+
+                    `API error ${response.status}`
+
                 );
+
             }
 
 
             /* =========================================
-               RESPONSE JSON
+               API JSON
             ========================================= */
 
             const data =
@@ -325,18 +345,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             /* =========================================
-               IMAGE RESPONSE
+               API ERROR
             ========================================= */
 
             if (
-                data.type === "image" &&
-                data.image
+                data?.type === "error"
             ) {
 
-                addAIImageMessage(
-                    data.reply ||
-                    "✨ Here is the image I created for you.",
-                    data.image
+                throw new Error(
+                    data.error ||
+                    "AI request failed."
+                );
+
+            }
+
+
+            /* =========================================
+               GENERATED IMAGE
+            ========================================= */
+
+            if (
+                data?.type === "image" &&
+                data?.image
+            ) {
+
+                await showGeneratedImage(
+                    data
                 );
 
 
@@ -346,53 +380,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     content:
                         data.reply ||
-                        "Generated an image."
+                        "Image generated."
 
                 });
 
-            }
-
-
-            /* =========================================
-               TEXT RESPONSE
-            ========================================= */
-
-            else {
-
-                const reply =
-                    getReplyFromResponse(
-                        data
-                    );
-
-
-                await typeAIMessage(
-                    reply
-                );
-
-
-                conversation.push({
-
-                    role: "assistant",
-
-                    content:
-                        reply
-
-                });
-
-            }
-
-
-            /* =========================================
-               SAVE RECENT CHAT
-            ========================================= */
-
-            if (message) {
 
                 saveRecentChat(
-                    message
+                    message ||
+                    "Generated image"
                 );
 
+
+                return;
             }
+
+
+            /* =========================================
+               TEXT / IMAGE ANALYSIS RESPONSE
+            ========================================= */
+
+            const reply =
+                getReplyFromResponse(
+                    data
+                );
+
+
+            await typeAIMessage(
+                reply
+            );
+
+
+            /* =========================================
+               SAVE AI RESPONSE
+            ========================================= */
+
+            conversation.push({
+
+                role: "assistant",
+
+                content:
+                    reply
+
+            });
+
+
+            /* =========================================
+               RECENT CHAT
+            ========================================= */
+
+            saveRecentChat(
+                message ||
+                "Image analysis"
+            );
 
 
         } catch (error) {
@@ -408,18 +447,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 `⚠️ ${error.message || "I couldn't connect to the AI right now. Please try again."}`
             );
 
+
         } finally {
 
             setLoading(false);
 
 
-            /* =========================================
-               CLEAR FILES
-            ========================================= */
-
             selectedFiles = [];
 
+
             fileInput.value = "";
+
 
             renderAttachments();
 
@@ -429,133 +467,242 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       PREPARE IMAGES
+       FILE -> BASE64
     ================================================= */
 
-    async function prepareImages(files) {
+    function filesToBase64(
+        files
+    ) {
 
-        if (
-            !files ||
-            files.length === 0
-        ) {
+        return Promise.all(
 
-            return [];
+            files.map(
+                file => {
 
-        }
+                    return new Promise(
+                        (resolve, reject) => {
 
+                            /* =================================
+                               IMAGE CHECK
+                            ================================= */
 
-        /*
-         * Groq vision supports up to 5 images
-         * per request.
-         */
+                            if (
+                                !file.type.startsWith(
+                                    "image/"
+                                )
+                            ) {
 
-        const imageFiles =
-            files
-                .filter(
-                    file =>
-                        file.type &&
-                        file.type.startsWith(
-                            "image/"
-                        )
-                )
-                .slice(0, 5);
+                                reject(
+                                    new Error(
+                                        `${file.name} is not an image. Please upload JPG, PNG, WEBP or another image file.`
+                                    )
+                                );
 
-
-        const results = [];
+                                return;
+                            }
 
 
-        for (
-            const file
-            of imageFiles
-        ) {
+                            /* =================================
+                               SIZE CHECK
+                            ================================= */
 
-            try {
+                            const maxSize =
+                                3.5 *
+                                1024 *
+                                1024;
 
-                /*
-                 * Convert image into
-                 * base64 data URL.
-                 */
 
-                const data =
-                    await fileToBase64(
-                        file
+                            if (
+                                file.size >
+                                maxSize
+                            ) {
+
+                                reject(
+                                    new Error(
+                                        `${file.name} is too large. Please upload an image smaller than 3.5 MB.`
+                                    )
+                                );
+
+                                return;
+                            }
+
+
+                            /* =================================
+                               FILE READER
+                            ================================= */
+
+                            const reader =
+                                new FileReader();
+
+
+                            reader.onload =
+                                () => {
+
+                                    resolve({
+
+                                        name:
+                                            file.name,
+
+                                        type:
+                                            file.type,
+
+                                        size:
+                                            file.size,
+
+                                        data:
+                                            reader.result
+
+                                    });
+
+                                };
+
+
+                            reader.onerror =
+                                () => {
+
+                                    reject(
+                                        new Error(
+                                            `Could not read ${file.name}.`
+                                        )
+                                    );
+
+                                };
+
+
+                            reader.readAsDataURL(
+                                file
+                            );
+
+                        }
                     );
 
+                }
+            )
 
-                results.push({
-
-                    name:
-                        file.name,
-
-                    type:
-                        file.type,
-
-                    size:
-                        file.size,
-
-                    data:
-                        data
-
-                });
-
-            } catch (error) {
-
-                console.error(
-                    "Image conversion error:",
-                    error
-                );
-
-            }
-
-        }
-
-
-        return results;
+        );
 
     }
 
 
     /* =================================================
-       FILE TO BASE64
+       GENERATED IMAGE MESSAGE
     ================================================= */
 
-    function fileToBase64(file) {
+    async function showGeneratedImage(
+        data
+    ) {
 
-        return new Promise(
-            (resolve, reject) => {
-
-                const reader =
-                    new FileReader();
-
-
-                reader.onload =
-                    () => {
-
-                        resolve(
-                            reader.result
-                        );
-
-                    };
+        const wrapper =
+            document.createElement(
+                "div"
+            );
 
 
-                reader.onerror =
-                    () => {
-
-                        reject(
-                            new Error(
-                                "Could not read image."
-                            )
-                        );
-
-                    };
+        wrapper.className =
+            "chat-message ai";
 
 
-                reader.readAsDataURL(
-                    file
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "chat-bubble";
+
+
+        /* =============================================
+           TEXT
+        ============================================= */
+
+        if (data.reply) {
+
+            const text =
+                document.createElement(
+                    "div"
                 );
 
-            }
+
+            text.innerHTML =
+                formatMessage(
+                    data.reply
+                );
+
+
+            bubble.appendChild(
+                text
+            );
+
+        }
+
+
+        /* =============================================
+           IMAGE
+        ============================================= */
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.src =
+            data.image;
+
+
+        image.alt =
+            "AI generated image";
+
+
+        image.loading =
+            "lazy";
+
+
+        image.style.maxWidth =
+            "100%";
+
+
+        image.style.width =
+            "100%";
+
+
+        image.style.maxHeight =
+            "600px";
+
+
+        image.style.objectFit =
+            "contain";
+
+
+        image.style.display =
+            "block";
+
+
+        image.style.marginTop =
+            "12px";
+
+
+        image.style.borderRadius =
+            "16px";
+
+
+        bubble.appendChild(
+            image
         );
+
+
+        wrapper.appendChild(
+            bubble
+        );
+
+
+        chatMessages.appendChild(
+            wrapper
+        );
+
+
+        scrollChat();
 
     }
 
@@ -564,7 +711,9 @@ document.addEventListener("DOMContentLoaded", () => {
        GET API RESPONSE
     ================================================= */
 
-    function getReplyFromResponse(data) {
+    function getReplyFromResponse(
+        data
+    ) {
 
         if (!data) {
 
@@ -629,8 +778,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 choice.message &&
-                typeof choice.message.content ===
-                    "string"
+                typeof choice.message.content === "string"
             ) {
 
                 return choice.message.content;
@@ -639,22 +787,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
             if (
-                typeof choice.text ===
-                    "string"
+                typeof choice.text === "string"
             ) {
 
                 return choice.text;
 
             }
-
-        }
-
-
-        if (
-            typeof data.error === "string"
-        ) {
-
-            return data.error;
 
         }
 
@@ -665,147 +803,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       ADD USER MESSAGE
-    ================================================= */
-
-    function addUserMessage(
-        text,
-        files
-    ) {
-
-        const wrapper =
-            document.createElement(
-                "div"
-            );
-
-
-        wrapper.className =
-            "chat-message user";
-
-
-        const bubble =
-            document.createElement(
-                "div"
-            );
-
-
-        bubble.className =
-            "chat-bubble";
-
-
-        /*
-         * Text
-         */
-
-        if (text) {
-
-            const textDiv =
-                document.createElement(
-                    "div"
-                );
-
-
-            textDiv.innerHTML =
-                formatMessage(
-                    text
-                );
-
-
-            bubble.appendChild(
-                textDiv
-            );
-
-        }
-
-
-        /*
-         * Images
-         */
-
-        if (
-            files &&
-            files.length > 0
-        ) {
-
-            const imageContainer =
-                document.createElement(
-                    "div"
-                );
-
-
-            imageContainer.className =
-                "message-images";
-
-
-            files
-                .filter(
-                    file =>
-                        file.type &&
-                        file.type.startsWith(
-                            "image/"
-                        )
-                )
-                .forEach(
-                    file => {
-
-                        const image =
-                            document.createElement(
-                                "img"
-                            );
-
-
-                        image.className =
-                            "message-image";
-
-
-                        image.src =
-                            URL.createObjectURL(
-                                file
-                            );
-
-
-                        image.alt =
-                            file.name;
-
-
-                        image.loading =
-                            "lazy";
-
-
-                        imageContainer.appendChild(
-                            image
-                        );
-
-                    }
-                );
-
-
-            bubble.appendChild(
-                imageContainer
-            );
-
-        }
-
-
-        wrapper.appendChild(
-            bubble
-        );
-
-
-        chatMessages.appendChild(
-            wrapper
-        );
-
-
-        scrollChat();
-
-        return bubble;
-
-    }
-
-
-    /* =================================================
-       ADD NORMAL MESSAGE
+       ADD MESSAGE
     ================================================= */
 
     function addMessage(
@@ -853,98 +851,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         return bubble;
-
-    }
-
-
-    /* =================================================
-       ADD AI GENERATED IMAGE
-    ================================================= */
-
-    function addAIImageMessage(
-        text,
-        image
-    ) {
-
-        const wrapper =
-            document.createElement(
-                "div"
-            );
-
-
-        wrapper.className =
-            "chat-message ai";
-
-
-        const bubble =
-            document.createElement(
-                "div"
-            );
-
-
-        bubble.className =
-            "chat-bubble";
-
-
-        if (text) {
-
-            const textDiv =
-                document.createElement(
-                    "div"
-                );
-
-
-            textDiv.innerHTML =
-                formatMessage(
-                    text
-                );
-
-
-            bubble.appendChild(
-                textDiv
-            );
-
-        }
-
-
-        const imageElement =
-            document.createElement(
-                "img"
-            );
-
-
-        imageElement.className =
-            "ai-generated-image";
-
-
-        imageElement.src =
-            image;
-
-
-        imageElement.alt =
-            "AI generated image";
-
-
-        imageElement.loading =
-            "lazy";
-
-
-        bubble.appendChild(
-            imageElement
-        );
-
-
-        wrapper.appendChild(
-            bubble
-        );
-
-
-        chatMessages.appendChild(
-            wrapper
-        );
-
-
-        scrollChat();
 
     }
 
@@ -1050,20 +956,12 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /*
-         * Code blocks
-         */
-
         safe =
             safe.replace(
                 /```([\s\S]*?)```/g,
                 "<pre><code>$1</code></pre>"
             );
 
-
-        /*
-         * Bold
-         */
 
         safe =
             safe.replace(
@@ -1072,20 +970,12 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        /*
-         * Inline code
-         */
-
         safe =
             safe.replace(
                 /`([^`]+)`/g,
                 "<code>$1</code>"
             );
 
-
-        /*
-         * New lines
-         */
 
         safe =
             safe.replace(
@@ -1121,10 +1011,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    /* =================================================
-       STRIP HTML
-    ================================================= */
 
     function stripHTML(
         text
@@ -1190,10 +1076,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "loading",
             state
         );
-
-
-        sendBtn.disabled =
-            state;
 
     }
 
@@ -1271,7 +1153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       FILE ATTACH
+       ATTACH FILE
     ================================================= */
 
     attachBtn.addEventListener(
@@ -1284,6 +1166,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
+    /* =================================================
+       FILE SELECT
+    ================================================= */
+
     fileInput.addEventListener(
         "change",
         () => {
@@ -1294,59 +1180,53 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-            /*
-             * Only images.
-             */
+            if (
+                files.length === 0
+            ) {
+                return;
+            }
 
-            const imageFiles =
+
+            /* =========================================
+               ONLY IMAGES
+            ========================================= */
+
+            const validFiles =
                 files.filter(
                     file =>
-                        file.type &&
                         file.type.startsWith(
                             "image/"
                         )
                 );
 
 
-            /*
-             * Add selected images.
-             */
-
-            selectedFiles.push(
-                ...imageFiles
-            );
-
-
-            /*
-             * Maximum 5 images
-             * per request.
-             */
-
             if (
-                selectedFiles.length > 5
+                validFiles.length !==
+                files.length
             ) {
 
-                selectedFiles =
-                    selectedFiles.slice(
-                        0,
-                        5
-                    );
-
-
                 alert(
-                    "You can upload up to 5 images at a time."
+                    "Please upload image files only."
                 );
 
             }
+
+
+            /* =========================================
+               ADD FILES
+            ========================================= */
+
+            selectedFiles.push(
+                ...validFiles
+            );
 
 
             renderAttachments();
 
 
             /*
-             * Reset input so
-             * same image can be
-             * selected again.
+             * Reset input so the same image
+             * can be selected again later.
              */
 
             fileInput.value = "";
@@ -1365,15 +1245,6 @@ document.addEventListener("DOMContentLoaded", () => {
             "";
 
 
-        if (
-            selectedFiles.length === 0
-        ) {
-
-            return;
-
-        }
-
-
         selectedFiles.forEach(
             (file, index) => {
 
@@ -1384,28 +1255,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 item.className =
-                    "attachment-item image-attachment";
+                    "attachment-item";
 
 
-                const image =
+                /* =====================================
+                   IMAGE THUMBNAIL
+                ===================================== */
+
+                const thumbnail =
                     document.createElement(
                         "img"
                     );
 
 
-                image.className =
-                    "attachment-image-preview";
+                thumbnail.className =
+                    "attachment-thumbnail";
 
 
-                image.src =
+                thumbnail.alt =
+                    file.name;
+
+
+                thumbnail.src =
                     URL.createObjectURL(
                         file
                     );
 
 
-                image.alt =
-                    file.name;
-
+                /* =====================================
+                   FILE NAME
+                ===================================== */
 
                 const name =
                     document.createElement(
@@ -1420,6 +1299,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 name.textContent =
                     file.name;
 
+
+                /* =====================================
+                   REMOVE BUTTON
+                ===================================== */
 
                 const remove =
                     document.createElement(
@@ -1439,12 +1322,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     index;
 
 
-                remove.innerHTML =
+                remove.textContent =
                     "×";
 
 
+                remove.addEventListener(
+                    "click",
+                    () => {
+
+                        selectedFiles.splice(
+                            index,
+                            1
+                        );
+
+
+                        renderAttachments();
+
+                    }
+                );
+
+
                 item.appendChild(
-                    image
+                    thumbnail
                 );
 
 
@@ -1464,38 +1363,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
         );
-
-
-        document
-            .querySelectorAll(
-                ".remove-file"
-            )
-            .forEach(
-                button => {
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-
-                            const index =
-                                Number(
-                                    button.dataset.index
-                                );
-
-
-                            selectedFiles.splice(
-                                index,
-                                1
-                            );
-
-
-                            renderAttachments();
-
-                        }
-                    );
-
-                }
-            );
 
     }
 
@@ -1572,6 +1439,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                         autoResize();
 
+
                         input.focus();
 
 
@@ -1640,6 +1508,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function newChat() {
 
         conversation = [];
+
 
         selectedFiles = [];
 
@@ -1959,36 +1828,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =================================================
-       SETTINGS
-    ================================================= */
-
-    if (settingsBtn) {
-
-        settingsBtn.addEventListener(
-            "click",
-            () => {
-
-                alert(
-                    "Settings panel coming soon."
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =================================================
        KEYBOARD SHORTCUTS
     ================================================= */
 
     document.addEventListener(
         "keydown",
         event => {
-
-            /*
-             * Ctrl + K
-             */
 
             if (
                 event.ctrlKey &&
@@ -2001,10 +1846,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             }
 
-
-            /*
-             * Escape
-             */
 
             if (
                 event.key === "Escape"
@@ -2027,7 +1868,9 @@ document.addEventListener("DOMContentLoaded", () => {
        HELPER
     ================================================= */
 
-    function sleep(ms) {
+    function sleep(
+        ms
+    ) {
 
         return new Promise(
             resolve =>
@@ -2081,8 +1924,7 @@ document.addEventListener(
             mouseY;
 
 
-        const trailPositions =
-            [];
+        const trailPositions = [];
 
 
         trails.forEach(
@@ -2090,15 +1932,21 @@ document.addEventListener(
 
                 trailPositions.push({
 
-                    x: mouseX,
+                    x:
+                        mouseX,
 
-                    y: mouseY
+                    y:
+                        mouseY
 
                 });
 
             }
         );
 
+
+        /* =============================================
+           MOUSE POSITION
+        ============================================= */
 
         document.addEventListener(
             "mousemove",
@@ -2114,6 +1962,10 @@ document.addEventListener(
             }
         );
 
+
+        /* =============================================
+           ANIMATE CURSOR
+        ============================================= */
 
         function animateCursor() {
 
@@ -2144,32 +1996,23 @@ document.addEventListener(
 
 
             trails.forEach(
-                (trail, index) => {
+                (
+                    trail,
+                    index
+                ) => {
 
                     const position =
                         trailPositions[index];
 
 
                     position.x +=
-                        (
-                            previousX -
-                            position.x
-                        ) *
-                        (
-                            0.22 -
-                            index * 0.02
-                        );
+                        (previousX - position.x) *
+                        (0.22 - index * 0.02);
 
 
                     position.y +=
-                        (
-                            previousY -
-                            position.y
-                        ) *
-                        (
-                            0.22 -
-                            index * 0.02
-                        );
+                        (previousY - position.y) *
+                        (0.22 - index * 0.02);
 
 
                     trail.style.left =
@@ -2181,13 +2024,11 @@ document.addEventListener(
 
 
                     const scale =
-                        1 -
-                        index * 0.12;
+                        1 - index * 0.12;
 
 
                     const opacity =
-                        0.65 -
-                        index * 0.09;
+                        0.65 - index * 0.09;
 
 
                     trail.style.transform =
@@ -2218,6 +2059,10 @@ document.addEventListener(
 
         animateCursor();
 
+
+        /* =============================================
+           HOVER
+        ============================================= */
 
         const interactiveElements =
             document.querySelectorAll(
@@ -2255,6 +2100,10 @@ document.addEventListener(
         );
 
 
+        /* =============================================
+           CLICK
+        ============================================= */
+
         document.addEventListener(
             "mousedown",
             () => {
@@ -2278,6 +2127,10 @@ document.addEventListener(
             }
         );
 
+
+        /* =============================================
+           MOUSE LEAVE
+        ============================================= */
 
         document.addEventListener(
             "mouseleave",
