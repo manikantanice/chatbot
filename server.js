@@ -5,7 +5,7 @@ const app = express();
 const PORT = 3000;
 
 // Pexels API Key
-const PEXELS_API_KEY = "YOUR_NEW_PEXELS_API_KEY";
+const PEXELS_API_KEY = "t5V6gWPPTy7zuytubDuzaE3WEExgvAsE2PjDNLlgieWOPFX2l7XjrdfY";
 
 app.use(express.json());
 app.use(express.static(__dirname));
