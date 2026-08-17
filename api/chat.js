@@ -1,127 +1,342 @@
+// =====================================================
+// MINI AI — VERCEL API
+// api/chat.js
+// =====================================================
+
 module.exports = async function handler(req, res) {
+
+    // =====================================================
+    // RESPONSE HEADERS
+    // =====================================================
+
+    res.setHeader(
+        "Cache-Control",
+        "no-store, max-age=0"
+    );
+
+    res.setHeader(
+        "Access-Control-Allow-Origin",
+        "*"
+    );
+
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "POST, OPTIONS"
+    );
+
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization"
+    );
+
+
+    // =====================================================
+    // OPTIONS / CORS
+    // =====================================================
+
+    if (req.method === "OPTIONS") {
+
+        return res.status(200).end();
+
+    }
+
 
     // =====================================================
     // METHOD CHECK
     // =====================================================
 
     if (req.method !== "POST") {
+
         return res.status(405).json({
+
             type: "error",
-            error: "Method not allowed"
+
+            error:
+                "Method not allowed. Use POST."
+
         });
+
     }
+
 
     try {
 
-        // =====================================================
-        // REQUEST DATA
-        // =====================================================
-
-        const body = req.body || {};
-
-        const messages = Array.isArray(body.messages)
-            ? body.messages
-            : [];
-
-        const message = typeof body.message === "string"
-            ? body.message.trim()
-            : "";
-
-        const webSearch = Boolean(body.webSearch);
-
-        const images = Array.isArray(body.images)
-            ? body.images
-            : [];
-
-
-        // =====================================================
-        // API KEYS
-        // =====================================================
+        // =================================================
+        // ENVIRONMENT VARIABLES
+        // =================================================
 
         const groqApiKey =
             process.env.GROQ_API_KEY;
 
+        const pollinationsKey =
+            process.env.POLLINATIONS_API_KEY;
+
+
+        // =================================================
+        // GROQ KEY CHECK
+        // =================================================
 
         if (!groqApiKey) {
+
+            console.error(
+                "GROQ_API_KEY is missing."
+            );
+
             return res.status(500).json({
+
                 type: "error",
-                error: "GROQ_API_KEY is not configured in Vercel."
+
+                error:
+                    "GROQ_API_KEY is not configured in Vercel."
+
             });
+
         }
 
 
-        // =====================================================
-        // USER MESSAGE
-        // =====================================================
+        // =================================================
+        // REQUEST BODY
+        // =================================================
 
-        let userText = message;
+        const body =
+            req.body && typeof req.body === "object"
+                ? req.body
+                : {};
+
+
+        // =================================================
+        // MESSAGES
+        // =================================================
+
+        const messages =
+            Array.isArray(body.messages)
+                ? body.messages
+                : [];
+
+
+        // =================================================
+        // USER MESSAGE
+        // =================================================
+
+        const message =
+            typeof body.message === "string"
+                ? body.message.trim()
+                : "";
+
+
+        // =================================================
+        // WEB SEARCH FLAG
+        // =================================================
+
+        const webSearch =
+            body.webSearch === true;
+
+
+        // =================================================
+        // IMAGES
+        // =================================================
+
+        const images =
+            Array.isArray(body.images)
+                ? body.images
+                : [];
+
+
+        // =================================================
+        // FIND LAST USER MESSAGE
+        // =================================================
+
+        let userText =
+            message;
+
 
         if (!userText && messages.length > 0) {
 
-            const lastMessage =
-                messages[messages.length - 1];
-
-            if (
-                lastMessage &&
-                typeof lastMessage.content === "string"
+            for (
+                let i = messages.length - 1;
+                i >= 0;
+                i--
             ) {
-                userText =
-                    lastMessage.content.trim();
+
+                const current =
+                    messages[i];
+
+
+                if (
+                    current &&
+                    current.role === "user"
+                ) {
+
+                    if (
+                        typeof current.content === "string"
+                    ) {
+
+                        userText =
+                            current.content.trim();
+
+                        break;
+
+                    }
+
+
+                    // -------------------------------------
+                    // Handle multimodal content
+                    // -------------------------------------
+
+                    if (
+                        Array.isArray(
+                            current.content
+                        )
+                    ) {
+
+                        const textPart =
+                            current.content.find(
+                                item =>
+                                    item &&
+                                    item.type === "text"
+                            );
+
+
+                        if (
+                            textPart &&
+                            typeof textPart.text === "string"
+                        ) {
+
+                            userText =
+                                textPart.text.trim();
+
+                            break;
+
+                        }
+
+                    }
+
+                }
+
             }
+
         }
 
 
-        // =====================================================
+        // =================================================
+        // BASIC VALIDATION
+        // =================================================
+
+        if (
+            !userText &&
+            messages.length === 0 &&
+            images.length === 0
+        ) {
+
+            return res.status(400).json({
+
+                type: "error",
+
+                error:
+                    "Please enter a message."
+
+            });
+
+        }
+
+
+        // =================================================
+        // LIMIT CONVERSATION HISTORY
+        // =================================================
+        //
+        // Prevent unnecessarily huge requests.
+        //
+        // Keep the latest 30 messages.
+        // =================================================
+
+        const safeMessages =
+            messages
+                .filter(message => {
+
+                    if (
+                        !message ||
+                        typeof message !== "object"
+                    ) {
+                        return false;
+                    }
+
+
+                    if (
+                        !["system", "user", "assistant"]
+                            .includes(message.role)
+                    ) {
+                        return false;
+                    }
+
+
+                    return true;
+
+                })
+                .slice(-30);
+
+
+        // =================================================
         // IMAGE GENERATION DETECTION
-        // =====================================================
+        // =================================================
 
         const wantsImage =
-            /create\s+(an?\s+)?image|generate\s+(an?\s+)?image|make\s+(an?\s+)?image|create\s+(an?\s+)?picture|generate\s+(an?\s+)?picture|draw|image\s+of|create\s+image|make\s+picture|generate\s+picture|show\s+me\s+(an?\s+)?image|show\s+image|create\s+photo|generate\s+photo|make\s+photo/i
+            /create\s+(an?\s+)?image|generate\s+(an?\s+)?image|make\s+(an?\s+)?image|create\s+(an?\s+)?picture|generate\s+(an?\s+)?picture|make\s+(an?\s+)?picture|draw\s+(an?\s+)?|image\s+of|create\s+(an?\s+)?photo|generate\s+(an?\s+)?photo|make\s+(an?\s+)?photo|show\s+me\s+(an?\s+)?image|show\s+image/i
                 .test(userText);
 
 
-        // =====================================================
+        // =================================================
         // IMAGE GENERATION
-        // =====================================================
+        // =================================================
 
         if (
             wantsImage &&
             images.length === 0
         ) {
 
-            const pollinationsKey =
-                process.env.POLLINATIONS_API_KEY;
 
+            // ------------------------------------------------
+            // POLLINATIONS KEY
+            // ------------------------------------------------
 
             if (!pollinationsKey) {
 
+                console.error(
+                    "POLLINATIONS_API_KEY is missing."
+                );
+
                 return res.status(500).json({
+
                     type: "error",
+
                     error:
                         "POLLINATIONS_API_KEY is not configured in Vercel."
+
                 });
+
             }
 
 
             try {
 
-                // -------------------------------------------------
-                // CLEAN PROMPT
-                // -------------------------------------------------
+                // =================================================
+                // CLEAN IMAGE PROMPT
+                // =================================================
 
                 let imagePrompt =
-                    userText
-                        .replace(
-                            /^\s*(please\s*)?(create|generate|make|draw|show\s+me)\s+(an?\s+)?(image|picture|photo)\s*(of\s*)?/i,
-                            ""
-                        )
-                        .trim();
+                    userText;
+
+
+                imagePrompt =
+                    imagePrompt.replace(
+                        /^\s*(please\s*)?(create|generate|make|draw|show\s+me)\s+(an?\s+)?(image|picture|photo)\s*(of\s*)?/i,
+                        ""
+                    );
 
 
                 imagePrompt =
                     imagePrompt
                         .replace(
-                            /^of\s+/i,
+                            /^\s*of\s+/i,
                             ""
                         )
                         .trim();
@@ -137,9 +352,9 @@ module.exports = async function handler(req, res) {
                 );
 
 
-                // -------------------------------------------------
-                // POLLINATIONS IMAGE URL
-                // -------------------------------------------------
+                // =================================================
+                // POLLINATIONS URL
+                // =================================================
 
                 const imageUrl =
                     `https://gen.pollinations.ai/image/${encodeURIComponent(
@@ -147,31 +362,43 @@ module.exports = async function handler(req, res) {
                     )}?model=flux`;
 
 
-                // -------------------------------------------------
-                // REQUEST IMAGE
-                // -------------------------------------------------
+                // =================================================
+                // GENERATE IMAGE
+                // =================================================
 
                 const imageResponse =
                     await fetch(
                         imageUrl,
                         {
-                            method: "GET",
+
+                            method:
+                                "GET",
 
                             headers: {
-                                "Authorization":
+
+                                Authorization:
                                     `Bearer ${pollinationsKey}`,
 
-                                "Accept":
+                                Accept:
                                     "image/*"
+
                             }
+
                         }
                     );
 
 
-                if (!imageResponse.ok) {
+                // =================================================
+                // POLLINATIONS ERROR
+                // =================================================
+
+                if (
+                    !imageResponse.ok
+                ) {
 
                     const errorText =
                         await imageResponse.text();
+
 
                     console.error(
                         "Pollinations error:",
@@ -179,28 +406,61 @@ module.exports = async function handler(req, res) {
                         errorText
                     );
 
+
                     return res.status(
                         imageResponse.status
                     ).json({
+
                         type: "error",
+
                         error:
                             errorText ||
                             "Image generation failed."
+
                     });
+
                 }
 
 
-                // -------------------------------------------------
-                // IMAGE BUFFER
-                // -------------------------------------------------
+                // =================================================
+                // READ IMAGE
+                // =================================================
 
                 const imageBuffer =
                     await imageResponse.arrayBuffer();
 
 
-                // -------------------------------------------------
+                if (
+                    !imageBuffer ||
+                    imageBuffer.byteLength === 0
+                ) {
+
+                    return res.status(500).json({
+
+                        type: "error",
+
+                        error:
+                            "Generated image is empty."
+
+                    });
+
+                }
+
+
+                // =================================================
+                // CONTENT TYPE
+                // =================================================
+
+                const contentType =
+                    imageResponse.headers.get(
+                        "content-type"
+                    ) ||
+                    "image/jpeg";
+
+
+                // =================================================
                 // BASE64
-                // -------------------------------------------------
+                // =================================================
 
                 const base64Image =
                     Buffer
@@ -208,23 +468,17 @@ module.exports = async function handler(req, res) {
                         .toString("base64");
 
 
-                // -------------------------------------------------
-                // CONTENT TYPE
-                // -------------------------------------------------
-
-                const contentType =
-                    imageResponse.headers.get(
-                        "content-type"
-                    ) || "image/jpeg";
-
+                // =================================================
+                // DATA URL
+                // =================================================
 
                 const imageData =
                     `data:${contentType};base64,${base64Image}`;
 
 
-                // -------------------------------------------------
-                // RETURN IMAGE
-                // -------------------------------------------------
+                // =================================================
+                // RETURN GENERATED IMAGE
+                // =================================================
 
                 return res.status(200).json({
 
@@ -245,6 +499,7 @@ module.exports = async function handler(req, res) {
                     error
                 );
 
+
                 return res.status(500).json({
 
                     type: "error",
@@ -254,7 +509,9 @@ module.exports = async function handler(req, res) {
                         "Image generation failed."
 
                 });
+
             }
+
         }
 
 
@@ -262,7 +519,9 @@ module.exports = async function handler(req, res) {
         // UPLOADED IMAGE ANALYSIS
         // =====================================================
 
-        if (images.length > 0) {
+        if (
+            images.length > 0
+        ) {
 
             console.log(
                 "Uploaded images:",
@@ -270,23 +529,31 @@ module.exports = async function handler(req, res) {
             );
 
 
+            // =================================================
+            // LIMIT IMAGES
+            // =================================================
+
             const selectedImages =
                 images.slice(0, 5);
 
 
-            const imageContents = [];
+            const imageContents =
+                [];
 
 
-            // -------------------------------------------------
-            // PREPARE IMAGES
-            // -------------------------------------------------
+            // =================================================
+            // PREPARE IMAGE DATA
+            // =================================================
 
             for (
                 const image
                 of selectedImages
             ) {
 
-                if (!image) {
+                if (
+                    !image ||
+                    typeof image !== "object"
+                ) {
                     continue;
                 }
 
@@ -309,9 +576,14 @@ module.exports = async function handler(req, res) {
                     imageData.trim();
 
 
-                // -------------------------------------------------
-                // RAW BASE64
-                // -------------------------------------------------
+                if (!imageData) {
+                    continue;
+                }
+
+
+                // =================================================
+                // RAW BASE64 → DATA URL
+                // =================================================
 
                 if (
                     !imageData.startsWith(
@@ -320,18 +592,21 @@ module.exports = async function handler(req, res) {
                 ) {
 
                     const mimeType =
-                        image.type ||
-                        "image/jpeg";
+                        typeof image.type === "string" &&
+                        image.type.startsWith("image/")
+                            ? image.type
+                            : "image/jpeg";
 
 
                     imageData =
                         `data:${mimeType};base64,${imageData}`;
+
                 }
 
 
-                // -------------------------------------------------
-                // VALID IMAGE
-                // -------------------------------------------------
+                // =================================================
+                // IMAGE VALIDATION
+                // =================================================
 
                 if (
                     !imageData.startsWith(
@@ -342,23 +617,30 @@ module.exports = async function handler(req, res) {
                 }
 
 
+                // =================================================
+                // ADD IMAGE
+                // =================================================
+
                 imageContents.push({
 
                     type:
                         "image_url",
 
                     image_url: {
+
                         url:
                             imageData
+
                     }
 
                 });
+
             }
 
 
-            // -------------------------------------------------
-            // NO VALID IMAGE
-            // -------------------------------------------------
+            // =================================================
+            // NO VALID IMAGES
+            // =================================================
 
             if (
                 imageContents.length === 0
@@ -372,32 +654,38 @@ module.exports = async function handler(req, res) {
                         "No valid image data was received."
 
                 });
+
             }
 
 
-            // -------------------------------------------------
+            // =================================================
             // IMAGE QUESTION
-            // -------------------------------------------------
+            // =================================================
 
             const analysisPrompt =
                 userText ||
-                "Analyze this image carefully and describe what you see. Include objects, people, colors, visible text and important details. Do not invent anything that is not visible.";
+                "Analyze this image carefully. Describe only what is visible. Include objects, people, colors, visible text and important details. Do not invent anything that cannot be seen.";
 
 
-            // -------------------------------------------------
+            // =================================================
             // VISION MESSAGE
-            // -------------------------------------------------
+            // =================================================
 
             const visionMessage = {
 
-                role: "user",
+                role:
+                    "user",
 
                 content: [
 
                     {
-                        type: "text",
+
+                        type:
+                            "text",
+
                         text:
                             analysisPrompt
+
                     },
 
                     ...imageContents
@@ -421,14 +709,15 @@ module.exports = async function handler(req, res) {
                     "https://api.groq.com/openai/v1/chat/completions",
                     {
 
-                        method: "POST",
+                        method:
+                            "POST",
 
                         headers: {
 
                             "Content-Type":
                                 "application/json",
 
-                            "Authorization":
+                            Authorization:
                                 `Bearer ${groqApiKey}`
 
                         },
@@ -462,13 +751,14 @@ module.exports = async function handler(req, res) {
                                     1500
 
                             })
+
                     }
                 );
 
 
-            // -------------------------------------------------
-            // READ RESPONSE
-            // -------------------------------------------------
+            // =================================================
+            // READ GROQ RESPONSE
+            // =================================================
 
             const responseText =
                 await groqResponse.text();
@@ -487,11 +777,12 @@ module.exports = async function handler(req, res) {
             } catch (error) {
 
                 console.error(
-                    "Invalid Groq response:",
+                    "Invalid Groq vision response:",
                     responseText
                 );
 
-                return res.status(500).json({
+
+                return res.status(502).json({
 
                     type: "error",
 
@@ -499,19 +790,23 @@ module.exports = async function handler(req, res) {
                         "Groq returned an invalid response."
 
                 });
+
             }
 
 
-            // -------------------------------------------------
+            // =================================================
             // GROQ ERROR
-            // -------------------------------------------------
+            // =================================================
 
-            if (!groqResponse.ok) {
+            if (
+                !groqResponse.ok
+            ) {
 
                 console.error(
                     "Groq vision error:",
                     groqData
                 );
+
 
                 return res.status(
                     groqResponse.status
@@ -524,12 +819,13 @@ module.exports = async function handler(req, res) {
                         "Groq vision API error."
 
                 });
+
             }
 
 
-            // -------------------------------------------------
-            // GET REPLY
-            // -------------------------------------------------
+            // =================================================
+            // GET VISION REPLY
+            // =================================================
 
             const reply =
                 groqData
@@ -538,9 +834,12 @@ module.exports = async function handler(req, res) {
                     ?.content;
 
 
-            if (!reply) {
+            if (
+                typeof reply !== "string" ||
+                !reply.trim()
+            ) {
 
-                return res.status(500).json({
+                return res.status(502).json({
 
                     type: "error",
 
@@ -548,24 +847,27 @@ module.exports = async function handler(req, res) {
                         "No image analysis response received."
 
                 });
+
             }
 
 
-            // -------------------------------------------------
+            // =================================================
             // RETURN IMAGE ANALYSIS
-            // -------------------------------------------------
+            // =================================================
 
             return res.status(200).json({
 
-                type: "text",
+                type:
+                    "text",
 
                 reply:
-                    reply,
+                    reply.trim(),
 
                 imageAnalysis:
                     true
 
             });
+
         }
 
 
@@ -574,23 +876,78 @@ module.exports = async function handler(req, res) {
         // =====================================================
 
         if (
-            !Array.isArray(messages) ||
-            messages.length === 0
+            safeMessages.length === 0
         ) {
 
-            return res.status(400).json({
+            if (!userText) {
 
-                type: "error",
+                return res.status(400).json({
 
-                error:
-                    "Messages are missing."
+                    type: "error",
+
+                    error:
+                        "Messages are missing."
+
+                });
+
+            }
+
+
+            // -------------------------------------------------
+            // Create message when only `message` was sent
+            // -------------------------------------------------
+
+            safeMessages.push({
+
+                role:
+                    "user",
+
+                content:
+                    userText
 
             });
+
         }
 
 
+        // =====================================================
+        // SYSTEM PROMPT
+        // =====================================================
+
+        const systemMessage = {
+
+            role:
+                "system",
+
+            content:
+                "You are Mini AI, a helpful, accurate and friendly AI assistant. Answer clearly and naturally. If the user asks for code, provide working code and explain important parts when useful. Do not claim to have searched the web unless actual web-search results were provided."
+
+        };
+
+
+        // =====================================================
+        // FINAL MESSAGE LIST
+        // =====================================================
+
+        const finalMessages = [
+
+            systemMessage,
+
+            ...safeMessages
+
+        ];
+
+
         console.log(
-            "Sending normal text request to Groq..."
+            "Sending normal text request to Groq...",
+            {
+                messageCount:
+                    finalMessages.length,
+
+                webSearch:
+                    webSearch
+
+            }
         );
 
 
@@ -603,14 +960,15 @@ module.exports = async function handler(req, res) {
                 "https://api.groq.com/openai/v1/chat/completions",
                 {
 
-                    method: "POST",
+                    method:
+                        "POST",
 
                     headers: {
 
                         "Content-Type":
                             "application/json",
 
-                        "Authorization":
+                        Authorization:
                             `Bearer ${groqApiKey}`
 
                     },
@@ -622,7 +980,7 @@ module.exports = async function handler(req, res) {
                                 "llama-3.3-70b-versatile",
 
                             messages:
-                                messages,
+                                finalMessages,
 
                             temperature:
                                 0.7,
@@ -631,13 +989,14 @@ module.exports = async function handler(req, res) {
                                 1500
 
                         })
+
                 }
             );
 
 
-        // -------------------------------------------------
-        // READ RESPONSE
-        // -------------------------------------------------
+        // =====================================================
+        // READ GROQ RESPONSE
+        // =====================================================
 
         const responseText =
             await groqResponse.text();
@@ -660,45 +1019,53 @@ module.exports = async function handler(req, res) {
                 responseText
             );
 
-            return res.status(500).json({
 
-                type: "error",
+            return res.status(502).json({
+
+                type:
+                    "error",
 
                 error:
                     "Groq returned an invalid response."
 
             });
+
         }
 
 
-        // -------------------------------------------------
+        // =====================================================
         // GROQ ERROR
-        // -------------------------------------------------
+        // =====================================================
 
-        if (!groqResponse.ok) {
+        if (
+            !groqResponse.ok
+        ) {
 
             console.error(
                 "Groq error:",
                 groqData
             );
 
+
             return res.status(
                 groqResponse.status
             ).json({
 
-                type: "error",
+                type:
+                    "error",
 
                 error:
                     groqData?.error?.message ||
                     "Groq API error."
 
             });
+
         }
 
 
-        // -------------------------------------------------
+        // =====================================================
         // GET TEXT REPLY
-        // -------------------------------------------------
+        // =====================================================
 
         const reply =
             groqData
@@ -707,29 +1074,35 @@ module.exports = async function handler(req, res) {
                 ?.content;
 
 
-        if (!reply) {
+        if (
+            typeof reply !== "string" ||
+            !reply.trim()
+        ) {
 
-            return res.status(500).json({
+            return res.status(502).json({
 
-                type: "error",
+                type:
+                    "error",
 
                 error:
                     "No reply received from Groq."
 
             });
+
         }
 
 
-        // -------------------------------------------------
+        // =====================================================
         // RETURN TEXT
-        // -------------------------------------------------
+        // =====================================================
 
         return res.status(200).json({
 
-            type: "text",
+            type:
+                "text",
 
             reply:
-                reply,
+                reply.trim(),
 
             webSearch:
                 webSearch
@@ -739,9 +1112,9 @@ module.exports = async function handler(req, res) {
 
     } catch (error) {
 
-        // =================================================
+        // =====================================================
         // GENERAL SERVER ERROR
-        // =================================================
+        // =====================================================
 
         console.error(
             "API SERVER ERROR:",
@@ -751,7 +1124,8 @@ module.exports = async function handler(req, res) {
 
         return res.status(500).json({
 
-            type: "error",
+            type:
+                "error",
 
             error:
                 error?.message ||
