@@ -5,332 +5,559 @@
 
 module.exports = async function handler(req, res) {
 
-    // ---------------------------------------------------------
+    // =========================================================
     // CORS
-    // ---------------------------------------------------------
+    // =========================================================
 
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Origin",
+        "*"
+    );
+
     res.setHeader(
         "Access-Control-Allow-Methods",
         "POST, OPTIONS"
     );
+
     res.setHeader(
         "Access-Control-Allow-Headers",
         "Content-Type"
     );
 
+
+    // =========================================================
+    // OPTIONS
+    // =========================================================
+
     if (req.method === "OPTIONS") {
-        return res.status(200).end();
+
+        return res
+            .status(200)
+            .end();
+
     }
 
-    // ---------------------------------------------------------
+
+    // =========================================================
     // ONLY POST
-    // ---------------------------------------------------------
+    // =========================================================
 
     if (req.method !== "POST") {
+
         return res.status(405).json({
+
             success: false,
+
             error: "Method not allowed"
+
         });
+
     }
+
 
     try {
 
-        // -----------------------------------------------------
-        // CHECK API KEY
-        // -----------------------------------------------------
+        // =====================================================
+        // GROQ API KEY
+        // =====================================================
 
-        const apiKey = process.env.GROQ_API_KEY;
+        const apiKey =
+            process.env.GROQ_API_KEY;
+
 
         if (!apiKey) {
-            console.error("GROQ_API_KEY is missing");
+
+            console.error(
+                "GROQ_API_KEY is missing"
+            );
 
             return res.status(500).json({
+
                 success: false,
-                error: "GROQ_API_KEY is not configured"
+
+                error:
+                    "GROQ_API_KEY is not configured"
+
             });
+
         }
 
-        // -----------------------------------------------------
-        // REQUEST BODY
-        // -----------------------------------------------------
 
-        const body = req.body || {};
+        // =====================================================
+        // REQUEST BODY
+        // =====================================================
+
+        const body =
+            req.body || {};
+
 
         const message =
             typeof body.message === "string"
                 ? body.message.trim()
                 : "";
 
-        const images =
-            Array.isArray(body.images)
-                ? body.images
-                : [];
 
         const history =
             Array.isArray(body.messages)
                 ? body.messages
                 : [];
 
-        // -----------------------------------------------------
-        // VALIDATE REQUEST
-        // -----------------------------------------------------
 
-        if (!message && images.length === 0) {
+        const images =
+            Array.isArray(body.images)
+                ? body.images
+                : [];
+
+
+        const webSearch =
+            body.webSearch === true;
+
+
+        // =====================================================
+        // VALIDATION
+        // =====================================================
+
+        if (
+            !message &&
+            images.length === 0
+        ) {
+
             return res.status(400).json({
+
                 success: false,
-                error: "Message or image is required"
+
+                error:
+                    "Message or image is required"
+
             });
+
         }
 
-        // -----------------------------------------------------
-        // LIMIT IMAGES
-        // -----------------------------------------------------
 
-        const safeImages = images
-            .filter(img => {
-                return (
-                    img &&
-                    typeof img.data === "string" &&
-                    img.data.startsWith("data:image/")
-                );
-            })
-            .slice(0, 5);
+        // =====================================================
+        // VALIDATE IMAGES
+        // =====================================================
 
-        // -----------------------------------------------------
+        const safeImages =
+            images
+                .filter(image => {
+
+                    return (
+                        image &&
+                        typeof image.data === "string" &&
+                        image.data.startsWith(
+                            "data:image/"
+                        )
+                    );
+
+                })
+                .slice(0, 3);
+
+
+        // =====================================================
         // IMAGE SIZE CHECK
-        // -----------------------------------------------------
+        // =====================================================
 
-        for (const image of safeImages) {
+        const MAX_IMAGE_SIZE =
+            20 * 1024 * 1024;
 
-            // Base64 can become very large.
-            // Keep each image below ~15 MB.
-            if (image.data.length > 20 * 1024 * 1024) {
+
+        for (
+            const image of safeImages
+        ) {
+
+            if (
+                image.data.length >
+                MAX_IMAGE_SIZE
+            ) {
 
                 return res.status(400).json({
+
                     success: false,
-                    error: "Image is too large. Please use an image below 15MB."
+
+                    error:
+                        "Image is too large. Please upload a smaller image."
+
                 });
+
             }
+
         }
 
-        // -----------------------------------------------------
+
+        // =====================================================
         // SELECT MODEL
-        // -----------------------------------------------------
+        // =====================================================
 
         const model =
             safeImages.length > 0
+
                 ? "qwen/qwen3.6-27b"
+
                 : "llama-3.3-70b-versatile";
 
-        // -----------------------------------------------------
-        // BUILD USER CONTENT
-        // -----------------------------------------------------
+
+        // =====================================================
+        // SYSTEM MESSAGE
+        // =====================================================
+
+        const systemMessage = {
+
+            role: "system",
+
+            content:
+                `You are Mini AI, a helpful, friendly and intelligent AI assistant.
+
+Rules:
+- Answer clearly and accurately.
+- Keep answers easy to understand.
+- If the user asks for code, provide clean working code.
+- If an image is provided, carefully analyze it.
+- Do not claim that you generated an image unless an actual image generation API was used.
+- If the user speaks Telugu, reply in Telugu.
+- If the user speaks English, reply in English.
+- You can understand Telugu, English and mixed Telugu-English.`
+
+        };
+
+
+        // =====================================================
+        // BUILD HISTORY
+        // =====================================================
+
+        const messages = [
+
+            systemMessage
+
+        ];
+
+
+        // =====================================================
+        // ADD PREVIOUS CONVERSATION
+        // =====================================================
+
+        const previousMessages =
+            history
+                .filter(item => {
+
+                    return (
+                        item &&
+                        (
+                            item.role === "user" ||
+                            item.role === "assistant"
+                        ) &&
+                        typeof item.content === "string" &&
+                        item.content.trim()
+                    );
+
+                })
+                .slice(-10);
+
+
+        for (
+            const item of previousMessages
+        ) {
+
+            messages.push({
+
+                role:
+                    item.role,
+
+                content:
+                    item.content
+
+            });
+
+        }
+
+
+        // =====================================================
+        // CURRENT USER CONTENT
+        // =====================================================
 
         const userContent = [];
 
-        if (message) {
 
-            userContent.push({
-                type: "text",
-                text: message
-            });
+        // =====================================================
+        // TEXT
+        // =====================================================
 
-        } else {
+        userContent.push({
 
-            userContent.push({
-                type: "text",
-                text: "Please analyze this image."
-            });
+            type: "text",
 
-        }
+            text:
+                message ||
+                "Please analyze this image carefully and describe what you see."
 
-        // -----------------------------------------------------
-        // ADD IMAGES
-        // -----------------------------------------------------
-
-        for (const image of safeImages) {
-
-            userContent.push({
-                type: "image_url",
-                image_url: {
-                    url: image.data
-                }
-            });
-
-        }
-
-        // -----------------------------------------------------
-        // BUILD MESSAGES
-        // -----------------------------------------------------
-
-        const messages = [];
-
-        // Add limited previous conversation
-        if (history.length > 0) {
-
-            const previousMessages =
-                history
-                    .filter(item => {
-                        return (
-                            item &&
-                            typeof item.role === "string" &&
-                            typeof item.content === "string"
-                        );
-                    })
-                    .slice(-10);
-
-            for (const item of previousMessages) {
-
-                messages.push({
-                    role:
-                        item.role === "assistant"
-                            ? "assistant"
-                            : "user",
-                    content: item.content
-                });
-
-            }
-        }
-
-        // Current message
-        messages.push({
-            role: "user",
-            content: userContent
         });
 
-        // -----------------------------------------------------
+
+        // =====================================================
+        // IMAGES
+        // =====================================================
+
+        for (
+            const image of safeImages
+        ) {
+
+            userContent.push({
+
+                type: "image_url",
+
+                image_url: {
+
+                    url:
+                        image.data
+
+                }
+
+            });
+
+        }
+
+
+        // =====================================================
+        // CURRENT MESSAGE
+        // =====================================================
+
+        messages.push({
+
+            role: "user",
+
+            content:
+                safeImages.length > 0
+                    ? userContent
+                    : message
+
+        });
+
+
+        // =====================================================
         // GROQ REQUEST
-        // -----------------------------------------------------
+        // =====================================================
 
-        const groqResponse = await fetch(
-            "https://api.groq.com/openai/v1/chat/completions",
-            {
-                method: "POST",
+        const groqResponse =
+            await fetch(
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
+                "https://api.groq.com/openai/v1/chat/completions",
 
-                body: JSON.stringify({
+                {
 
-                    model: model,
+                    method: "POST",
 
-                    messages: messages,
+                    headers: {
 
-                    temperature: 0.7,
+                        "Content-Type":
+                            "application/json",
 
-                    max_completion_tokens:
-                        safeImages.length > 0
-                            ? 2048
-                            : 4096
+                        "Authorization":
+                            `Bearer ${apiKey}`
 
-                })
-            }
-        );
+                    },
 
-        // -----------------------------------------------------
-        // READ RESPONSE
-        // -----------------------------------------------------
+                    body: JSON.stringify({
+
+                        model:
+
+                            model,
+
+                        messages:
+
+                            messages,
+
+                        temperature:
+
+                            safeImages.length > 0
+                                ? 0.5
+                                : 0.7,
+
+                        max_completion_tokens:
+
+                            safeImages.length > 0
+                                ? 2048
+                                : 4096,
+
+                        stream:
+
+                            false
+
+                    })
+
+                }
+
+            );
+
+
+        // =====================================================
+        // READ GROQ RESPONSE
+        // =====================================================
 
         const responseText =
             await groqResponse.text();
 
+
         let groqData;
+
 
         try {
 
             groqData =
-                JSON.parse(responseText);
+                JSON.parse(
+                    responseText
+                );
 
         } catch (parseError) {
 
             console.error(
-                "Groq returned invalid JSON:",
+                "Groq invalid JSON:",
                 responseText
             );
 
-            return res.status(500).json({
+            return res.status(502).json({
+
                 success: false,
-                error: "Invalid response received from Groq",
-                details: responseText.slice(0, 500)
+
+                error:
+                    "Invalid response received from Groq"
+
             });
+
         }
 
-        // -----------------------------------------------------
-        // GROQ ERROR
-        // -----------------------------------------------------
 
-        if (!groqResponse.ok) {
+        // =====================================================
+        // GROQ API ERROR
+        // =====================================================
+
+        if (
+            !groqResponse.ok
+        ) {
 
             console.error(
-                "Groq API error:",
+                "Groq API Error:",
                 groqData
             );
 
-            return res.status(groqResponse.status).json({
+
+            const groqError =
+                groqData?.error?.message ||
+                "Groq API request failed";
+
+
+            return res.status(
+                groqResponse.status
+            ).json({
+
                 success: false,
+
                 error:
-                    groqData?.error?.message ||
-                    "Groq API request failed",
-                details:
-                    groqData?.error || null
+                    groqError,
+
+                model:
+                    model
+
             });
+
         }
 
-        // -----------------------------------------------------
-        // GET AI MESSAGE
-        // -----------------------------------------------------
 
-        const answer =
-            groqData?.choices?.[0]?.message?.content;
+        // =====================================================
+        // GET AI RESPONSE
+        // =====================================================
+
+        let answer =
+            groqData
+                ?.choices
+                ?.[0]
+                ?.message
+                ?.content;
+
+
+        // =====================================================
+        // SAFETY CHECK
+        // =====================================================
+
+        if (
+            typeof answer !== "string"
+        ) {
+
+            answer = "";
+
+        }
+
+
+        answer =
+            answer.trim();
+
 
         if (!answer) {
 
             console.error(
-                "No AI response:",
+                "Empty Groq response:",
                 groqData
             );
 
-            return res.status(500).json({
+
+            return res.status(502).json({
+
                 success: false,
-                error: "AI returned an empty response"
+
+                error:
+                    "AI returned an empty response"
+
             });
+
         }
 
-        // -----------------------------------------------------
-        // SUCCESS
-        // -----------------------------------------------------
+
+        // =====================================================
+        // SUCCESS RESPONSE
+        // =====================================================
 
         return res.status(200).json({
 
             success: true,
 
-            message: answer,
+            // Frontend compatibility
+            reply:
+                answer,
 
-            response: answer,
+            message:
+                answer,
 
-            model: model,
+            response:
+                answer,
+
+            content:
+                answer,
+
+            model:
+                model,
 
             hasImages:
                 safeImages.length > 0,
 
             imageCount:
-                safeImages.length
+                safeImages.length,
+
+            webSearch:
+                webSearch
 
         });
 
+
     } catch (error) {
 
-        // -----------------------------------------------------
+        // =====================================================
         // SERVER ERROR
-        // -----------------------------------------------------
+        // =====================================================
 
         console.error(
             "API /api/chat ERROR:",
             error
         );
+
 
         return res.status(500).json({
 
@@ -338,13 +565,10 @@ module.exports = async function handler(req, res) {
 
             error:
                 error?.message ||
-                "Internal server error",
-
-            details:
-                process.env.NODE_ENV === "development"
-                    ? error?.stack
-                    : undefined
+                "Internal server error"
 
         });
+
     }
+
 };
